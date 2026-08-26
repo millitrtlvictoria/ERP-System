@@ -1,0 +1,274 @@
+/* =================================
+   SIDEBAR
+================================= */
+
+.sidebar {
+  width: 260px;
+  height: 100vh;
+
+  position: fixed;
+  left: 0;
+  top: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #7090d6;
+  color: white;
+
+  transition: 0.3s ease;
+
+  z-index: 1000;
+}
+
+.sidebar.closed {
+  width: 78px;
+}
+
+
+/* =================================
+   LOGO
+================================= */
+
+.logo {
+  height: 80px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 20px;
+
+  gap: 12px;
+
+  border-bottom: 1px solid #273244;
+}
+
+.logo-icon {
+  width: 42px;
+  height: 42px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: #2563eb;
+
+  color: white;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.logo h2 {
+  margin: 0;
+
+  font-size: 18px;
+
+  color: white;
+}
+
+.logo span {
+  display: block;
+
+  margin-top: 3px;
+
+  font-size: 9px;
+
+  color: #151618;
+
+  letter-spacing: 1px;
+}
+
+
+/* =================================
+   MENU
+================================= */
+
+.sidebar-menu {
+  flex: 1;
+
+  padding: 20px 12px;
+
+  overflow-y: auto;
+}
+
+.menu-title {
+  font-size: 10px;
+
+  color: #f4f6fc;
+
+  margin: 15px 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 1px;
+}
+
+
+/* =================================
+   MENU ITEM
+================================= */
+
+.menu-item {
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 0 14px;
+
+  margin-bottom: 5px;
+
+  border-radius: 8px;
+
+  color: #ffffff;
+
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.menu-item:hover {
+  background: #1f2937;
+
+  color: white;
+}
+
+.menu-item.active {
+  background: #2563eb;
+
+  color: white;
+}
+
+.menu-item span:first-child {
+  font-size: 19px;
+}
+
+
+/* =================================
+   CLOSED SIDEBAR
+================================= */
+
+.sidebar.closed .menu-item {
+  justify-content: center;
+
+  padding: 0;
+}
+
+.sidebar.closed .menu-item span:first-child {
+  margin: 0;
+}
+
+
+/* =================================
+   BOTTOM
+================================= */
+
+.sidebar-bottom {
+  padding: 15px;
+
+  border-top: 1px solid #273244;
+}
+
+
+/* =================================
+   USER
+================================= */
+
+.user-mini {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 15px;
+}
+
+.user-mini strong {
+  display: block;
+
+  font-size: 13px;
+
+  color: white;
+}
+
+.user-mini small {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #15171c;
+
+  font-size: 11px;
+}
+
+
+/* =================================
+   LOGOUT
+================================= */
+
+.logout-btn {
+  width: 100%;
+
+  padding: 10px;
+
+  border: 1px solid #374151;
+
+  background: transparent;
+
+  color: #07080a;
+
+  border-radius: 6px;
+
+  cursor: pointer;
+
+  font-size: 13px;
+
+  transition: 0.2s;
+}
+
+.logout-btn:hover {
+  background: #dde2ea;
+
+  color: #111827;
+}
+
+
+/* =================================
+   CLOSED LOGOUT
+================================= */
+
+.sidebar.closed .logout-btn {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 10px 0;
+}
+
+
+/* =================================
+   MOBILE
+================================= */
+
+@media (max-width: 700px) {
+
+  .sidebar {
+    width: 78px;
+  }
+
+  .sidebar.open {
+    width: 260px;
+  }
+
+}
