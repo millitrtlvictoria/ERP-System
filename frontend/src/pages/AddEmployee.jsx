@@ -206,7 +206,7 @@ function AddEmployee() {
             <div className="heading-icon">👤</div>
 
             <div>
-              <h2>P Information</h2>
+              <h2>Personal Information</h2>
               <p>Basic information about the employee</p>
             </div>
           </div>
