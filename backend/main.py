@@ -1,3 +1,4 @@
+
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -6,11 +7,7 @@ import models
 import schemas
 import crud
 
-from database import (
-    engine,
-    Base,
-    get_db
-)
+from database import engine, Base, get_db
 
 
 # =====================================================
@@ -21,11 +18,11 @@ Base.metadata.create_all(bind=engine)
 
 
 # =====================================================
-# CREATE FASTAPI APPLICATION
+# FASTAPI APPLICATION
 # =====================================================
 
 app = FastAPI(
-    title="ERP Employee Management System",
+    title="ERP Employee Management API",
     version="1.0.0"
 )
 
@@ -41,23 +38,23 @@ app.add_middleware(
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://localhost:5174",
-        "http://127.0.0.1:5174"
+        "http://127.0.0.1:5174",
     ],
 
     allow_credentials=True,
 
     allow_methods=["*"],
 
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
 
 
 # =====================================================
-# ROOT
+# HOME
 # =====================================================
 
 @app.get("/")
-def root():
+def home():
 
     return {
         "message": "ERP Backend is running"
@@ -70,57 +67,90 @@ def root():
 
 @app.post(
     "/api/register",
-    response_model=schemas.UserResponse,
-    status_code=201
+    response_model=schemas.UserResponse
 )
 def register_user(
-    user_data: schemas.UserCreate,
+    user: schemas.UserCreate,
     db: Session = Depends(get_db)
 ):
 
     # -------------------------------------------------
-    # CHECK PASSWORD CONFIRMATION
+    # CHECK EMAIL
     # -------------------------------------------------
 
-    if user_data.password != user_data.confirm_password:
-
-        raise HTTPException(
-            status_code=400,
-            detail="Passwords do not match"
-        )
-
-    # -------------------------------------------------
-    # CREATE USER
-    # -------------------------------------------------
-
-    result = crud.create_user(
+    existing_email = crud.get_user_by_email(
         db,
-        user_data
+        user.email
     )
 
-    # -------------------------------------------------
-    # EMAIL ALREADY EXISTS
-    # -------------------------------------------------
-
-    if result == "EMAIL_EXISTS":
+    if existing_email:
 
         raise HTTPException(
             status_code=400,
             detail="Email already registered"
         )
 
+
     # -------------------------------------------------
-    # USERNAME ALREADY EXISTS
+    # CHECK USERNAME
     # -------------------------------------------------
 
-    if result == "USERNAME_EXISTS":
+    existing_username = crud.get_user_by_username(
+        db,
+        user.username
+    )
+
+    if existing_username:
 
         raise HTTPException(
             status_code=400,
             detail="Username already exists"
         )
 
-    return result
+
+    # -------------------------------------------------
+    # PASSWORD CONFIRMATION
+    # -------------------------------------------------
+
+    if user.password != user.confirm_password:
+
+        raise HTTPException(
+            status_code=400,
+            detail="Passwords do not match"
+        )
+
+
+    # -------------------------------------------------
+    # CREATE USER
+    # -------------------------------------------------
+
+    try:
+
+        new_user, error_message = crud.create_user(
+            db,
+            user
+        )
+
+        if error_message:
+
+            raise HTTPException(
+                status_code=400,
+                detail=error_message
+            )
+
+        return new_user
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+
+        db.rollback()
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
 
 
 # =====================================================
@@ -141,10 +171,11 @@ def login_user(
     # -------------------------------------------------
 
     user = crud.authenticate_user(
-        db=db,
-        email=login_data.email,
-        password=login_data.password
+        db,
+        login_data.username,
+        login_data.password
     )
+
 
     # -------------------------------------------------
     # INVALID LOGIN
@@ -154,11 +185,12 @@ def login_user(
 
         raise HTTPException(
             status_code=401,
-            detail="Invalid email or password"
+            detail="Invalid username or password"
         )
 
+
     # -------------------------------------------------
-    # LOGIN SUCCESS
+    # SUCCESS
     # -------------------------------------------------
 
     return {
@@ -168,307 +200,84 @@ def login_user(
 
 
 # =====================================================
-# GET ALL EMPLOYEES
-# =====================================================
-
-@app.get("/api/employees")
-def get_all_employees(
-
-    skip: int = 0,
-
-    limit: int = 100,
-
-    emp_id: str | None = None,
-
-    search: str | None = None,
-
-    department: str | None = None,
-
-    status: str | None = None,
-
-    gender: str | None = None,
-
-    designation: str | None = None,
-
-    db: Session = Depends(get_db)
-):
-
-    employees = crud.get_employees(
-
-        db=db,
-
-        skip=skip,
-
-        limit=limit,
-
-        emp_id=emp_id,
-
-        search=search,
-
-        department=department,
-
-        status=status,
-
-        gender=gender,
-
-        designation=designation
-    )
-
-    return [
-
-        {
-            "id": employee.id,
-
-            "emp_id": employee.emp_id,
-
-            "first_name": employee.first_name,
-
-            "last_name": employee.last_name,
-
-            "name": (
-                employee.first_name
-                + " "
-                + employee.last_name
-            ),
-
-            "gender": employee.gender,
-
-            "date_of_birth": (
-                employee.date_of_birth.isoformat()
-                if employee.date_of_birth
-                else None
-            ),
-
-            "phone": employee.phone,
-
-            "email": employee.email,
-
-            "department": employee.department,
-
-            "designation": employee.designation,
-
-            "joining_date": (
-                employee.joining_date.isoformat()
-                if employee.joining_date
-                else None
-            ),
-
-            "employment_type_": employee.employment_type_,
-
-            "monthly_salary": (
-                float(employee.monthly_salary)
-                if employee.monthly_salary is not None
-                else None
-            ),
-
-            "status": employee.status,
-
-            "address": employee.address,
-
-            "created_at": (
-                employee.created_at.isoformat()
-                if employee.created_at
-                else None
-            ),
-
-            "updated_at": (
-                employee.updated_at.isoformat()
-                if employee.updated_at
-                else None
-            )
-        }
-
-        for employee in employees
-    ]
-
-
-# =====================================================
 # CREATE EMPLOYEE
 # =====================================================
 
-@app.post("/api/employees")
-def create_new_employee(
-
-    employee_data: schemas.EmployeeCreate,
-
+@app.post(
+    "/api/employees",
+    response_model=schemas.EmployeeResponse
+)
+def create_employee(
+    employee: schemas.EmployeeCreate,
     db: Session = Depends(get_db)
 ):
 
-    # -------------------------------------------------
-    # CHECK DUPLICATE EMPLOYEE ID
-    # -------------------------------------------------
+    try:
 
-    existing_employee = crud.get_employee_by_emp_id(
-        db,
-        employee_data.emp_id
-    )
+        # -------------------------------------------------
+        # CHECK EMPLOYEE ID
+        # -------------------------------------------------
 
-    if existing_employee:
+        existing_employee = crud.get_employee_by_emp_id(
+            db,
+            employee.emp_id
+        )
+
+        if existing_employee:
+
+            raise HTTPException(
+                status_code=400,
+                detail="Employee ID already exists"
+            )
+
+
+        # -------------------------------------------------
+        # CREATE EMPLOYEE
+        # -------------------------------------------------
+
+        return crud.create_employee(
+            db,
+            employee
+        )
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+
+        db.rollback()
 
         raise HTTPException(
-            status_code=400,
-            detail="Employee ID already exists"
+            status_code=500,
+            detail=str(e)
         )
-
-    # -------------------------------------------------
-    # CREATE EMPLOYEE
-    # -------------------------------------------------
-
-    employee = crud.create_employee(
-        db,
-        employee_data
-    )
-
-    # -------------------------------------------------
-    # RETURN CREATED EMPLOYEE
-    # -------------------------------------------------
-
-    return {
-
-        "id": employee.id,
-
-        "emp_id": employee.emp_id,
-
-        "first_name": employee.first_name,
-
-        "last_name": employee.last_name,
-
-        "name": (
-            employee.first_name
-            + " "
-            + employee.last_name
-        ),
-
-        "gender": employee.gender,
-
-        "date_of_birth": (
-            employee.date_of_birth.isoformat()
-            if employee.date_of_birth
-            else None
-        ),
-
-        "phone": employee.phone,
-
-        "email": employee.email,
-
-        "department": employee.department,
-
-        "designation": employee.designation,
-
-        "joining_date": (
-            employee.joining_date.isoformat()
-            if employee.joining_date
-            else None
-        ),
-
-        "employment_type_": employee.employment_type_,
-
-        "monthly_salary": (
-            float(employee.monthly_salary)
-            if employee.monthly_salary is not None
-            else None
-        ),
-
-        "status": employee.status,
-
-        "address": employee.address,
-
-        "created_at": (
-            employee.created_at.isoformat()
-            if employee.created_at
-            else None
-        )
-    }
 
 
 # =====================================================
-# GET EMPLOYEE BY DATABASE ID
+# GET ALL EMPLOYEES
 # =====================================================
 
-@app.get("/api/employees/id/{employee_id}")
-def get_employee_by_database_id(
-
-    employee_id: int,
-
+@app.get(
+    "/api/employees",
+    response_model=list[schemas.EmployeeResponse]
+)
+def get_employees(
     db: Session = Depends(get_db)
 ):
 
-    employee = crud.get_employee(
-        db,
-        employee_id
-    )
-
-    if not employee:
-
-        raise HTTPException(
-            status_code=404,
-            detail="Employee not found"
-        )
-
-    return {
-
-        "id": employee.id,
-
-        "emp_id": employee.emp_id,
-
-        "first_name": employee.first_name,
-
-        "last_name": employee.last_name,
-
-        "name": (
-            employee.first_name
-            + " "
-            + employee.last_name
-        ),
-
-        "gender": employee.gender,
-
-        "date_of_birth": (
-            employee.date_of_birth.isoformat()
-            if employee.date_of_birth
-            else None
-        ),
-
-        "phone": employee.phone,
-
-        "email": employee.email,
-
-        "department": employee.department,
-
-        "designation": employee.designation,
-
-        "joining_date": (
-            employee.joining_date.isoformat()
-            if employee.joining_date
-            else None
-        ),
-
-        "employment_type_": employee.employment_type_,
-
-        "monthly_salary": (
-            float(employee.monthly_salary)
-            if employee.monthly_salary is not None
-            else None
-        ),
-
-        "status": employee.status,
-
-        "address": employee.address
-    }
+    return crud.get_employees(db)
 
 
 # =====================================================
 # GET EMPLOYEE BY EMPLOYEE ID
-#
-# Example:
-# /api/employees/emp/EMP007
 # =====================================================
 
-@app.get("/api/employees/emp/{emp_id}")
-def get_employee_by_employee_id(
-
+@app.get(
+    "/api/employees/emp/{emp_id}",
+    response_model=schemas.EmployeeResponse
+)
+def get_employee_by_emp_id(
     emp_id: str,
-
     db: Session = Depends(get_db)
 ):
 
@@ -484,76 +293,25 @@ def get_employee_by_employee_id(
             detail="Employee not found"
         )
 
-    return {
-
-        "id": employee.id,
-
-        "emp_id": employee.emp_id,
-
-        "first_name": employee.first_name,
-
-        "last_name": employee.last_name,
-
-        "name": (
-            employee.first_name
-            + " "
-            + employee.last_name
-        ),
-
-        "gender": employee.gender,
-
-        "date_of_birth": (
-            employee.date_of_birth.isoformat()
-            if employee.date_of_birth
-            else None
-        ),
-
-        "phone": employee.phone,
-
-        "email": employee.email,
-
-        "department": employee.department,
-
-        "designation": employee.designation,
-
-        "joining_date": (
-            employee.joining_date.isoformat()
-            if employee.joining_date
-            else None
-        ),
-
-        "employment_type_": employee.employment_type_,
-
-        "monthly_salary": (
-            float(employee.monthly_salary)
-            if employee.monthly_salary is not None
-            else None
-        ),
-
-        "status": employee.status,
-
-        "address": employee.address
-    }
+    return employee
 
 
 # =====================================================
-# UPDATE EMPLOYEE
+# GET EMPLOYEE BY DATABASE ID
 # =====================================================
 
-@app.put("/api/employees/id/{employee_id}")
-def update_employee(
-
+@app.get(
+    "/api/employees/id/{employee_id}",
+    response_model=schemas.EmployeeResponse
+)
+def get_employee(
     employee_id: int,
-
-    employee_data: schemas.EmployeeCreate,
-
     db: Session = Depends(get_db)
 ):
 
-    employee = crud.update_employee(
+    employee = crud.get_employee(
         db,
-        employee_id,
-        employee_data
+        employee_id
     )
 
     if not employee:
@@ -563,44 +321,65 @@ def update_employee(
             detail="Employee not found"
         )
 
-    return {
+    return employee
 
-        "message": "Employee updated successfully",
 
-        "employee": {
+# =====================================================
+# UPDATE EMPLOYEE
+# =====================================================
 
-            "id": employee.id,
+@app.put(
+    "/api/employees/id/{employee_id}",
+    response_model=schemas.EmployeeResponse
+)
+def update_employee(
+    employee_id: int,
+    employee: schemas.EmployeeUpdate,
+    db: Session = Depends(get_db)
+):
 
-            "emp_id": employee.emp_id,
+    existing_employee = crud.get_employee(
+        db,
+        employee_id
+    )
 
-            "first_name": employee.first_name,
+    if not existing_employee:
 
-            "last_name": employee.last_name,
+        raise HTTPException(
+            status_code=404,
+            detail="Employee not found"
+        )
 
-            "name": (
-                employee.first_name
-                + " "
-                + employee.last_name
-            ),
 
-            "department": employee.department,
+    try:
 
-            "designation": employee.designation,
+        updated_employee = crud.update_employee(
+            db,
+            employee_id,
+            employee
+        )
 
-            "status": employee.status
-        }
-    }
+        return updated_employee
+
+    except Exception as e:
+
+        db.rollback()
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
 
 
 # =====================================================
 # DELETE EMPLOYEE
 # =====================================================
 
-@app.delete("/api/employees/id/{employee_id}")
+@app.delete(
+    "/api/employees/id/{employee_id}"
+)
 def delete_employee(
-
     employee_id: int,
-
     db: Session = Depends(get_db)
 ):
 
@@ -616,9 +395,8 @@ def delete_employee(
             detail="Employee not found"
         )
 
+
     return {
-
         "message": "Employee deleted successfully",
-
         "emp_id": employee.emp_id
     }

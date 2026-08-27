@@ -1,3 +1,4 @@
+
 const API_URL = "http://127.0.0.1:8000/api/employees";
 
 
@@ -11,10 +12,12 @@ export async function getEmployees() {
 
     if (!response.ok) {
 
+        const errorData = await response.json();
+
         throw new Error(
+            errorData.detail ||
             "Failed to fetch employees"
         );
-
     }
 
     return await response.json();
@@ -22,21 +25,49 @@ export async function getEmployees() {
 
 
 // =====================================================
-// GET ONE EMPLOYEE
+// GET EMPLOYEE BY EMPLOYEE ID
+// Example: EMP001
+// =====================================================
+
+export async function getEmployeeByEmpId(empId) {
+
+    const response = await fetch(
+        `${API_URL}/emp/${encodeURIComponent(empId)}`
+    );
+
+    if (!response.ok) {
+
+        const errorData = await response.json();
+
+        throw new Error(
+            errorData.detail ||
+            "Employee not found"
+        );
+    }
+
+    return await response.json();
+}
+
+
+// =====================================================
+// GET EMPLOYEE BY DATABASE ID
+// Example: 1
 // =====================================================
 
 export async function getEmployee(employeeId) {
 
     const response = await fetch(
-        `${API_URL}/${employeeId}`
+        `${API_URL}/id/${employeeId}`
     );
 
     if (!response.ok) {
 
+        const errorData = await response.json();
+
         throw new Error(
+            errorData.detail ||
             "Employee not found"
         );
-
     }
 
     return await response.json();
@@ -70,7 +101,6 @@ export async function createEmployee(employeeData) {
             errorData.detail ||
             "Failed to create employee"
         );
-
     }
 
     return await response.json();
@@ -87,7 +117,7 @@ export async function updateEmployee(
 ) {
 
     const response = await fetch(
-        `${API_URL}/${employeeId}`,
+        `${API_URL}/id/${employeeId}`,
         {
             method: "PUT",
 
@@ -107,7 +137,6 @@ export async function updateEmployee(
             errorData.detail ||
             "Failed to update employee"
         );
-
     }
 
     return await response.json();
@@ -121,7 +150,7 @@ export async function updateEmployee(
 export async function deleteEmployee(employeeId) {
 
     const response = await fetch(
-        `${API_URL}/${employeeId}`,
+        `${API_URL}/id/${employeeId}`,
         {
             method: "DELETE"
         }
@@ -135,7 +164,6 @@ export async function deleteEmployee(employeeId) {
             errorData.detail ||
             "Failed to delete employee"
         );
-
     }
 
     return await response.json();

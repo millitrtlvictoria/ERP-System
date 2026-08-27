@@ -1,6 +1,6 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import "../styles/RegistraionFrom.css";
 
 function RegistrationForm() {
@@ -26,19 +26,19 @@ function RegistrationForm() {
   });
 
   // =====================================================
-  // ERRORS
+  // ERROR STATE
   // =====================================================
 
   const [errors, setErrors] = useState({});
 
   // =====================================================
-  // SUCCESS MESSAGE
+  // SUCCESS STATE
   // =====================================================
 
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   // =====================================================
-  // LOADING
+  // LOADING STATE
   // =====================================================
 
   const [isLoading, setIsLoading] = useState(false);
@@ -55,7 +55,7 @@ function RegistrationForm() {
       [name]: value,
     }));
 
-    // Remove error for this field
+    // Remove error for the field being edited
     if (errors[name]) {
       setErrors((currentErrors) => ({
         ...currentErrors,
@@ -63,7 +63,15 @@ function RegistrationForm() {
       }));
     }
 
-    // Remove success message when user starts typing again
+    // Remove general error
+    if (errors.general) {
+      setErrors((currentErrors) => ({
+        ...currentErrors,
+        general: "",
+      }));
+    }
+
+    // Remove success message
     setIsSubmitted(false);
   };
 
@@ -97,9 +105,9 @@ function RegistrationForm() {
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
     ) {
-      newErrors.email = "Email is invalid";
+      newErrors.email = "Please enter a valid email address";
     }
 
     // -------------------------------------------------
@@ -108,7 +116,7 @@ function RegistrationForm() {
 
     if (!formData.username.trim()) {
       newErrors.username = "Username is required";
-    } else if (formData.username.length < 3) {
+    } else if (formData.username.trim().length < 3) {
       newErrors.username =
         "Username must be at least 3 characters";
     }
@@ -144,27 +152,24 @@ function RegistrationForm() {
   };
 
   // =====================================================
-  // HANDLE SUBMIT
+  // HANDLE REGISTRATION
   // =====================================================
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Clear previous messages
     setIsSubmitted(false);
+    setErrors({});
 
-    // Validate frontend
-    const isValid = validateForm();
+    // -------------------------------------------------
+    // FRONTEND VALIDATION
+    // -------------------------------------------------
 
-    if (!isValid) {
+    if (!validateForm()) {
       return;
     }
 
-    // Start loading
     setIsLoading(true);
-
-    // Clear previous backend errors
-    setErrors({});
 
     try {
       // =================================================
@@ -180,14 +185,15 @@ function RegistrationForm() {
         confirm_password: formData.confirmPassword,
       };
 
-      console.log("Sending registration data:", {
-        ...requestData,
-        password: "********",
-        confirm_password: "********",
+      console.log("Sending registration request:", {
+        first_name: requestData.first_name,
+        last_name: requestData.last_name,
+        email: requestData.email,
+        username: requestData.username,
       });
 
       // =================================================
-      // CALL BACKEND
+      // CALL FASTAPI
       // =================================================
 
       const response = await fetch(
@@ -205,12 +211,12 @@ function RegistrationForm() {
       );
 
       // =================================================
-      // READ RESPONSE
+      // READ BACKEND RESPONSE
       // =================================================
 
       const data = await response.json();
 
-      console.log("Backend response:", data);
+      console.log("Registration response:", data);
 
       // =================================================
       // SUCCESS
@@ -219,7 +225,6 @@ function RegistrationForm() {
       if (response.ok) {
         setIsSubmitted(true);
 
-        // Clear form
         setFormData({
           firstName: "",
           lastName: "",
@@ -230,8 +235,7 @@ function RegistrationForm() {
         });
 
         console.log(
-          "Registration successful:",
-          data
+          "Registration successful"
         );
 
         return;
@@ -241,86 +245,69 @@ function RegistrationForm() {
       // BACKEND ERROR
       // =================================================
 
-      if (response.status === 400) {
-        const message =
-          data.detail || "Registration failed";
+      const message =
+        data.detail || "Registration failed";
 
-        // Duplicate email
-        if (
-          message
-            .toLowerCase()
-            .includes("email")
-        ) {
-          setErrors({
-            email: message,
-          });
+      // -------------------------------------------------
+      // DUPLICATE EMAIL
+      // -------------------------------------------------
 
-          return;
-        }
-
-        // Duplicate username
-        if (
-          message
-            .toLowerCase()
-            .includes("username")
-        ) {
-          setErrors({
-            username: message,
-          });
-
-          return;
-        }
-
-        // Password mismatch
-        if (
-          message
-            .toLowerCase()
-            .includes("password")
-        ) {
-          setErrors({
-            confirmPassword: message,
-          });
-
-          return;
-        }
-
+      if (
+        message
+          .toLowerCase()
+          .includes("email")
+      ) {
         setErrors({
-          general: message,
+          email: message,
         });
 
         return;
       }
 
-      // =================================================
-      // VALIDATION ERROR
-      // =================================================
+      // -------------------------------------------------
+      // DUPLICATE USERNAME
+      // -------------------------------------------------
 
-      if (response.status === 422) {
+      if (
+        message
+          .toLowerCase()
+          .includes("username")
+      ) {
         setErrors({
-          general:
-            "Some registration information is invalid.",
+          username: message,
         });
 
         return;
       }
 
-      // =================================================
-      // OTHER SERVER ERROR
-      // =================================================
+      // -------------------------------------------------
+      // PASSWORD ERROR
+      // -------------------------------------------------
+
+      if (
+        message
+          .toLowerCase()
+          .includes("password")
+      ) {
+        setErrors({
+          confirmPassword: message,
+        });
+
+        return;
+      }
+
+      // -------------------------------------------------
+      // OTHER BACKEND ERROR
+      // -------------------------------------------------
 
       setErrors({
-        general:
-          "Something went wrong. Please try again.",
+        general: message,
       });
     } catch (error) {
       console.error(
-        "Registration error:",
+        "Registration connection error:",
         error
       );
-
-      // =================================================
-      // CONNECTION ERROR
-      // =================================================
 
       setErrors({
         general:
@@ -332,7 +319,7 @@ function RegistrationForm() {
   };
 
   // =====================================================
-  // GO BACK TO LOGIN
+  // GO TO LOGIN
   // =====================================================
 
   const handleLogin = () => {
@@ -411,6 +398,7 @@ function RegistrationForm() {
                   ? "error-input"
                   : ""
               }
+              disabled={isLoading}
             />
 
             {errors.firstName && (
@@ -443,6 +431,7 @@ function RegistrationForm() {
                   ? "error-input"
                   : ""
               }
+              disabled={isLoading}
             />
 
             {errors.lastName && (
@@ -475,6 +464,7 @@ function RegistrationForm() {
                   ? "error-input"
                   : ""
               }
+              disabled={isLoading}
             />
 
             {errors.email && (
@@ -507,6 +497,7 @@ function RegistrationForm() {
                   ? "error-input"
                   : ""
               }
+              disabled={isLoading}
             />
 
             {errors.username && (
@@ -539,6 +530,7 @@ function RegistrationForm() {
                   ? "error-input"
                   : ""
               }
+              disabled={isLoading}
             />
 
             {errors.password && (
@@ -571,6 +563,7 @@ function RegistrationForm() {
                   ? "error-input"
                   : ""
               }
+              disabled={isLoading}
             />
 
             {errors.confirmPassword && (
@@ -590,11 +583,9 @@ function RegistrationForm() {
             className="submit-btn"
             disabled={isLoading}
           >
-
             {isLoading
               ? "Registering..."
               : "Register"}
-
           </button>
 
         </form>
@@ -612,6 +603,7 @@ function RegistrationForm() {
           <button
             type="button"
             onClick={handleLogin}
+            disabled={isLoading}
           >
             Back to Login
           </button>
