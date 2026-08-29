@@ -1,20 +1,32 @@
+from fastapi import (
+    FastAPI,
+    Depends,
+    HTTPException
+)
 
-from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 import models
 import schemas
 import crud
 
-from database import engine, Base, get_db
+from database import (
+    engine,
+    Base,
+    get_db
+)
 
 
 # =====================================================
-# CREATE DATABASE TABLES
+# DATABASE INITIALIZATION
 # =====================================================
 
-Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(
+    bind=engine
+)
 
 
 # =====================================================
@@ -28,7 +40,7 @@ app = FastAPI(
 
 
 # =====================================================
-# CORS
+# CORS CONFIGURATION
 # =====================================================
 
 app.add_middleware(
@@ -50,7 +62,7 @@ app.add_middleware(
 
 
 # =====================================================
-# HOME
+# HOME / HEALTH CHECK
 # =====================================================
 
 @app.get("/")
@@ -75,40 +87,6 @@ def register_user(
 ):
 
     # -------------------------------------------------
-    # CHECK EMAIL
-    # -------------------------------------------------
-
-    existing_email = crud.get_user_by_email(
-        db,
-        user.email
-    )
-
-    if existing_email:
-
-        raise HTTPException(
-            status_code=400,
-            detail="Email already registered"
-        )
-
-
-    # -------------------------------------------------
-    # CHECK USERNAME
-    # -------------------------------------------------
-
-    existing_username = crud.get_user_by_username(
-        db,
-        user.username
-    )
-
-    if existing_username:
-
-        raise HTTPException(
-            status_code=400,
-            detail="Username already exists"
-        )
-
-
-    # -------------------------------------------------
     # PASSWORD CONFIRMATION
     # -------------------------------------------------
 
@@ -124,33 +102,20 @@ def register_user(
     # CREATE USER
     # -------------------------------------------------
 
-    try:
+    new_user, error_message = crud.create_user(
+        db,
+        user
+    )
 
-        new_user, error_message = crud.create_user(
-            db,
-            user
-        )
-
-        if error_message:
-
-            raise HTTPException(
-                status_code=400,
-                detail=error_message
-            )
-
-        return new_user
-
-    except HTTPException:
-        raise
-
-    except Exception as e:
-
-        db.rollback()
+    if error_message:
 
         raise HTTPException(
-            status_code=500,
-            detail=str(e)
+            status_code=400,
+            detail=error_message
         )
+
+
+    return new_user
 
 
 # =====================================================
@@ -190,7 +155,7 @@ def login_user(
 
 
     # -------------------------------------------------
-    # SUCCESS
+    # LOGIN SUCCESS
     # -------------------------------------------------
 
     return {
@@ -212,44 +177,41 @@ def create_employee(
     db: Session = Depends(get_db)
 ):
 
-    try:
+    # -------------------------------------------------
+    # CHECK EMPLOYEE ID
+    # -------------------------------------------------
 
-        # -------------------------------------------------
-        # CHECK EMPLOYEE ID
-        # -------------------------------------------------
+    existing_employee = crud.get_employee_by_emp_id(
+        db,
+        employee.emp_id
+    )
 
-        existing_employee = crud.get_employee_by_emp_id(
-            db,
-            employee.emp_id
+    if existing_employee:
+
+        raise HTTPException(
+            status_code=400,
+            detail="Employee ID already exists"
         )
 
-        if existing_employee:
 
-            raise HTTPException(
-                status_code=400,
-                detail="Employee ID already exists"
-            )
+    # -------------------------------------------------
+    # CREATE EMPLOYEE
+    # -------------------------------------------------
 
-
-        # -------------------------------------------------
-        # CREATE EMPLOYEE
-        # -------------------------------------------------
+    try:
 
         return crud.create_employee(
             db,
             employee
         )
 
-    except HTTPException:
-        raise
-
-    except Exception as e:
+    except IntegrityError:
 
         db.rollback()
 
         raise HTTPException(
-            status_code=500,
-            detail=str(e)
+            status_code=400,
+            detail="Employee could not be created because of a database constraint."
         )
 
 
@@ -293,6 +255,7 @@ def get_employee_by_emp_id(
             detail="Employee not found"
         )
 
+
     return employee
 
 
@@ -321,6 +284,7 @@ def get_employee(
             detail="Employee not found"
         )
 
+
     return employee
 
 
@@ -338,6 +302,10 @@ def update_employee(
     db: Session = Depends(get_db)
 ):
 
+    # -------------------------------------------------
+    # CHECK EMPLOYEE
+    # -------------------------------------------------
+
     existing_employee = crud.get_employee(
         db,
         employee_id
@@ -351,6 +319,10 @@ def update_employee(
         )
 
 
+    # -------------------------------------------------
+    # UPDATE EMPLOYEE
+    # -------------------------------------------------
+
     try:
 
         updated_employee = crud.update_employee(
@@ -361,13 +333,13 @@ def update_employee(
 
         return updated_employee
 
-    except Exception as e:
+    except IntegrityError:
 
         db.rollback()
 
         raise HTTPException(
-            status_code=500,
-            detail=str(e)
+            status_code=400,
+            detail="Employee could not be updated because of a database constraint."
         )
 
 
@@ -383,10 +355,30 @@ def delete_employee(
     db: Session = Depends(get_db)
 ):
 
-    employee = crud.delete_employee(
-        db,
-        employee_id
-    )
+    # -------------------------------------------------
+    # DELETE EMPLOYEE
+    # -------------------------------------------------
+
+    try:
+
+        employee = crud.delete_employee(
+            db,
+            employee_id
+        )
+
+    except IntegrityError:
+
+        db.rollback()
+
+        raise HTTPException(
+            status_code=400,
+            detail="Employee could not be deleted."
+        )
+
+
+    # -------------------------------------------------
+    # CHECK EMPLOYEE
+    # -------------------------------------------------
 
     if not employee:
 
@@ -395,6 +387,10 @@ def delete_employee(
             detail="Employee not found"
         )
 
+
+    # -------------------------------------------------
+    # SUCCESS RESPONSE
+    # -------------------------------------------------
 
     return {
         "message": "Employee deleted successfully",

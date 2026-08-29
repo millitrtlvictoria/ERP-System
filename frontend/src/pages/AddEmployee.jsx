@@ -3,33 +3,55 @@ import { useNavigate } from "react-router-dom";
 import "../styles/AddEmployee.css";
 import { createEmployee } from "../services/employeeAPI";
 
+
 function AddEmployee() {
+
   const navigate = useNavigate();
+
 
   // =====================================================
   // EMPLOYEE FORM DATA
   // =====================================================
 
   const initialEmployee = {
+
     employeeId: "",
+
     firstName: "",
     lastName: "",
+
     gender: "",
     dob: "",
+
     phone: "",
     email: "",
+
     department: "",
     designation: "",
+
     joiningDate: "",
+
     employmentType: "",
+
     salary: "",
+
     status: "Active",
+
     address: "",
+
     emergencyName: "",
     emergencyPhone: "",
   };
 
-  const [employee, setEmployee] = useState(initialEmployee);
+
+  const [employee, setEmployee] = useState(
+    initialEmployee
+  );
+
+
+  // =====================================================
+  // PHOTO
+  // =====================================================
 
   // Stores the selected photo preview
   const [photo, setPhoto] = useState(null);
@@ -37,89 +59,117 @@ function AddEmployee() {
   // Stores the actual selected image file
   const [photoFile, setPhotoFile] = useState(null);
 
+
   // =====================================================
   // HANDLE FORM CHANGES
   // =====================================================
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
 
-    setEmployee((previousEmployee) => ({
-      ...previousEmployee,
-      [name]: value,
-    }));
+    const {
+      name,
+      value
+    } = e.target;
+
+
+    setEmployee(
+      (previousEmployee) => ({
+
+        ...previousEmployee,
+
+        [name]: value
+
+      })
+    );
   };
+
 
   // =====================================================
   // HANDLE PHOTO
   // =====================================================
 
   const handlePhoto = (e) => {
+
     const file = e.target.files[0];
 
+
     if (!file) {
+
       return;
     }
 
-    // Save actual file
+
+    // -------------------------------------------------
+    // SAVE ACTUAL FILE
+    // -------------------------------------------------
+
     setPhotoFile(file);
 
-    // Create preview
+
+    // -------------------------------------------------
+    // CREATE PREVIEW
+    // -------------------------------------------------
+
     const previewUrl = URL.createObjectURL(file);
+
     setPhoto(previewUrl);
   };
+
 
   // =====================================================
   // SUBMIT EMPLOYEE
   // =====================================================
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
 
-    // -------------------------------------------------
-    // Create emergency contact as a single string
-    // because our employees table has one column:
-    //
-    // emergency_contact VARCHAR(500)
-    // -------------------------------------------------
 
-    let emergencyContact = null;
-
-    if (employee.emergencyName || employee.emergencyPhone) {
-      emergencyContact = `${employee.emergencyName} - ${employee.emergencyPhone}`;
-    }
-
-    // -------------------------------------------------
-    // Create employee photo value
-    //
-    // At the moment we store the file name/path.
-    // Actual file upload can be added later.
-    // -------------------------------------------------
-
-    let employeePhoto = null;
-
-    if (photoFile) {
-      employeePhoto = photoFile.name;
-    }
-
-    // -------------------------------------------------
-    // Convert React field names to backend field names
-    // -------------------------------------------------
+    // =================================================
+    // PREPARE EMPLOYEE DATA
+    // =================================================
 
     const employeeData = {
+
+      // -------------------------------------------------
+      // EMPLOYEE ID
+      // -------------------------------------------------
+
       emp_id: employee.employeeId,
+
+
+      // -------------------------------------------------
+      // PERSONAL INFORMATION
+      // -------------------------------------------------
+
       first_name: employee.firstName,
+
       last_name: employee.lastName,
+
       gender: employee.gender,
+
       date_of_birth: employee.dob,
+
+
+      // -------------------------------------------------
+      // CONTACT INFORMATION
+      // -------------------------------------------------
+
       phone: employee.phone,
+
       email: employee.email,
+
+
+      // -------------------------------------------------
+      // EMPLOYMENT INFORMATION
+      // -------------------------------------------------
+
       department: employee.department,
+
       designation: employee.designation,
+
       joining_date: employee.joiningDate,
 
-      // IMPORTANT:
-      // Backend column is employment_type
       employment_type: employee.employmentType,
 
       monthly_salary:
@@ -129,58 +179,141 @@ function AddEmployee() {
 
       status: employee.status,
 
+
+      // -------------------------------------------------
+      // ADDRESS
+      // -------------------------------------------------
+
       address:
         employee.address === ""
           ? null
           : employee.address,
 
-      emergency_contact: emergencyContact,
 
-      employee_photo: employeePhoto,
+      // -------------------------------------------------
+      // EMERGENCY CONTACT
+      //
+      // These are now stored directly in employees table.
+      // -------------------------------------------------
+
+      emergency_name:
+        employee.emergencyName === ""
+          ? null
+          : employee.emergencyName,
+
+      emergency_phone:
+        employee.emergencyPhone === ""
+          ? null
+          : employee.emergencyPhone,
+
+      emergency_relationship: null,
+
+
+      // -------------------------------------------------
+      // EMPLOYEE PHOTO
+      //
+      // The actual image upload is not being sent yet.
+      // We store the available file information.
+      // -------------------------------------------------
+
+      photo_file_name:
+        photoFile
+          ? photoFile.name
+          : null,
+
+      photo_file_path: null,
+
+      photo_file_type:
+        photoFile
+          ? photoFile.type
+          : null,
+
+      photo_file_size:
+        photoFile
+          ? photoFile.size
+          : null
     };
 
-    console.log("Sending employee data:", employeeData);
+
+    // =================================================
+    // DEBUG
+    // =================================================
+
+    console.log(
+      "Sending employee data:",
+      employeeData
+    );
+
 
     // =================================================
     // SEND DATA TO BACKEND
     // =================================================
 
     try {
-      const result = await createEmployee(employeeData);
 
-      console.log("Server response:", result);
+      const result = await createEmployee(
+        employeeData
+      );
 
-      alert("Employee added successfully!");
 
-      // Go back to dashboard
+      console.log(
+        "Server response:",
+        result
+      );
+
+
+      alert(
+        "Employee added successfully!"
+      );
+
+
+      // -------------------------------------------------
+      // GO BACK TO DASHBOARD
+      // -------------------------------------------------
+
       navigate("/dashboard");
 
     } catch (error) {
-      console.error("Error creating employee:", error);
+
+      console.error(
+        "Error creating employee:",
+        error
+      );
+
 
       alert(
-        error.message || "Failed to create employee"
+        error.message ||
+        "Failed to create employee"
       );
     }
   };
+
 
   // =====================================================
   // RESET FORM
   // =====================================================
 
   const handleReset = () => {
-    setEmployee(initialEmployee);
+
+    setEmployee(
+      initialEmployee
+    );
+
 
     setPhoto(null);
+
     setPhotoFile(null);
   };
+
 
   // =====================================================
   // PAGE
   // =====================================================
 
   return (
+
     <div className="add-employee-page">
+
 
       {/* =================================================
           TOP HEADER
@@ -189,11 +322,17 @@ function AddEmployee() {
       <div className="employee-page-header">
 
         <div>
-          <h1>Add Employee</h1>
+
+          <h1>
+            Add Employee
+          </h1>
+
           <p>
             Create a new employee profile in the ERP system
           </p>
+
         </div>
+
 
         <button
           type="button"
@@ -212,6 +351,7 @@ function AddEmployee() {
 
       <form onSubmit={handleSubmit}>
 
+
         {/* =================================================
             PERSONAL INFORMATION
         ================================================= */}
@@ -224,12 +364,17 @@ function AddEmployee() {
               👤
             </div>
 
+
             <div>
-              <h2>Personal Information</h2>
+
+              <h2>
+                Personal Information
+              </h2>
 
               <p>
                 Basic information about the employee
               </p>
+
             </div>
 
           </div>
@@ -237,13 +382,17 @@ function AddEmployee() {
 
           <div className="form-grid">
 
-            {/* EMPLOYEE ID */}
+
+            {/* =================================================
+                EMPLOYEE ID
+            ================================================= */}
 
             <div className="form-group">
 
               <label>
                 Employee ID <span>*</span>
               </label>
+
 
               <input
                 type="text"
@@ -257,13 +406,16 @@ function AddEmployee() {
             </div>
 
 
-            {/* FIRST NAME */}
+            {/* =================================================
+                FIRST NAME
+            ================================================= */}
 
             <div className="form-group">
 
               <label>
                 First Name <span>*</span>
               </label>
+
 
               <input
                 type="text"
@@ -277,13 +429,16 @@ function AddEmployee() {
             </div>
 
 
-            {/* LAST NAME */}
+            {/* =================================================
+                LAST NAME
+            ================================================= */}
 
             <div className="form-group">
 
               <label>
                 Last Name <span>*</span>
               </label>
+
 
               <input
                 type="text"
@@ -297,13 +452,16 @@ function AddEmployee() {
             </div>
 
 
-            {/* GENDER */}
+            {/* =================================================
+                GENDER
+            ================================================= */}
 
             <div className="form-group">
 
               <label>
                 Gender <span>*</span>
               </label>
+
 
               <select
                 name="gender"
@@ -333,13 +491,16 @@ function AddEmployee() {
             </div>
 
 
-            {/* DATE OF BIRTH */}
+            {/* =================================================
+                DATE OF BIRTH
+            ================================================= */}
 
             <div className="form-group">
 
               <label>
                 Date of Birth <span>*</span>
               </label>
+
 
               <input
                 type="date"
@@ -352,13 +513,16 @@ function AddEmployee() {
             </div>
 
 
-            {/* PHONE */}
+            {/* =================================================
+                PHONE
+            ================================================= */}
 
             <div className="form-group">
 
               <label>
                 Phone Number <span>*</span>
               </label>
+
 
               <input
                 type="tel"
@@ -372,13 +536,16 @@ function AddEmployee() {
             </div>
 
 
-            {/* EMAIL */}
+            {/* =================================================
+                EMAIL
+            ================================================= */}
 
             <div className="form-group full-width">
 
               <label>
                 Email Address <span>*</span>
               </label>
+
 
               <input
                 type="email"
@@ -390,6 +557,7 @@ function AddEmployee() {
               />
 
             </div>
+
 
           </div>
 
@@ -408,6 +576,7 @@ function AddEmployee() {
               💼
             </div>
 
+
             <div>
 
               <h2>
@@ -425,13 +594,17 @@ function AddEmployee() {
 
           <div className="form-grid">
 
-            {/* DEPARTMENT */}
+
+            {/* =================================================
+                DEPARTMENT
+            ================================================= */}
 
             <div className="form-group">
 
               <label>
                 Department <span>*</span>
               </label>
+
 
               <select
                 name="department"
@@ -481,13 +654,16 @@ function AddEmployee() {
             </div>
 
 
-            {/* DESIGNATION */}
+            {/* =================================================
+                DESIGNATION
+            ================================================= */}
 
             <div className="form-group">
 
               <label>
                 Designation <span>*</span>
               </label>
+
 
               <input
                 type="text"
@@ -501,13 +677,16 @@ function AddEmployee() {
             </div>
 
 
-            {/* JOINING DATE */}
+            {/* =================================================
+                JOINING DATE
+            ================================================= */}
 
             <div className="form-group">
 
               <label>
                 Joining Date <span>*</span>
               </label>
+
 
               <input
                 type="date"
@@ -520,13 +699,16 @@ function AddEmployee() {
             </div>
 
 
-            {/* EMPLOYMENT TYPE */}
+            {/* =================================================
+                EMPLOYMENT TYPE
+            ================================================= */}
 
             <div className="form-group">
 
               <label>
                 Employment Type <span>*</span>
               </label>
+
 
               <select
                 name="employmentType"
@@ -560,13 +742,16 @@ function AddEmployee() {
             </div>
 
 
-            {/* MONTHLY SALARY */}
+            {/* =================================================
+                MONTHLY SALARY
+            ================================================= */}
 
             <div className="form-group">
 
               <label>
                 Monthly Salary
               </label>
+
 
               <input
                 type="number"
@@ -580,13 +765,16 @@ function AddEmployee() {
             </div>
 
 
-            {/* STATUS */}
+            {/* =================================================
+                STATUS
+            ================================================= */}
 
             <div className="form-group">
 
               <label>
                 Employee Status
               </label>
+
 
               <select
                 name="status"
@@ -610,6 +798,7 @@ function AddEmployee() {
 
             </div>
 
+
           </div>
 
         </div>
@@ -626,6 +815,7 @@ function AddEmployee() {
             <div className="heading-icon">
               📍
             </div>
+
 
             <div>
 
@@ -644,13 +834,17 @@ function AddEmployee() {
 
           <div className="form-grid">
 
-            {/* ADDRESS */}
+
+            {/* =================================================
+                ADDRESS
+            ================================================= */}
 
             <div className="form-group full-width">
 
               <label>
                 Address
               </label>
+
 
               <textarea
                 name="address"
@@ -663,13 +857,16 @@ function AddEmployee() {
             </div>
 
 
-            {/* EMERGENCY NAME */}
+            {/* =================================================
+                EMERGENCY NAME
+            ================================================= */}
 
             <div className="form-group">
 
               <label>
                 Emergency Contact Name
               </label>
+
 
               <input
                 type="text"
@@ -682,13 +879,16 @@ function AddEmployee() {
             </div>
 
 
-            {/* EMERGENCY PHONE */}
+            {/* =================================================
+                EMERGENCY PHONE
+            ================================================= */}
 
             <div className="form-group">
 
               <label>
                 Emergency Contact Phone
               </label>
+
 
               <input
                 type="tel"
@@ -699,6 +899,7 @@ function AddEmployee() {
               />
 
             </div>
+
 
           </div>
 
@@ -717,6 +918,7 @@ function AddEmployee() {
               📷
             </div>
 
+
             <div>
 
               <h2>
@@ -734,7 +936,10 @@ function AddEmployee() {
 
           <div className="photo-section">
 
-            {/* PHOTO PREVIEW */}
+
+            {/* =================================================
+                PHOTO PREVIEW
+            ================================================= */}
 
             <div className="photo-preview">
 
@@ -756,13 +961,16 @@ function AddEmployee() {
             </div>
 
 
-            {/* PHOTO UPLOAD */}
+            {/* =================================================
+                PHOTO UPLOAD
+            ================================================= */}
 
             <div className="photo-upload">
 
               <label htmlFor="employeePhoto">
                 Choose Photo
               </label>
+
 
               <input
                 id="employeePhoto"
@@ -771,6 +979,7 @@ function AddEmployee() {
                 onChange={handlePhoto}
               />
 
+
               <p>
                 JPG, PNG or JPEG
                 <br />
@@ -778,6 +987,7 @@ function AddEmployee() {
               </p>
 
             </div>
+
 
           </div>
 
@@ -790,7 +1000,10 @@ function AddEmployee() {
 
         <div className="form-actions">
 
-          {/* CANCEL */}
+
+          {/* =================================================
+              CANCEL
+          ================================================= */}
 
           <button
             type="button"
@@ -801,7 +1014,9 @@ function AddEmployee() {
           </button>
 
 
-          {/* RESET */}
+          {/* =================================================
+              RESET
+          ================================================= */}
 
           <button
             type="button"
@@ -812,7 +1027,9 @@ function AddEmployee() {
           </button>
 
 
-          {/* SAVE */}
+          {/* =================================================
+              SAVE
+          ================================================= */}
 
           <button
             type="submit"
@@ -821,12 +1038,15 @@ function AddEmployee() {
             ✓ Save Employee
           </button>
 
+
         </div>
+
 
       </form>
 
     </div>
   );
 }
+
 
 export default AddEmployee;

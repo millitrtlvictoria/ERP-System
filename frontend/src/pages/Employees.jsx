@@ -1,3 +1,4 @@
+
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/employees.css";
@@ -59,7 +60,7 @@ function Employees() {
     department: "",
     designation: "",
     joining_date: "",
-    employment_type_: "",
+    employment_type: "",
     monthly_salary: "",
     status: "",
     address: "",
@@ -434,10 +435,8 @@ function Employees() {
         employee.designation || "",
       joining_date:
         employee.joining_date || "",
-      employment_type_:
-        employee.employment_type_ ||
-        employee.employment_type ||
-        "",
+      employment_type:
+        employee.employment_type || "",
       monthly_salary:
         employee.monthly_salary ?? "",
       status: employee.status || "",
@@ -510,8 +509,8 @@ function Employees() {
         joining_date:
           editForm.joining_date,
 
-        employment_type_:
-          editForm.employment_type_.trim(),
+        employment_type:
+          editForm.employment_type.trim(),
 
         monthly_salary:
           editForm.monthly_salary === ""
@@ -716,7 +715,9 @@ function Employees() {
   if (error) {
     return (
       <div className="employees-page">
+
         <div className="employees-header">
+
           <div>
             <h1>
               Employees
@@ -734,9 +735,11 @@ function Employees() {
           >
             + Add Employee
           </Link>
+
         </div>
 
         <div className="employee-table-card">
+
           <div
             style={{
               padding: "40px",
@@ -762,8 +765,11 @@ function Employees() {
             >
               Try Again
             </button>
+
           </div>
+
         </div>
+
       </div>
     );
   }
@@ -1245,9 +1251,7 @@ function Employees() {
                         <td>
 
                           <span className="employee-id">
-
                             {employee.emp_id}
-
                           </span>
 
                         </td>
@@ -1265,9 +1269,7 @@ function Employees() {
                         <td>
 
                           <span className="department-badge">
-
                             {employee.department}
-
                           </span>
 
                         </td>
@@ -1672,6 +1674,85 @@ function Employees() {
                       </div>
                     </div>
 
+
+                    <div
+                      style={{
+                        gridColumn:
+                          "1 / -1",
+                      }}
+                    >
+                      <strong>
+                        Address
+                      </strong>
+
+                      <div>
+                        {
+                          selectedEmployee.address ||
+                          "N/A"
+                        }
+                      </div>
+                    </div>
+
+                  </div>
+
+
+                  <h3>
+                    Emergency Contact
+                  </h3>
+
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns:
+                        "1fr 1fr",
+                      gap: "15px",
+                      marginBottom:
+                        "25px",
+                    }}
+                  >
+
+                    <div>
+                      <strong>
+                        Name
+                      </strong>
+
+                      <div>
+                        {
+                          selectedEmployee.emergency_name ||
+                          "N/A"
+                        }
+                      </div>
+                    </div>
+
+
+                    <div>
+                      <strong>
+                        Phone
+                      </strong>
+
+                      <div>
+                        {
+                          selectedEmployee.emergency_phone ||
+                          "N/A"
+                        }
+                      </div>
+                    </div>
+
+
+                    <div>
+                      <strong>
+                        Relationship
+                      </strong>
+
+                      <div>
+                        {
+                          selectedEmployee.emergency_relationship ||
+                          "N/A"
+                        }
+                      </div>
+                    </div>
+
                   </div>
 
 
@@ -1748,10 +1829,8 @@ function Employees() {
 
                       <div>
                         {
-                          selectedEmployee
-                            .employment_type_ ||
-                          selectedEmployee
-                            .employment_type
+                          selectedEmployee.employment_type ||
+                          "N/A"
                         }
                       </div>
                     </div>
@@ -1764,7 +1843,8 @@ function Employees() {
 
                       <div>
                         {
-                          selectedEmployee.monthly_salary
+                          selectedEmployee.monthly_salary ??
+                          "N/A"
                         }
                       </div>
                     </div>
@@ -1778,19 +1858,6 @@ function Employees() {
                       <div>
                         {
                           selectedEmployee.status
-                        }
-                      </div>
-                    </div>
-
-
-                    <div>
-                      <strong>
-                        Address
-                      </strong>
-
-                      <div>
-                        {
-                          selectedEmployee.address
                         }
                       </div>
                     </div>
@@ -2207,6 +2274,108 @@ function Employees() {
 
 
               {/* =======================================
+                  EMERGENCY CONTACT
+              ======================================= */}
+
+              <h3>
+                Emergency Contact
+              </h3>
+
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    "1fr 1fr",
+                  gap: "18px",
+                  marginBottom: "25px",
+                }}
+              >
+
+                <div>
+
+                  <label>
+                    Emergency Name
+                  </label>
+
+                  <input
+                    type="text"
+                    value={
+                      editingEmployee.emergency_name ||
+                      ""
+                    }
+                    disabled
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      marginTop: "6px",
+                      boxSizing:
+                        "border-box",
+                      background:
+                        "#f5f5f5",
+                    }}
+                  />
+
+                </div>
+
+
+                <div>
+
+                  <label>
+                    Emergency Phone
+                  </label>
+
+                  <input
+                    type="text"
+                    value={
+                      editingEmployee.emergency_phone ||
+                      ""
+                    }
+                    disabled
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      marginTop: "6px",
+                      boxSizing:
+                        "border-box",
+                      background:
+                        "#f5f5f5",
+                    }}
+                  />
+
+                </div>
+
+
+                <div>
+
+                  <label>
+                    Relationship
+                  </label>
+
+                  <input
+                    type="text"
+                    value={
+                      editingEmployee.emergency_relationship ||
+                      ""
+                    }
+                    disabled
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      marginTop: "6px",
+                      boxSizing:
+                        "border-box",
+                      background:
+                        "#f5f5f5",
+                    }}
+                  />
+
+                </div>
+
+              </div>
+
+
+              {/* =======================================
                   EMPLOYMENT INFORMATION
               ======================================= */}
 
@@ -2354,9 +2523,9 @@ function Employees() {
                   </label>
 
                   <select
-                    name="employment_type_"
+                    name="employment_type"
                     value={
-                      editForm.employment_type_
+                      editForm.employment_type
                     }
                     onChange={
                       handleEditChange

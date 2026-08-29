@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/login.css";
@@ -14,7 +13,7 @@ function Login() {
   const [password, setPassword] = useState("");
 
   // =====================================================
-  // MESSAGE STATE
+  // UI STATE
   // =====================================================
 
   const [error, setError] = useState("");
@@ -27,10 +26,12 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Clear previous error
     setError("");
 
-    // Basic frontend validation
+    // -------------------------------------------------
+    // FRONTEND VALIDATION
+    // -------------------------------------------------
+
     if (!username.trim()) {
       setError("Username is required");
       return;
@@ -44,9 +45,9 @@ function Login() {
     setLoading(true);
 
     try {
-      // =================================================
-      // SEND LOGIN REQUEST TO FASTAPI
-      // =================================================
+      // -------------------------------------------------
+      // CALL FASTAPI LOGIN API
+      // -------------------------------------------------
 
       const response = await fetch(
         "http://127.0.0.1:8000/api/login",
@@ -65,39 +66,35 @@ function Login() {
         }
       );
 
-      // =================================================
-      // READ SERVER RESPONSE
-      // =================================================
+      // -------------------------------------------------
+      // READ RESPONSE
+      // -------------------------------------------------
 
       const data = await response.json();
 
       console.log("Login response:", data);
 
-      // =================================================
+      // -------------------------------------------------
       // LOGIN FAILED
-      // =================================================
+      // -------------------------------------------------
 
       if (!response.ok) {
         setError(
-          data.detail ||
-            "Invalid username or password"
+          data.detail || "Invalid username or password"
         );
 
         return;
       }
 
-      // =================================================
+      // -------------------------------------------------
       // LOGIN SUCCESSFUL
-      // =================================================
+      // -------------------------------------------------
 
-      console.log(
-        "Login successful:",
-        data
-      );
+      console.log("Login successful:", data);
 
-      // =================================================
+      // -------------------------------------------------
       // SAVE USER INFORMATION
-      // =================================================
+      // -------------------------------------------------
 
       if (data.user) {
         localStorage.setItem(
@@ -106,33 +103,30 @@ function Login() {
         );
       }
 
-      // =================================================
+      // -------------------------------------------------
       // SAVE LOGIN STATUS
-      // =================================================
+      // -------------------------------------------------
 
       localStorage.setItem(
         "isLoggedIn",
         "true"
       );
 
-      // =================================================
+      // -------------------------------------------------
       // CLEAR FORM
-      // =================================================
+      // -------------------------------------------------
 
       setUsername("");
       setPassword("");
 
-      // =================================================
+      // -------------------------------------------------
       // GO TO DASHBOARD
-      // =================================================
+      // -------------------------------------------------
 
       navigate("/dashboard");
 
     } catch (error) {
-      console.error(
-        "Login error:",
-        error
-      );
+      console.error("Login error:", error);
 
       setError(
         "Unable to connect to the server. Please make sure FastAPI is running."
@@ -143,7 +137,7 @@ function Login() {
   };
 
   // =====================================================
-  // GO TO REGISTRATION PAGE
+  // REGISTER
   // =====================================================
 
   const handleRegister = () => {
@@ -163,13 +157,9 @@ function Login() {
             TITLE
         ================================================= */}
 
-        <h1>
-          ERP System
-        </h1>
+        <h1>ERP System</h1>
 
-        <h2>
-          Login
-        </h2>
+        <h2>Login</h2>
 
         {/* =================================================
             ERROR MESSAGE
@@ -211,6 +201,7 @@ function Login() {
                 }
               }}
               disabled={loading}
+              autoComplete="username"
               required
             />
 
@@ -240,6 +231,7 @@ function Login() {
                 }
               }}
               disabled={loading}
+              autoComplete="current-password"
               required
             />
 
@@ -253,15 +245,13 @@ function Login() {
             type="submit"
             disabled={loading}
           >
-            {loading
-              ? "Logging in..."
-              : "Login"}
+            {loading ? "Logging in..." : "Login"}
           </button>
 
         </form>
 
         {/* =================================================
-            REGISTRATION SECTION
+            REGISTRATION
         ================================================= */}
 
         <div className="register-section">

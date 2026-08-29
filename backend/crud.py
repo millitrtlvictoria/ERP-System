@@ -1,6 +1,6 @@
-
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+
 import bcrypt
 
 import models
@@ -22,22 +22,36 @@ def create_employee(
 ):
 
     db_employee = models.Employee(
+
         emp_id=employee.emp_id,
+
         first_name=employee.first_name,
         last_name=employee.last_name,
+
         gender=employee.gender,
         date_of_birth=employee.date_of_birth,
+
         phone=employee.phone,
         email=employee.email,
+        address=employee.address,
+
+        emergency_name=employee.emergency_name,
+        emergency_phone=employee.emergency_phone,
+        emergency_relationship=employee.emergency_relationship,
+
         department=employee.department,
         designation=employee.designation,
+
         joining_date=employee.joining_date,
         employment_type=employee.employment_type,
+
         monthly_salary=employee.monthly_salary,
         status=employee.status,
-        address=employee.address,
-        emergency_contact=employee.emergency_contact,
-        employee_photo=employee.employee_photo
+
+        photo_file_name=employee.photo_file_name,
+        photo_file_path=employee.photo_file_path,
+        photo_file_type=employee.photo_file_type,
+        photo_file_size=employee.photo_file_size
     )
 
     try:
@@ -58,7 +72,9 @@ def create_employee(
 # GET ALL EMPLOYEES
 # =====================================================
 
-def get_employees(db: Session):
+def get_employees(
+    db: Session
+):
 
     return (
         db.query(models.Employee)
@@ -168,10 +184,17 @@ def delete_employee(
     if not db_employee:
         return None
 
-    db.delete(db_employee)
-    db.commit()
+    try:
 
-    return db_employee
+        db.delete(db_employee)
+        db.commit()
+
+        return db_employee
+
+    except IntegrityError:
+
+        db.rollback()
+        raise
 
 
 # =====================================================
@@ -216,7 +239,7 @@ def get_user_by_username(
 
 
 # =====================================================
-# CREATE USER / REGISTER
+# CREATE USER
 # =====================================================
 
 def create_user(
@@ -228,27 +251,23 @@ def create_user(
     # CHECK EMAIL
     # -------------------------------------------------
 
-    existing_email = get_user_by_email(
+    if get_user_by_email(
         db,
         user.email
-    )
+    ):
 
-    if existing_email:
         return None, "Email already registered"
-
 
     # -------------------------------------------------
     # CHECK USERNAME
     # -------------------------------------------------
 
-    existing_username = get_user_by_username(
+    if get_user_by_username(
         db,
         user.username
-    )
+    ):
 
-    if existing_username:
         return None, "Username already exists"
-
 
     # -------------------------------------------------
     # HASH PASSWORD
@@ -259,19 +278,20 @@ def create_user(
         bcrypt.gensalt()
     ).decode("utf-8")
 
-
     # -------------------------------------------------
     # CREATE USER
     # -------------------------------------------------
 
     db_user = models.User(
+
         first_name=user.first_name,
         last_name=user.last_name,
+
         email=user.email,
         username=user.username,
+
         password_hash=password_hash
     )
-
 
     try:
 
@@ -285,11 +305,14 @@ def create_user(
 
         db.rollback()
 
-        return None, "Email or username already exists"
+        return (
+            None,
+            "Email or username already exists"
+        )
 
 
 # =====================================================
-# AUTHENTICATE USER / LOGIN
+# AUTHENTICATE USER
 # =====================================================
 
 def authenticate_user(
@@ -297,10 +320,6 @@ def authenticate_user(
     username: str,
     password: str
 ):
-
-    # -------------------------------------------------
-    # FIND USER
-    # -------------------------------------------------
 
     user = get_user_by_username(
         db,
@@ -310,11 +329,6 @@ def authenticate_user(
     if not user:
         return None
 
-
-    # -------------------------------------------------
-    # CHECK PASSWORD
-    # -------------------------------------------------
-
     password_correct = bcrypt.checkpw(
         password.encode("utf-8"),
         user.password_hash.encode("utf-8")
@@ -322,10 +336,5 @@ def authenticate_user(
 
     if not password_correct:
         return None
-
-
-    # -------------------------------------------------
-    # LOGIN SUCCESS
-    # -------------------------------------------------
 
     return user

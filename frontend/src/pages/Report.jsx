@@ -895,6 +895,18 @@ function Reports() {
                 WEAVING-S4
               </option>
 
+              <option>
+                HR
+              </option>
+
+              <option>
+                IT
+              </option>
+
+              <option>
+                Accounts
+              </option>
+
             </select>
 
           </div>

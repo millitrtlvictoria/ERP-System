@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/RegistraionFrom.css";
@@ -55,7 +54,7 @@ function RegistrationForm() {
       [name]: value,
     }));
 
-    // Remove error for the field being edited
+    // Clear field error
     if (errors[name]) {
       setErrors((currentErrors) => ({
         ...currentErrors,
@@ -63,7 +62,7 @@ function RegistrationForm() {
       }));
     }
 
-    // Remove general error
+    // Clear general error
     if (errors.general) {
       setErrors((currentErrors) => ({
         ...currentErrors,
@@ -71,7 +70,7 @@ function RegistrationForm() {
       }));
     }
 
-    // Remove success message
+    // Clear success message
     setIsSubmitted(false);
   };
 
@@ -105,7 +104,9 @@ function RegistrationForm() {
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+        formData.email.trim()
+      )
     ) {
       newErrors.email = "Please enter a valid email address";
     }
@@ -185,12 +186,10 @@ function RegistrationForm() {
         confirm_password: formData.confirmPassword,
       };
 
-      console.log("Sending registration request:", {
-        first_name: requestData.first_name,
-        last_name: requestData.last_name,
-        email: requestData.email,
-        username: requestData.username,
-      });
+      console.log(
+        "Sending registration request:",
+        requestData
+      );
 
       // =================================================
       // CALL FASTAPI
@@ -216,7 +215,10 @@ function RegistrationForm() {
 
       const data = await response.json();
 
-      console.log("Registration response:", data);
+      console.log(
+        "Registration response:",
+        data
+      );
 
       // =================================================
       // SUCCESS
@@ -249,7 +251,7 @@ function RegistrationForm() {
         data.detail || "Registration failed";
 
       // -------------------------------------------------
-      // DUPLICATE EMAIL
+      // EMAIL ERROR
       // -------------------------------------------------
 
       if (
@@ -265,7 +267,7 @@ function RegistrationForm() {
       }
 
       // -------------------------------------------------
-      // DUPLICATE USERNAME
+      // USERNAME ERROR
       // -------------------------------------------------
 
       if (
@@ -297,12 +299,13 @@ function RegistrationForm() {
       }
 
       // -------------------------------------------------
-      // OTHER BACKEND ERROR
+      // OTHER ERROR
       // -------------------------------------------------
 
       setErrors({
         general: message,
       });
+
     } catch (error) {
       console.error(
         "Registration connection error:",
@@ -313,6 +316,7 @@ function RegistrationForm() {
         general:
           "Unable to connect to the backend server. Please make sure FastAPI is running.",
       });
+
     } finally {
       setIsLoading(false);
     }
