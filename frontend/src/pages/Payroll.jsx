@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import "../styles/payroll.css";
 
 function Payroll() {
   // =========================================================
@@ -11,25 +12,20 @@ function Payroll() {
       name: "Rahul Kumar",
       department: "SPINNING",
       designation: "Senior Operator",
-
       basicSalary: 22000,
       allowances: 4500,
       overtime: 1800,
       bonus: 1000,
       deductions: 1800,
-
       workingDays: 26,
       paidDays: 26,
       leaveDays: 0,
-
       status: "Processed",
       paymentDate: "05 Aug 2026",
-
       bankName: "State Bank of India",
       accountNumber: "XXXXXX4582",
       pan: "ABCDE1234F",
       uan: "100123456789",
-
       month: "August 2026",
     },
 
@@ -38,25 +34,20 @@ function Payroll() {
       name: "Amit Das",
       department: "SPINNING",
       designation: "Machine Operator",
-
       basicSalary: 20000,
       allowances: 4000,
       overtime: 1200,
       bonus: 800,
       deductions: 1500,
-
       workingDays: 26,
       paidDays: 25,
       leaveDays: 1,
-
       status: "Processed",
       paymentDate: "05 Aug 2026",
-
       bankName: "HDFC Bank",
       accountNumber: "XXXXXX7821",
       pan: "BCDEF2345G",
       uan: "100123456790",
-
       month: "August 2026",
     },
 
@@ -65,25 +56,20 @@ function Payroll() {
       name: "Sanjay Roy",
       department: "WEAVING-Rapier",
       designation: "Weaving Supervisor",
-
       basicSalary: 28000,
       allowances: 5500,
       overtime: 2200,
       bonus: 1500,
       deductions: 2200,
-
       workingDays: 26,
       paidDays: 26,
       leaveDays: 0,
-
       status: "Pending",
       paymentDate: "-",
-
       bankName: "ICICI Bank",
       accountNumber: "XXXXXX3456",
       pan: "CDEFG3456H",
       uan: "100123456791",
-
       month: "August 2026",
     },
 
@@ -92,25 +78,20 @@ function Payroll() {
       name: "Priya Sharma",
       department: "WEAVING-S4",
       designation: "Production Assistant",
-
       basicSalary: 19000,
       allowances: 3500,
       overtime: 1000,
       bonus: 700,
       deductions: 1200,
-
       workingDays: 26,
       paidDays: 26,
       leaveDays: 0,
-
       status: "Processed",
       paymentDate: "05 Aug 2026",
-
       bankName: "Axis Bank",
       accountNumber: "XXXXXX9821",
       pan: "DEFGH4567I",
       uan: "100123456792",
-
       month: "August 2026",
     },
 
@@ -119,25 +100,20 @@ function Payroll() {
       name: "Rakesh Singh",
       department: "WEAVING-S4",
       designation: "Machine Operator",
-
       basicSalary: 21000,
       allowances: 4200,
       overtime: 900,
       bonus: 500,
       deductions: 1600,
-
       workingDays: 26,
       paidDays: 24,
       leaveDays: 2,
-
       status: "On Hold",
       paymentDate: "-",
-
       bankName: "Punjab National Bank",
       accountNumber: "XXXXXX6412",
       pan: "EFGHI5678J",
       uan: "100123456793",
-
       month: "August 2026",
     },
 
@@ -146,25 +122,20 @@ function Payroll() {
       name: "Arjun Mehta",
       department: "SPINNING",
       designation: "Production Executive",
-
       basicSalary: 30000,
       allowances: 6000,
       overtime: 2000,
       bonus: 2000,
       deductions: 2500,
-
       workingDays: 26,
       paidDays: 26,
       leaveDays: 0,
-
       status: "Pending",
       paymentDate: "-",
-
       bankName: "Kotak Mahindra Bank",
       accountNumber: "XXXXXX1122",
       pan: "FGHIJ6789K",
       uan: "100123456794",
-
       month: "August 2026",
     },
   ]);
@@ -184,13 +155,8 @@ function Payroll() {
   // =========================================================
 
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-
-  const [showDetailsModal, setShowDetailsModal] =
-    useState(false);
-
-  const [showEditModal, setShowEditModal] =
-    useState(false);
-
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [editForm, setEditForm] = useState(null);
 
   // =========================================================
@@ -208,7 +174,7 @@ function Payroll() {
   };
 
   // =========================================================
-  // CURRENCY FORMAT
+  // FORMAT CURRENCY
   // =========================================================
 
   const formatCurrency = (amount) => {
@@ -225,7 +191,7 @@ function Payroll() {
 
   const filteredEmployees = useMemo(() => {
     return employees.filter((employee) => {
-        const idMatch = employee.id
+      const idMatch = employee.id
         .toLowerCase()
         .includes(employeeId.toLowerCase());
 
@@ -263,7 +229,7 @@ function Payroll() {
   ]);
 
   // =========================================================
-  // SUMMARY CALCULATIONS
+  // SUMMARY
   // =========================================================
 
   const totalEmployees = employees.length;
@@ -281,8 +247,7 @@ function Payroll() {
   ).length;
 
   const totalPayroll = employees.reduce(
-    (total, employee) =>
-      total + calculateNetSalary(employee),
+    (total, employee) => total + calculateNetSalary(employee),
     0
   );
 
@@ -299,7 +264,7 @@ function Payroll() {
   };
 
   // =========================================================
-  // OPEN DETAILS
+  // VIEW DETAILS
   // =========================================================
 
   const openDetails = (employee) => {
@@ -308,21 +273,14 @@ function Payroll() {
   };
 
   // =========================================================
-  // OPEN EDIT
+  // EDIT
   // =========================================================
 
   const openEdit = (employee) => {
     setSelectedEmployee(employee);
-    setEditForm({
-      ...employee,
-    });
-
+    setEditForm({ ...employee });
     setShowEditModal(true);
   };
-
-  // =========================================================
-  // HANDLE EDIT FORM
-  // =========================================================
 
   const handleEditChange = (field, value) => {
     setEditForm((previous) => ({
@@ -332,55 +290,34 @@ function Payroll() {
   };
 
   // =========================================================
-  // SAVE EMPLOYEE
+  // SAVE
   // =========================================================
 
   const saveEmployee = () => {
     if (!editForm) return;
 
+    const updatedEmployee = {
+      ...editForm,
+      basicSalary: Number(editForm.basicSalary || 0),
+      allowances: Number(editForm.allowances || 0),
+      overtime: Number(editForm.overtime || 0),
+      bonus: Number(editForm.bonus || 0),
+      deductions: Number(editForm.deductions || 0),
+      workingDays: Number(editForm.workingDays || 0),
+      paidDays: Number(editForm.paidDays || 0),
+      leaveDays: Number(editForm.leaveDays || 0),
+    };
+
     setEmployees((previousEmployees) =>
       previousEmployees.map((employee) =>
-        employee.id === editForm.id
-          ? {
-              ...editForm,
-
-              basicSalary: Number(
-                editForm.basicSalary
-              ),
-
-              allowances: Number(
-                editForm.allowances
-              ),
-
-              overtime: Number(
-                editForm.overtime
-              ),
-
-              bonus: Number(
-                editForm.bonus
-              ),
-
-              deductions: Number(
-                editForm.deductions
-              ),
-
-              workingDays: Number(
-                editForm.workingDays
-              ),
-
-              paidDays: Number(
-                editForm.paidDays
-              ),
-
-              leaveDays: Number(
-                editForm.leaveDays
-              ),
-            }
+        employee.id === updatedEmployee.id
+          ? updatedEmployee
           : employee
       )
     );
 
     setShowEditModal(false);
+    setShowDetailsModal(false);
     setSelectedEmployee(null);
     setEditForm(null);
   };
@@ -404,7 +341,7 @@ function Payroll() {
   };
 
   // =========================================================
-  // PUT ON HOLD
+  // HOLD PAYROLL
   // =========================================================
 
   const holdPayroll = (id) => {
@@ -422,23 +359,14 @@ function Payroll() {
   };
 
   // =========================================================
-  // STATUS STYLE
+  // STATUS CLASS
   // =========================================================
 
-  const getStatusStyle = (status) => {
-    switch (status) {
-      case "Processed":
-        return "bg-emerald-50 text-emerald-700 border border-emerald-200";
-
-      case "Pending":
-        return "bg-amber-50 text-amber-700 border border-amber-200";
-
-      case "On Hold":
-        return "bg-red-50 text-red-700 border border-red-200";
-
-      default:
-        return "bg-slate-100 text-slate-600 border border-slate-200";
-    }
+  const getStatusClass = (status) => {
+    if (status === "Processed") return "status-processed";
+    if (status === "Pending") return "status-pending";
+    if (status === "On Hold") return "status-hold";
+    return "status-default";
   };
 
   // =========================================================
@@ -446,56 +374,45 @@ function Payroll() {
   // =========================================================
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-6 lg:p-8">
+    <div className="payroll-page">
 
       {/* =====================================================
           HEADER
       ===================================================== */}
 
-      <div className="mb-7 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+      <div className="payroll-header">
 
         <div>
-
-          <div className="mb-2 flex items-center gap-2 text-sm text-slate-500">
+          <div className="breadcrumb">
             <span>Dashboard</span>
-
             <span>/</span>
-
-            <span className="font-medium text-blue-600">
-              Payroll
-            </span>
+            <span className="active">Payroll</span>
           </div>
 
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            Payroll Management
-          </h1>
+          <h1>Payroll Management</h1>
 
-          <p className="mt-1 text-sm text-slate-500">
+          <p>
             Manage employee salaries, payroll processing,
-            payments and employee compensation details.
+            payments and compensation details.
           </p>
-
         </div>
 
-
-        <div className="flex flex-wrap gap-3">
+        <div className="header-actions">
 
           <button
-            type="button"
+            className="btn btn-secondary"
             onClick={clearFilters}
-            className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50"
           >
             Reset
           </button>
 
           <button
-            type="button"
-            onClick={() => {
+            className="btn btn-primary"
+            onClick={() =>
               alert(
-                "Payroll processing started for the selected month."
-              );
-            }}
-            className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                `Payroll processing started for ${salaryMonth}.`
+              )
+            }
           >
             + Process Payroll
           </button>
@@ -504,407 +421,175 @@ function Payroll() {
 
       </div>
 
-
       {/* =====================================================
           SUMMARY CARDS
       ===================================================== */}
 
-      <div className="mb-7 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="summary-grid">
 
-        {/* TOTAL EMPLOYEES */}
+        <SummaryCard
+          title="Total Employees"
+          value={totalEmployees}
+          subtitle="Payroll employees"
+          icon="👥"
+          type="blue"
+        />
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <SummaryCard
+          title="Processed"
+          value={processedCount}
+          subtitle="Successfully processed"
+          icon="✓"
+          type="green"
+        />
 
-          <div className="flex items-start justify-between">
+        <SummaryCard
+          title="Pending"
+          value={pendingCount}
+          subtitle="Need processing"
+          icon="⏳"
+          type="orange"
+        />
 
-            <div>
+        <SummaryCard
+          title="On Hold"
+          value={holdCount}
+          subtitle="Payment blocked"
+          icon="!"
+          type="red"
+        />
 
-              <p className="text-sm font-medium text-slate-500">
-                Total Employees
-              </p>
-
-              <h2 className="mt-2 text-2xl font-bold text-slate-900">
-                {totalEmployees}
-              </h2>
-
-              <p className="mt-1 text-xs text-slate-400">
-                Payroll employees
-              </p>
-
-            </div>
-
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-xl">
-              👥
-            </div>
-
-          </div>
-
-        </div>
-
-
-        {/* PROCESSED */}
-
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-
-          <div className="flex items-start justify-between">
-
-            <div>
-
-              <p className="text-sm font-medium text-slate-500">
-                Processed
-              </p>
-
-              <h2 className="mt-2 text-2xl font-bold text-emerald-600">
-                {processedCount}
-              </h2>
-
-              <p className="mt-1 text-xs text-slate-400">
-                Successfully processed
-              </p>
-
-            </div>
-
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-xl">
-              ✓
-            </div>
-
-          </div>
-
-        </div>
-
-
-        {/* PENDING */}
-
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-
-          <div className="flex items-start justify-between">
-
-            <div>
-
-              <p className="text-sm font-medium text-slate-500">
-                Pending
-              </p>
-
-              <h2 className="mt-2 text-2xl font-bold text-amber-600">
-                {pendingCount}
-              </h2>
-
-              <p className="mt-1 text-xs text-slate-400">
-                Need processing
-              </p>
-
-            </div>
-
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-50 text-xl">
-              ⏳
-            </div>
-
-          </div>
-
-        </div>
-
-
-        {/* ON HOLD */}
-
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-
-          <div className="flex items-start justify-between">
-
-            <div>
-
-              <p className="text-sm font-medium text-slate-500">
-                On Hold
-              </p>
-
-              <h2 className="mt-2 text-2xl font-bold text-red-600">
-                {holdCount}
-              </h2>
-
-              <p className="mt-1 text-xs text-slate-400">
-                Payment blocked
-              </p>
-
-            </div>
-
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-red-50 text-xl">
-              !
-            </div>
-
-          </div>
-
-        </div>
-
-
-        {/* TOTAL PAYROLL */}
-
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-
-          <div className="flex items-start justify-between">
-
-            <div>
-
-              <p className="text-sm font-medium text-slate-500">
-                Net Payroll
-              </p>
-
-              <h2 className="mt-2 text-xl font-bold text-slate-900">
-                {formatCurrency(totalPayroll)}
-              </h2>
-
-              <p className="mt-1 text-xs text-slate-400">
-                {salaryMonth}
-              </p>
-
-            </div>
-
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-purple-50 text-xl">
-              ₹
-            </div>
-
-          </div>
-
-        </div>
+        <SummaryCard
+          title="Net Payroll"
+          value={formatCurrency(totalPayroll)}
+          subtitle={salaryMonth}
+          icon="₹"
+          type="purple"
+        />
 
       </div>
 
-
       {/* =====================================================
-          FILTER SECTION
+          FILTERS
       ===================================================== */}
 
-      <div className="mb-7 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="payroll-card filter-card">
 
-        {/* FILTER HEADER */}
-
-        <div className="flex flex-col gap-3 border-b border-slate-200 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="card-header">
 
           <div>
-
-            <h2 className="text-lg font-bold text-slate-900">
-              Payroll Records
-            </h2>
-
-            <p className="mt-1 text-sm text-slate-500">
+            <h2>Payroll Records</h2>
+            <p>
               Search and filter employee payroll information.
             </p>
-
           </div>
 
           <button
-            type="button"
+            className="clear-filter-btn"
             onClick={clearFilters}
-            className="font-medium text-blue-600 transition hover:text-blue-800"
           >
             Clear Filters
           </button>
 
         </div>
 
+        <div className="filter-grid">
 
-        {/* FILTER GRID */}
+          <FilterInput
+            label="Employee ID"
+            placeholder="EMP001"
+            value={employeeId}
+            onChange={setEmployeeId}
+          />
 
-        <div className="grid grid-cols-1 gap-5 p-6 md:grid-cols-2 xl:grid-cols-5">
+          <FilterInput
+            label="Employee Name"
+            placeholder="Employee name"
+            value={employeeName}
+            onChange={setEmployeeName}
+          />
 
-          {/* EMPLOYEE ID */}
+          <FilterSelect
+            label="Department"
+            value={department}
+            onChange={setDepartment}
+            options={[
+              "All Departments",
+              "SPINNING",
+              "WEAVING-Rapier",
+              "WEAVING-S4",
+            ]}
+          />
 
-          <div>
+          <FilterSelect
+            label="Payroll Status"
+            value={payrollStatus}
+            onChange={setPayrollStatus}
+            options={[
+              "All Status",
+              "Processed",
+              "Pending",
+              "On Hold",
+            ]}
+          />
 
-            <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-600">
-              Employee ID
-            </label>
-
-            <input
-              type="text"
-              value={employeeId}
-              onChange={(event) =>
-                setEmployeeId(event.target.value)
-              }
-              placeholder="EMP001"
-              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            />
-
-          </div>
-
-
-          {/* EMPLOYEE NAME */}
-
-          <div>
-
-            <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-600">
-              Employee Name
-            </label>
-
-            <input
-              type="text"
-              value={employeeName}
-              onChange={(event) =>
-                setEmployeeName(event.target.value)
-              }
-              placeholder="Employee name"
-              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            />
-
-          </div>
-
-
-          {/* DEPARTMENT */}
-
-          <div>
-
-            <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-600">
-              Department
-            </label>
-
-            <select
-              value={department}
-              onChange={(event) =>
-                setDepartment(event.target.value)
-              }
-              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            >
-              <option>All Departments</option>
-              <option>SPINNING</option>
-              <option>WEAVING-Rapier</option>
-              <option>WEAVING-S4</option>
-            </select>
-
-          </div>
-
-
-          {/* PAYROLL STATUS */}
-
-          <div>
-
-            <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-600">
-              Payroll Status
-            </label>
-
-            <select
-              value={payrollStatus}
-              onChange={(event) =>
-                setPayrollStatus(event.target.value)
-              }
-              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            >
-              <option>All Status</option>
-              <option>Processed</option>
-              <option>Pending</option>
-              <option>On Hold</option>
-            </select>
-
-          </div>
-
-
-          {/* SALARY MONTH */}
-
-          <div>
-
-            <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-600">
-              Salary Month
-            </label>
-
-            <select
-              value={salaryMonth}
-              onChange={(event) =>
-                setSalaryMonth(event.target.value)
-              }
-              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            >
-              <option>August 2026</option>
-              <option>July 2026</option>
-              <option>June 2026</option>
-              <option>May 2026</option>
-            </select>
-
-          </div>
+          <FilterSelect
+            label="Salary Month"
+            value={salaryMonth}
+            onChange={setSalaryMonth}
+            options={[
+              "August 2026",
+              "July 2026",
+              "June 2026",
+              "May 2026",
+            ]}
+          />
 
         </div>
 
       </div>
 
-
       {/* =====================================================
-          EMPLOYEE PAYROLL TABLE
+          TABLE
       ===================================================== */}
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="payroll-card table-card">
 
-        {/* TABLE HEADER */}
-
-        <div className="flex flex-col gap-4 border-b border-slate-200 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="table-header">
 
           <div>
-
-            <h2 className="text-lg font-bold text-slate-900">
-              Employee Payroll
-            </h2>
-
-            <p className="mt-1 text-sm text-slate-500">
+            <h2>Employee Payroll</h2>
+            <p>
               Showing {filteredEmployees.length} of{" "}
               {employees.length} employees
             </p>
-
           </div>
 
-          <div className="rounded-lg bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700">
+          <span className="month-badge">
             {salaryMonth}
-          </div>
+          </span>
 
         </div>
 
+        <div className="table-wrapper">
 
-        {/* TABLE */}
+          <table className="payroll-table">
 
-        <div className="overflow-x-auto">
-
-          <table className="w-full min-w-[1250px]">
-
-            <thead className="bg-slate-50">
-
+            <thead>
               <tr>
-
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Employee
-                </th>
-
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Department
-                </th>
-
-                <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Basic
-                </th>
-
-                <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Allowances
-                </th>
-
-                <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Overtime
-                </th>
-
-                <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Deductions
-                </th>
-
-                <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Net Salary
-                </th>
-
-                <th className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Status
-                </th>
-
-                <th className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Actions
-                </th>
-
+                <th>Employee</th>
+                <th>Department</th>
+                <th>Basic</th>
+                <th>Allowances</th>
+                <th>Overtime</th>
+                <th>Deductions</th>
+                <th>Net Salary</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
-
             </thead>
 
-
-            <tbody className="divide-y divide-slate-100">
+            <tbody>
 
               {filteredEmployees.length > 0 ? (
 
@@ -913,174 +598,125 @@ function Payroll() {
                   const netSalary =
                     calculateNetSalary(employee);
 
+                  const initials = employee.name
+                    .split(" ")
+                    .map((word) => word[0])
+                    .join("")
+                    .slice(0, 2)
+                    .toUpperCase();
+
                   return (
-                    <tr
-                      key={employee.id}
-                      className="transition hover:bg-slate-50"
-                    >
+                    <tr key={employee.id}>
 
-                      {/* EMPLOYEE */}
+                      <td>
+                        <div className="employee-cell">
 
-                      <td className="px-6 py-4">
-
-                        <div className="flex items-center gap-3">
-
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
-                            {employee.name
-                              .split(" ")
-                              .map((word) => word[0])
-                              .join("")
-                              .slice(0, 2)}
+                          <div className="employee-avatar">
+                            {initials}
                           </div>
 
                           <div>
-
-                            <p className="font-semibold text-slate-900">
+                            <strong>
                               {employee.name}
-                            </p>
+                            </strong>
 
-                            <p className="text-xs text-slate-500">
+                            <small>
                               {employee.id}
-                            </p>
-
+                            </small>
                           </div>
 
                         </div>
-
                       </td>
 
+                      <td>
+                        <div className="department-cell">
+                          <strong>
+                            {employee.department}
+                          </strong>
 
-                      {/* DEPARTMENT */}
-
-                      <td className="px-6 py-4">
-
-                        <p className="text-sm font-medium text-slate-700">
-                          {employee.department}
-                        </p>
-
-                        <p className="mt-1 text-xs text-slate-400">
-                          {employee.designation}
-                        </p>
-
+                          <small>
+                            {employee.designation}
+                          </small>
+                        </div>
                       </td>
 
-
-                      {/* BASIC */}
-
-                      <td className="px-6 py-4 text-right text-sm text-slate-700">
+                      <td className="amount">
                         {formatCurrency(
                           employee.basicSalary
                         )}
                       </td>
 
-
-                      {/* ALLOWANCES */}
-
-                      <td className="px-6 py-4 text-right text-sm font-medium text-emerald-600">
-                        +
-                        {formatCurrency(
+                      <td className="amount positive">
+                        +{formatCurrency(
                           employee.allowances
                         )}
                       </td>
 
-
-                      {/* OVERTIME */}
-
-                      <td className="px-6 py-4 text-right text-sm font-medium text-blue-600">
-                        +
-                        {formatCurrency(
+                      <td className="amount overtime">
+                        +{formatCurrency(
                           employee.overtime
                         )}
                       </td>
 
-
-                      {/* DEDUCTIONS */}
-
-                      <td className="px-6 py-4 text-right text-sm font-medium text-red-600">
-                        -
-                        {formatCurrency(
+                      <td className="amount negative">
+                        -{formatCurrency(
                           employee.deductions
                         )}
                       </td>
 
-
-                      {/* NET SALARY */}
-
-                      <td className="px-6 py-4 text-right">
-
-                        <p className="font-bold text-slate-900">
-                          {formatCurrency(netSalary)}
-                        </p>
-
+                      <td className="amount net">
+                        {formatCurrency(netSalary)}
                       </td>
 
-
-                      {/* STATUS */}
-
-                      <td className="px-6 py-4 text-center">
-
+                      <td>
                         <span
-                          className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(
+                          className={`status-badge ${getStatusClass(
                             employee.status
                           )}`}
                         >
                           {employee.status}
                         </span>
-
                       </td>
 
+                      <td>
 
-                      {/* ACTIONS */}
-
-                      <td className="px-6 py-4">
-
-                        <div className="flex items-center justify-center gap-2">
+                        <div className="action-buttons">
 
                           <button
-                            type="button"
+                            className="action-btn view-btn"
                             onClick={() =>
                               openDetails(employee)
                             }
-                            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-600"
                           >
                             View
                           </button>
 
                           <button
-                            type="button"
+                            className="action-btn edit-btn"
                             onClick={() =>
                               openEdit(employee)
                             }
-                            className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-600 transition hover:bg-blue-100"
                           >
                             Edit
                           </button>
 
-                          {employee.status ===
-                            "Pending" && (
+                          {employee.status === "Pending" && (
                             <button
-                              type="button"
+                              className="action-btn process-btn"
                               onClick={() =>
-                                processPayroll(
-                                  employee.id
-                                )
+                                processPayroll(employee.id)
                               }
-                              className="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-emerald-700"
                             >
                               Process
                             </button>
                           )}
 
-                          {employee.status !==
-                            "On Hold" && (
+                          {employee.status !== "On Hold" && (
                             <button
-                              type="button"
+                              className="action-btn hold-btn"
                               onClick={() =>
-                                holdPayroll(
-                                  employee.id
-                                )
+                                holdPayroll(employee.id)
                               }
-                              className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-100"
                             >
                               Hold
                             </button>
@@ -1097,35 +733,29 @@ function Payroll() {
               ) : (
 
                 <tr>
-
                   <td
                     colSpan="9"
-                    className="px-6 py-16 text-center"
+                    className="empty-cell"
                   >
-
-                    <div className="text-4xl">
+                    <div className="empty-icon">
                       🔍
                     </div>
 
-                    <h3 className="mt-3 font-semibold text-slate-800">
+                    <h3>
                       No payroll records found
                     </h3>
 
-                    <p className="mt-1 text-sm text-slate-500">
-                      Try changing your employee ID,
-                      employee name or filters.
+                    <p>
+                      Try changing your search or filters.
                     </p>
 
                     <button
-                      type="button"
+                      className="btn btn-primary"
                       onClick={clearFilters}
-                      className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
                     >
                       Clear Filters
                     </button>
-
                   </td>
-
                 </tr>
 
               )}
@@ -1138,296 +768,255 @@ function Payroll() {
 
       </div>
 
-
       {/* =====================================================
           DETAILS MODAL
       ===================================================== */}
 
-      {showDetailsModal &&
-        selectedEmployee && (
+      {showDetailsModal && selectedEmployee && (
 
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
+        <div
+          className="modal-overlay"
+          onClick={() =>
+            setShowDetailsModal(false)
+          }
+        >
 
-            <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
+          <div
+            className="modal-container"
+            onClick={(event) =>
+              event.stopPropagation()
+            }
+          >
 
-              {/* MODAL HEADER */}
+            <div className="modal-header">
 
-              <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+              <div>
+                <h2>Payroll Details</h2>
 
-                <div>
-
-                  <h2 className="text-xl font-bold text-slate-900">
-                    Payroll Details
-                  </h2>
-
-                  <p className="mt-1 text-sm text-slate-500">
-                    {selectedEmployee.name} ·{" "}
-                    {selectedEmployee.id}
-                  </p>
-
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setShowDetailsModal(false)
-                  }
-                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-lg text-slate-600 hover:bg-slate-200"
-                >
-                  ×
-                </button>
-
+                <p>
+                  {selectedEmployee.name} ·{" "}
+                  {selectedEmployee.id}
+                </p>
               </div>
 
+              <button
+                className="modal-close"
+                onClick={() =>
+                  setShowDetailsModal(false)
+                }
+              >
+                ×
+              </button>
+
+            </div>
+
+            <div className="modal-body">
 
               {/* EMPLOYEE INFORMATION */}
 
-              <div className="grid grid-cols-1 gap-6 p-6 lg:grid-cols-2">
+              <div className="detail-section">
 
-                <div className="rounded-xl border border-slate-200 p-5">
+                <h3>Employee Information</h3>
 
-                  <h3 className="mb-4 font-semibold text-slate-900">
-                    Employee Information
-                  </h3>
+                <DetailRow
+                  label="Employee ID"
+                  value={selectedEmployee.id}
+                />
 
-                  <div className="space-y-4">
+                <DetailRow
+                  label="Employee Name"
+                  value={selectedEmployee.name}
+                />
 
-                    <DetailRow
-                      label="Employee ID"
-                      value={selectedEmployee.id}
-                    />
+                <DetailRow
+                  label="Department"
+                  value={selectedEmployee.department}
+                />
 
-                    <DetailRow
-                      label="Employee Name"
-                      value={selectedEmployee.name}
-                    />
+                <DetailRow
+                  label="Designation"
+                  value={selectedEmployee.designation}
+                />
 
-                    <DetailRow
-                      label="Department"
-                      value={selectedEmployee.department}
-                    />
+                <DetailRow
+                  label="UAN"
+                  value={selectedEmployee.uan}
+                />
 
-                    <DetailRow
-                      label="Designation"
-                      value={selectedEmployee.designation}
-                    />
+                <DetailRow
+                  label="PAN"
+                  value={selectedEmployee.pan}
+                />
 
-                    <DetailRow
-                      label="UAN"
-                      value={selectedEmployee.uan}
-                    />
+              </div>
 
-                    <DetailRow
-                      label="PAN"
-                      value={selectedEmployee.pan}
-                    />
+              {/* PAYMENT INFORMATION */}
 
-                  </div>
+              <div className="detail-section">
 
+                <h3>Payment Information</h3>
+
+                <DetailRow
+                  label="Bank"
+                  value={selectedEmployee.bankName}
+                />
+
+                <DetailRow
+                  label="Account"
+                  value={selectedEmployee.accountNumber}
+                />
+
+                <DetailRow
+                  label="Salary Month"
+                  value={selectedEmployee.month}
+                />
+
+                <DetailRow
+                  label="Payment Date"
+                  value={selectedEmployee.paymentDate}
+                />
+
+                <div className="detail-row">
+                  <span>Status</span>
+
+                  <span
+                    className={`status-badge ${getStatusClass(
+                      selectedEmployee.status
+                    )}`}
+                  >
+                    {selectedEmployee.status}
+                  </span>
                 </div>
 
+              </div>
 
-                {/* PAYMENT INFORMATION */}
+              {/* SALARY BREAKDOWN */}
 
-                <div className="rounded-xl border border-slate-200 p-5">
+              <div className="detail-section full-width">
 
-                  <h3 className="mb-4 font-semibold text-slate-900">
-                    Payment Information
-                  </h3>
+                <h3>Salary Breakdown</h3>
 
-                  <div className="space-y-4">
+                <div className="salary-grid">
 
-                    <DetailRow
-                      label="Bank"
-                      value={selectedEmployee.bankName}
-                    />
+                  <SalaryBox
+                    label="Basic Salary"
+                    value={formatCurrency(
+                      selectedEmployee.basicSalary
+                    )}
+                  />
 
-                    <DetailRow
-                      label="Account"
-                      value={
-                        selectedEmployee.accountNumber
-                      }
-                    />
+                  <SalaryBox
+                    label="Allowances"
+                    value={formatCurrency(
+                      selectedEmployee.allowances
+                    )}
+                  />
 
-                    <DetailRow
-                      label="Salary Month"
-                      value={selectedEmployee.month}
-                    />
+                  <SalaryBox
+                    label="Overtime"
+                    value={formatCurrency(
+                      selectedEmployee.overtime
+                    )}
+                  />
 
-                    <DetailRow
-                      label="Payment Date"
-                      value={
-                        selectedEmployee.paymentDate
-                      }
-                    />
+                  <SalaryBox
+                    label="Bonus"
+                    value={formatCurrency(
+                      selectedEmployee.bonus
+                    )}
+                  />
 
-                    <div className="flex items-center justify-between border-t border-slate-100 pt-3">
+                  <SalaryBox
+                    label="Deductions"
+                    value={formatCurrency(
+                      selectedEmployee.deductions
+                    )}
+                  />
 
-                      <span className="text-sm text-slate-500">
-                        Status
-                      </span>
-
-                      <span
-                        className={`rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(
-                          selectedEmployee.status
-                        )}`}
-                      >
-                        {selectedEmployee.status}
-                      </span>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-
-                {/* SALARY BREAKDOWN */}
-
-                <div className="rounded-xl border border-slate-200 p-5 lg:col-span-2">
-
-                  <h3 className="mb-5 font-semibold text-slate-900">
-                    Salary Breakdown
-                  </h3>
-
-                  <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-
-                    <SalaryBox
-                      label="Basic Salary"
-                      value={formatCurrency(
-                        selectedEmployee.basicSalary
-                      )}
-                    />
-
-                    <SalaryBox
-                      label="Allowances"
-                      value={formatCurrency(
-                        selectedEmployee.allowances
-                      )}
-                    />
-
-                    <SalaryBox
-                      label="Overtime"
-                      value={formatCurrency(
-                        selectedEmployee.overtime
-                      )}
-                    />
-
-                    <SalaryBox
-                      label="Bonus"
-                      value={formatCurrency(
-                        selectedEmployee.bonus
-                      )}
-                    />
-
-                    <SalaryBox
-                      label="Deductions"
-                      value={formatCurrency(
-                        selectedEmployee.deductions
-                      )}
-                    />
-
-                    <SalaryBox
-                      label="Net Salary"
-                      value={formatCurrency(
-                        calculateNetSalary(
-                          selectedEmployee
-                        )
-                      )}
-                      highlighted
-                    />
-
-                  </div>
-
-                </div>
-
-
-                {/* ATTENDANCE */}
-
-                <div className="rounded-xl border border-slate-200 p-5 lg:col-span-2">
-
-                  <h3 className="mb-5 font-semibold text-slate-900">
-                    Attendance Information
-                  </h3>
-
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-
-                    <AttendanceBox
-                      label="Working Days"
-                      value={
-                        selectedEmployee.workingDays
-                      }
-                    />
-
-                    <AttendanceBox
-                      label="Paid Days"
-                      value={
-                        selectedEmployee.paidDays
-                      }
-                    />
-
-                    <AttendanceBox
-                      label="Leave Days"
-                      value={
-                        selectedEmployee.leaveDays
-                      }
-                    />
-
-                  </div>
+                  <SalaryBox
+                    label="Net Salary"
+                    value={formatCurrency(
+                      calculateNetSalary(
+                        selectedEmployee
+                      )
+                    )}
+                    highlighted
+                  />
 
                 </div>
 
               </div>
 
+              {/* ATTENDANCE */}
 
-              {/* MODAL FOOTER */}
+              <div className="detail-section full-width">
 
-              <div className="flex flex-wrap justify-end gap-3 border-t border-slate-200 px-6 py-4">
+                <h3>Attendance Information</h3>
 
-                <button
-                  type="button"
-                  onClick={() =>
-                    openEdit(selectedEmployee)
-                  }
-                  className="rounded-lg border border-blue-300 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-600 hover:bg-blue-100"
-                >
-                  Edit Payroll
-                </button>
+                <div className="attendance-grid">
 
-                {selectedEmployee.status ===
-                  "Pending" && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      processPayroll(
-                        selectedEmployee.id
-                      );
+                  <AttendanceBox
+                    label="Working Days"
+                    value={selectedEmployee.workingDays}
+                  />
 
-                      setShowDetailsModal(false);
-                    }}
-                    className="rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
-                  >
-                    Process Payroll
-                  </button>
-                )}
+                  <AttendanceBox
+                    label="Paid Days"
+                    value={selectedEmployee.paidDays}
+                  />
 
-                <button
-                  type="button"
-                  onClick={() =>
-                    setShowDetailsModal(false)
-                  }
-                  className="rounded-lg bg-slate-800 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-900"
-                >
-                  Close
-                </button>
+                  <AttendanceBox
+                    label="Leave Days"
+                    value={selectedEmployee.leaveDays}
+                  />
+
+                </div>
 
               </div>
 
             </div>
 
-          </div>
-        )}
+            <div className="modal-footer">
 
+              <button
+                className="btn btn-secondary"
+                onClick={() =>
+                  setShowDetailsModal(false)
+                }
+              >
+                Close
+              </button>
+
+              <button
+                className="btn btn-edit"
+                onClick={() =>
+                  openEdit(selectedEmployee)
+                }
+              >
+                Edit Payroll
+              </button>
+
+              {selectedEmployee.status === "Pending" && (
+                <button
+                  className="btn btn-success"
+                  onClick={() => {
+                    processPayroll(
+                      selectedEmployee.id
+                    );
+
+                    setShowDetailsModal(false);
+                  }}
+                >
+                  Process Payroll
+                </button>
+              )}
+
+            </div>
+
+          </div>
+
+        </div>
+      )}
 
       {/* =====================================================
           EDIT MODAL
@@ -1435,43 +1024,43 @@ function Payroll() {
 
       {showEditModal && editForm && (
 
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 p-4">
+        <div
+          className="modal-overlay edit-overlay"
+          onClick={() =>
+            setShowEditModal(false)
+          }
+        >
 
-          <div className="max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
+          <div
+            className="modal-container edit-modal"
+            onClick={(event) =>
+              event.stopPropagation()
+            }
+          >
 
-            {/* HEADER */}
-
-            <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+            <div className="modal-header">
 
               <div>
+                <h2>Edit Payroll</h2>
 
-                <h2 className="text-xl font-bold text-slate-900">
-                  Edit Payroll
-                </h2>
-
-                <p className="mt-1 text-sm text-slate-500">
+                <p>
                   Update payroll information for{" "}
                   {editForm.name}
                 </p>
-
               </div>
 
               <button
-                type="button"
+                className="modal-close"
                 onClick={() =>
                   setShowEditModal(false)
                 }
-                className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-lg text-slate-600 hover:bg-slate-200"
               >
                 ×
               </button>
 
             </div>
 
-
-            {/* FORM */}
-
-            <div className="grid grid-cols-1 gap-5 p-6 md:grid-cols-2">
+            <div className="edit-form">
 
               <InputField
                 label="Employee ID"
@@ -1483,10 +1072,7 @@ function Payroll() {
                 label="Employee Name"
                 value={editForm.name}
                 onChange={(value) =>
-                  handleEditChange(
-                    "name",
-                    value
-                  )
+                  handleEditChange("name", value)
                 }
               />
 
@@ -1501,31 +1087,21 @@ function Payroll() {
                 }
               />
 
-              {/* DEPARTMENT */}
-
-              <div>
-
-                <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Department
-                </label>
-
-                <select
-                  value={editForm.department}
-                  onChange={(event) =>
-                    handleEditChange(
-                      "department",
-                      event.target.value
-                    )
-                  }
-                  className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                >
-                  <option>SPINNING</option>
-                  <option>WEAVING-Rapier</option>
-                  <option>WEAVING-S4</option>
-                </select>
-
-              </div>
-
+              <SelectField
+                label="Department"
+                value={editForm.department}
+                onChange={(value) =>
+                  handleEditChange(
+                    "department",
+                    value
+                  )
+                }
+                options={[
+                  "SPINNING",
+                  "WEAVING-Rapier",
+                  "WEAVING-S4",
+                ]}
+              />
 
               <InputField
                 label="Basic Salary"
@@ -1623,31 +1199,21 @@ function Payroll() {
                 }
               />
 
-              {/* STATUS */}
-
-              <div>
-
-                <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Payroll Status
-                </label>
-
-                <select
-                  value={editForm.status}
-                  onChange={(event) =>
-                    handleEditChange(
-                      "status",
-                      event.target.value
-                    )
-                  }
-                  className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                >
-                  <option>Processed</option>
-                  <option>Pending</option>
-                  <option>On Hold</option>
-                </select>
-
-              </div>
-
+              <SelectField
+                label="Payroll Status"
+                value={editForm.status}
+                onChange={(value) =>
+                  handleEditChange(
+                    "status",
+                    value
+                  )
+                }
+                options={[
+                  "Processed",
+                  "Pending",
+                  "On Hold",
+                ]}
+              />
 
               <InputField
                 label="Bank Name"
@@ -1695,25 +1261,20 @@ function Payroll() {
 
             </div>
 
-
-            {/* FOOTER */}
-
-            <div className="flex justify-end gap-3 border-t border-slate-200 px-6 py-4">
+            <div className="modal-footer">
 
               <button
-                type="button"
+                className="btn btn-secondary"
                 onClick={() =>
                   setShowEditModal(false)
                 }
-                className="rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
               >
                 Cancel
               </button>
 
               <button
-                type="button"
+                className="btn btn-primary"
                 onClick={saveEmployee}
-                className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
               >
                 Save Changes
               </button>
@@ -1723,7 +1284,6 @@ function Payroll() {
           </div>
 
         </div>
-
       )}
 
     </div>
@@ -1732,57 +1292,36 @@ function Payroll() {
 
 
 // =========================================================
-// DETAIL ROW COMPONENT
+// SUMMARY CARD
 // =========================================================
 
-function DetailRow({ label, value }) {
-  return (
-    <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-3">
-
-      <span className="text-sm text-slate-500">
-        {label}
-      </span>
-
-      <span className="text-right text-sm font-semibold text-slate-800">
-        {value}
-      </span>
-
-    </div>
-  );
-}
-
-
-// =========================================================
-// SALARY BOX
-// =========================================================
-
-function SalaryBox({
-  label,
+function SummaryCard({
+  title,
   value,
-  highlighted = false,
+  subtitle,
+  icon,
+  type,
 }) {
   return (
-    <div
-      className={`rounded-xl p-4 ${
-        highlighted
-          ? "bg-blue-600 text-white"
-          : "bg-slate-50 text-slate-900"
-      }`}
-    >
+    <div className="summary-card">
 
-      <p
-        className={`text-xs ${
-          highlighted
-            ? "text-blue-100"
-            : "text-slate-500"
-        }`}
-      >
-        {label}
-      </p>
+      <div>
+        <p className="summary-title">
+          {title}
+        </p>
 
-      <p className="mt-2 text-lg font-bold">
-        {value}
-      </p>
+        <h2 className={`summary-value ${type}`}>
+          {value}
+        </h2>
+
+        <p className="summary-subtitle">
+          {subtitle}
+        </p>
+      </div>
+
+      <div className={`summary-icon ${type}`}>
+        {icon}
+      </div>
 
     </div>
   );
@@ -1790,24 +1329,64 @@ function SalaryBox({
 
 
 // =========================================================
-// ATTENDANCE BOX
+// FILTER INPUT
 // =========================================================
 
-function AttendanceBox({ label, value }) {
+function FilterInput({
+  label,
+  placeholder,
+  value,
+  onChange,
+}) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
+    <div className="form-group">
 
-      <p className="text-sm text-slate-500">
-        {label}
-      </p>
+      <label>{label}</label>
 
-      <p className="mt-2 text-2xl font-bold text-slate-900">
-        {value}
-      </p>
+      <input
+        type="text"
+        placeholder={placeholder}
+        value={value}
+        onChange={(event) =>
+          onChange(event.target.value)
+        }
+      />
 
-      <p className="mt-1 text-xs text-slate-400">
-        Days
-      </p>
+    </div>
+  );
+}
+
+
+// =========================================================
+// FILTER SELECT
+// =========================================================
+
+function FilterSelect({
+  label,
+  value,
+  onChange,
+  options,
+}) {
+  return (
+    <div className="form-group">
+
+      <label>{label}</label>
+
+      <select
+        value={value}
+        onChange={(event) =>
+          onChange(event.target.value)
+        }
+      >
+        {options.map((option) => (
+          <option
+            key={option}
+            value={option}
+          >
+            {option}
+          </option>
+        ))}
+      </select>
 
     </div>
   );
@@ -1826,11 +1405,9 @@ function InputField({
   disabled = false,
 }) {
   return (
-    <div>
+    <div className="form-group">
 
-      <label className="mb-2 block text-sm font-medium text-slate-700">
-        {label}
-      </label>
+      <label>{label}</label>
 
       <input
         type={type}
@@ -1839,12 +1416,104 @@ function InputField({
         onChange={(event) =>
           onChange?.(event.target.value)
         }
-        className={`w-full rounded-lg border px-4 py-3 text-sm outline-none transition ${
-          disabled
-            ? "cursor-not-allowed bg-slate-100 text-slate-500"
-            : "border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-        }`}
       />
+
+    </div>
+  );
+}
+
+
+// =========================================================
+// SELECT FIELD
+// =========================================================
+
+function SelectField({
+  label,
+  value,
+  onChange,
+  options,
+}) {
+  return (
+    <div className="form-group">
+
+      <label>{label}</label>
+
+      <select
+        value={value}
+        onChange={(event) =>
+          onChange(event.target.value)
+        }
+      >
+        {options.map((option) => (
+          <option
+            key={option}
+            value={option}
+          >
+            {option}
+          </option>
+        ))}
+      </select>
+
+    </div>
+  );
+}
+
+
+// =========================================================
+// DETAIL ROW
+// =========================================================
+
+function DetailRow({ label, value }) {
+  return (
+    <div className="detail-row">
+
+      <span>{label}</span>
+
+      <strong>{value}</strong>
+
+    </div>
+  );
+}
+
+
+// =========================================================
+// SALARY BOX
+// =========================================================
+
+function SalaryBox({
+  label,
+  value,
+  highlighted = false,
+}) {
+  return (
+    <div
+      className={`salary-box ${
+        highlighted ? "highlighted" : ""
+      }`}
+    >
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </div>
+  );
+}
+
+
+// =========================================================
+// ATTENDANCE BOX
+// =========================================================
+
+function AttendanceBox({
+  label,
+  value,
+}) {
+  return (
+    <div className="attendance-box">
+
+      <span>{label}</span>
+
+      <strong>{value}</strong>
+
+      <small>Days</small>
 
     </div>
   );

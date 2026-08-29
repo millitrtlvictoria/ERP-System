@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "../styles/Documents.css";
 
 function Documents() {
   const navigate = useNavigate();
@@ -116,9 +117,13 @@ function Documents() {
     file: null,
   });
 
+  /* =====================================================
+     FILTER DOCUMENTS
+  ===================================================== */
+
   const filteredDocuments = useMemo(() => {
     return documents.filter((doc) => {
-      const searchValue = search.toLowerCase();
+      const searchValue = search.toLowerCase().trim();
 
       const matchesSearch =
         doc.documentId.toLowerCase().includes(searchValue) ||
@@ -149,6 +154,10 @@ function Documents() {
     });
   }, [documents, search, category, type, status, department]);
 
+  /* =====================================================
+     STATISTICS
+  ===================================================== */
+
   const activeDocuments = documents.filter(
     (doc) => doc.status === "Active"
   ).length;
@@ -164,6 +173,18 @@ function Documents() {
   const employeeDocuments = documents.filter(
     (doc) => doc.category === "Employee Documents"
   ).length;
+
+  const payrollDocuments = documents.filter(
+    (doc) => doc.category === "Payroll Documents"
+  ).length;
+
+  const productionDocuments = documents.filter(
+    (doc) => doc.category === "Production Documents"
+  ).length;
+
+  /* =====================================================
+     FORM HANDLERS
+  ===================================================== */
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -181,6 +202,10 @@ function Documents() {
     }));
   };
 
+  /* =====================================================
+     UPLOAD DOCUMENT
+  ===================================================== */
+
   const handleUpload = (e) => {
     e.preventDefault();
 
@@ -189,7 +214,9 @@ function Documents() {
       !newDocument.employeeName ||
       !newDocument.documentName
     ) {
-      alert("Please fill Employee ID, Employee Name and Document Name.");
+      alert(
+        "Please fill Employee ID, Employee Name and Document Name."
+      );
       return;
     }
 
@@ -230,6 +257,10 @@ function Documents() {
     setShowUpload(false);
   };
 
+  /* =====================================================
+     DELETE DOCUMENT
+  ===================================================== */
+
   const deleteDocument = (id) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this document?"
@@ -242,6 +273,10 @@ function Documents() {
     );
   };
 
+  /* =====================================================
+     CLEAR FILTERS
+  ===================================================== */
+
   const clearFilters = () => {
     setSearch("");
     setCategory("All Categories");
@@ -250,171 +285,246 @@ function Documents() {
     setDepartment("All Departments");
   };
 
-  const statusStyle = (value) => {
+  /* =====================================================
+     STATUS CLASS
+  ===================================================== */
+
+  const statusClass = (value) => {
     if (value === "Verified") {
-      return "bg-green-100 text-green-700";
+      return "status-verified";
     }
 
     if (value === "Expiring Soon") {
-      return "bg-orange-100 text-orange-700";
+      return "status-expiring";
     }
 
     if (value === "Expired") {
-      return "bg-red-100 text-red-700";
+      return "status-expired";
     }
 
-    return "bg-blue-100 text-blue-700";
+    return "status-active";
+  };
+
+  /* =====================================================
+     EMPLOYEE INITIALS
+  ===================================================== */
+
+  const getInitials = (name) => {
+    return name
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800">
+    <div className="documents-page">
 
-      {/* HEADER */}
-      <div className="border-b bg-white px-6 py-5 shadow-sm">
-        <div className="mx-auto max-w-7xl">
+      {/* =================================================
+          HEADER
+      ================================================= */}
+
+      <header className="documents-header">
+
+        <div className="documents-header-inner">
 
           <button
             onClick={() => navigate("/dashboard")}
-            className="mb-3 text-sm font-medium text-blue-600 hover:text-blue-800"
+            className="back-dashboard-btn"
           >
             ← Back to Dashboard
           </button>
 
-          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+          <div className="documents-header-row">
 
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">
-                Document Management
-              </h1>
+            <div className="documents-title-section">
 
-              <p className="mt-1 text-sm text-slate-500">
+              <h1>Document Management</h1>
+
+              <p>
                 Manage, organize and track all employee and company
                 documents from one place.
               </p>
+
             </div>
 
             <button
               onClick={() => setShowUpload(true)}
-              className="rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+              className="primary-upload-btn"
             >
-              + Upload Document
+              <span className="button-plus">+</span>
+              Upload Document
             </button>
 
           </div>
+
         </div>
-      </div>
 
-      {/* MAIN */}
-      <div className="mx-auto max-w-7xl space-y-6 p-6">
+      </header>
 
-        {/* STATISTICS */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {/* =================================================
+          MAIN CONTENT
+      ================================================= */}
 
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
+      <main className="documents-main">
+
+        {/* =================================================
+            STATISTICS
+        ================================================= */}
+
+        <section className="statistics-grid">
+
+          {/* TOTAL DOCUMENTS */}
+
+          <div className="stat-card">
+
+            <div className="stat-content">
+
               <div>
-                <p className="text-sm text-slate-500">
+                <p className="stat-label">
                   Total Documents
                 </p>
 
-                <h2 className="mt-2 text-3xl font-bold text-slate-900">
+                <h2 className="stat-number stat-total">
                   {documents.length}
                 </h2>
 
-                <p className="mt-1 text-xs text-slate-400">
+                <p className="stat-description">
                   All uploaded documents
                 </p>
               </div>
 
-              <div className="rounded-xl bg-blue-100 p-4 text-2xl">
+              <div className="stat-icon stat-icon-blue">
                 📁
               </div>
+
             </div>
+
           </div>
 
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
+          {/* ACTIVE DOCUMENTS */}
+
+          <div className="stat-card">
+
+            <div className="stat-content">
+
               <div>
-                <p className="text-sm text-slate-500">
+                <p className="stat-label">
                   Active Documents
                 </p>
 
-                <h2 className="mt-2 text-3xl font-bold text-green-600">
+                <h2 className="stat-number stat-active">
                   {activeDocuments}
                 </h2>
 
-                <p className="mt-1 text-xs text-slate-400">
+                <p className="stat-description">
                   Currently active
                 </p>
               </div>
 
-              <div className="rounded-xl bg-green-100 p-4 text-2xl">
+              <div className="stat-icon stat-icon-green">
                 ✓
               </div>
+
             </div>
+
           </div>
 
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
+          {/* VERIFIED */}
+
+          <div className="stat-card">
+
+            <div className="stat-content">
+
               <div>
-                <p className="text-sm text-slate-500">
+                <p className="stat-label">
                   Verified
                 </p>
 
-                <h2 className="mt-2 text-3xl font-bold text-purple-600">
+                <h2 className="stat-number stat-verified-number">
                   {verifiedDocuments}
                 </h2>
 
-                <p className="mt-1 text-xs text-slate-400">
+                <p className="stat-description">
                   Verified documents
                 </p>
               </div>
 
-              <div className="rounded-xl bg-purple-100 p-4 text-2xl">
+              <div className="stat-icon stat-icon-purple">
                 ✓
               </div>
+
             </div>
+
           </div>
 
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
+          {/* EXPIRING */}
+
+          <div className="stat-card">
+
+            <div className="stat-content">
+
               <div>
-                <p className="text-sm text-slate-500">
+                <p className="stat-label">
                   Expiring Soon
                 </p>
 
-                <h2 className="mt-2 text-3xl font-bold text-orange-600">
+                <h2 className="stat-number stat-expiring-number">
                   {expiringDocuments}
                 </h2>
 
-                <p className="mt-1 text-xs text-slate-400">
+                <p className="stat-description">
                   Require attention
                 </p>
               </div>
 
-              <div className="rounded-xl bg-orange-100 p-4 text-2xl">
+              <div className="stat-icon stat-icon-orange">
                 ⚠
               </div>
+
             </div>
+
           </div>
 
-        </div>
+        </section>
 
-        {/* DOCUMENT CATEGORY SUMMARY */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        {/* =================================================
+            CATEGORY SUMMARY
+        ================================================= */}
 
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
-            <p className="text-sm text-slate-500">
-              Employee Documents
-            </p>
+        <section className="category-summary-grid">
 
-            <p className="mt-2 text-2xl font-bold">
-              {employeeDocuments}
-            </p>
+          {/* EMPLOYEE */}
 
-            <div className="mt-4 h-2 rounded-full bg-slate-100">
+          <div className="category-card">
+
+            <div className="category-card-header">
+
+              <div>
+                <p className="category-title">
+                  Employee Documents
+                </p>
+
+                <h3>
+                  {employeeDocuments}
+                </h3>
+              </div>
+
+              <div className="category-percentage">
+                {documents.length
+                  ? Math.round(
+                      (employeeDocuments / documents.length) * 100
+                    )
+                  : 0}
+                %
+              </div>
+
+            </div>
+
+            <div className="progress-track">
               <div
-                className="h-2 rounded-full bg-blue-600"
+                className="progress-bar progress-blue"
                 style={{
                   width: `${
                     documents.length
@@ -424,128 +534,162 @@ function Documents() {
                 }}
               />
             </div>
+
           </div>
 
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
-            <p className="text-sm text-slate-500">
-              Payroll Documents
-            </p>
+          {/* PAYROLL */}
 
-            <p className="mt-2 text-2xl font-bold">
-              {
-                documents.filter(
-                  (doc) =>
-                    doc.category === "Payroll Documents"
-                ).length
-              }
-            </p>
+          <div className="category-card">
 
-            <div className="mt-4 h-2 rounded-full bg-slate-100">
+            <div className="category-card-header">
+
+              <div>
+                <p className="category-title">
+                  Payroll Documents
+                </p>
+
+                <h3>
+                  {payrollDocuments}
+                </h3>
+              </div>
+
+              <div className="category-percentage">
+                {documents.length
+                  ? Math.round(
+                      (payrollDocuments / documents.length) * 100
+                    )
+                  : 0}
+                %
+              </div>
+
+            </div>
+
+            <div className="progress-track">
               <div
-                className="h-2 rounded-full bg-purple-600"
+                className="progress-bar progress-purple"
                 style={{
                   width: `${
                     documents.length
-                      ? (documents.filter(
-                          (doc) =>
-                            doc.category ===
-                            "Payroll Documents"
-                        ).length /
-                          documents.length) *
-                        100
+                      ? (payrollDocuments / documents.length) * 100
                       : 0
                   }%`,
                 }}
               />
             </div>
+
           </div>
 
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
-            <p className="text-sm text-slate-500">
-              Production Documents
-            </p>
+          {/* PRODUCTION */}
 
-            <p className="mt-2 text-2xl font-bold">
-              {
-                documents.filter(
-                  (doc) =>
-                    doc.category ===
-                    "Production Documents"
-                ).length
-              }
-            </p>
+          <div className="category-card">
 
-            <div className="mt-4 h-2 rounded-full bg-slate-100">
+            <div className="category-card-header">
+
+              <div>
+                <p className="category-title">
+                  Production Documents
+                </p>
+
+                <h3>
+                  {productionDocuments}
+                </h3>
+              </div>
+
+              <div className="category-percentage">
+                {documents.length
+                  ? Math.round(
+                      (productionDocuments / documents.length) * 100
+                    )
+                  : 0}
+                %
+              </div>
+
+            </div>
+
+            <div className="progress-track">
               <div
-                className="h-2 rounded-full bg-orange-500"
+                className="progress-bar progress-orange"
                 style={{
                   width: `${
                     documents.length
-                      ? (documents.filter(
-                          (doc) =>
-                            doc.category ===
-                            "Production Documents"
-                        ).length /
-                          documents.length) *
-                        100
+                      ? (productionDocuments / documents.length) * 100
                       : 0
                   }%`,
                 }}
               />
             </div>
+
           </div>
 
-        </div>
+        </section>
 
-        {/* FILTER CARD */}
-        <div className="rounded-xl border bg-white p-5 shadow-sm">
+        {/* =================================================
+            FILTER SECTION
+        ================================================= */}
 
-          <div className="mb-5 flex flex-col justify-between gap-3 md:flex-row md:items-center">
+        <section className="filter-card">
+
+          <div className="filter-header">
 
             <div>
-              <h2 className="text-lg font-bold text-slate-900">
+              <h2>
                 Document Records
               </h2>
 
-              <p className="text-sm text-slate-500">
+              <p>
                 Search and filter your documents.
               </p>
             </div>
 
             <button
               onClick={clearFilters}
-              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50"
+              className="clear-filter-btn"
             >
               Clear Filters
             </button>
 
           </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
+          <div className="filter-grid">
 
-            <div className="lg:col-span-2">
-              <label className="mb-1 block text-xs font-semibold text-slate-600">
+            {/* SEARCH */}
+
+            <div className="filter-field search-field">
+
+              <label>
                 Search
               </label>
 
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Employee ID, name or document..."
-                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-              />
+              <div className="search-input-wrapper">
+
+                <span className="search-icon">
+                  🔍
+                </span>
+
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Employee ID, name or document..."
+                />
+
+              </div>
+
             </div>
 
-            <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-600">
+            {/* CATEGORY */}
+
+            <div className="filter-field">
+
+              <label>
                 Category
               </label>
 
               <select
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-blue-500"
+                onChange={(e) =>
+                  setCategory(e.target.value)
+                }
               >
                 <option>All Categories</option>
                 <option>Employee Documents</option>
@@ -555,17 +699,22 @@ function Documents() {
                 <option>Attendance Documents</option>
                 <option>Company Documents</option>
               </select>
+
             </div>
 
-            <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-600">
+            {/* STATUS */}
+
+            <div className="filter-field">
+
+              <label>
                 Status
               </label>
 
               <select
                 value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-blue-500"
+                onChange={(e) =>
+                  setStatus(e.target.value)
+                }
               >
                 <option>All Status</option>
                 <option>Active</option>
@@ -573,17 +722,22 @@ function Documents() {
                 <option>Expiring Soon</option>
                 <option>Expired</option>
               </select>
+
             </div>
 
-            <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-600">
+            {/* DEPARTMENT */}
+
+            <div className="filter-field">
+
+              <label>
                 Department
               </label>
 
               <select
                 value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-blue-500"
+                onChange={(e) =>
+                  setDepartment(e.target.value)
+                }
               >
                 <option>All Departments</option>
                 <option>HR</option>
@@ -591,98 +745,93 @@ function Documents() {
                 <option>WEAVING-Rapier</option>
                 <option>WEAVING-S4</option>
               </select>
+
+            </div>
+
+            {/* DOCUMENT TYPE */}
+
+            <div className="filter-field">
+
+              <label>
+                Document Type
+              </label>
+
+              <select
+                value={type}
+                onChange={(e) =>
+                  setType(e.target.value)
+                }
+              >
+                <option>All Types</option>
+                <option>ID Proof</option>
+                <option>Appointment Letter</option>
+                <option>Experience Certificate</option>
+                <option>Salary Slip</option>
+                <option>Medical Certificate</option>
+                <option>Production Report</option>
+              </select>
+
             </div>
 
           </div>
 
-          <div className="mt-4 max-w-xs">
-            <label className="mb-1 block text-xs font-semibold text-slate-600">
-              Document Type
-            </label>
+        </section>
 
-            <select
-              value={type}
-              onChange={(e) => setType(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-blue-500"
-            >
-              <option>All Types</option>
-              <option>ID Proof</option>
-              <option>Appointment Letter</option>
-              <option>Experience Certificate</option>
-              <option>Salary Slip</option>
-              <option>Medical Certificate</option>
-              <option>Production Report</option>
-            </select>
-          </div>
+        {/* =================================================
+            DOCUMENT TABLE
+        ================================================= */}
 
-        </div>
+        <section className="documents-table-card">
 
-        {/* TABLE */}
-        <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
-
-          <div className="flex flex-col justify-between gap-3 border-b p-5 md:flex-row md:items-center">
+          <div className="table-header">
 
             <div>
-              <h2 className="text-lg font-bold text-slate-900">
+
+              <h2>
                 All Documents
               </h2>
 
-              <p className="text-sm text-slate-500">
-                Showing {filteredDocuments.length} of{" "}
-                {documents.length} documents
+              <p>
+                Showing{" "}
+                <strong>
+                  {filteredDocuments.length}
+                </strong>{" "}
+                of{" "}
+                <strong>
+                  {documents.length}
+                </strong>{" "}
+                documents
               </p>
+
             </div>
 
             <button
               onClick={() => setShowUpload(true)}
-              className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+              className="add-document-btn"
             >
-              + Add Document
+              <span>+</span>
+              Add Document
             </button>
 
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="table-wrapper">
 
-            <table className="w-full min-w-[1200px]">
+            <table className="documents-table">
 
-              <thead className="bg-slate-50">
+              <thead>
 
-                <tr className="border-b text-left text-xs uppercase text-slate-500">
+                <tr>
 
-                  <th className="px-5 py-4">
-                    Document
-                  </th>
-
-                  <th className="px-5 py-4">
-                    Employee ID
-                  </th>
-
-                  <th className="px-5 py-4">
-                    Employee Name
-                  </th>
-
-                  <th className="px-5 py-4">
-                    Category
-                  </th>
-
-                  <th className="px-5 py-4">
-                    Department
-                  </th>
-
-                  <th className="px-5 py-4">
-                    Uploaded
-                  </th>
-
-                  <th className="px-5 py-4">
-                    Expiry
-                  </th>
-
-                  <th className="px-5 py-4">
-                    Status
-                  </th>
-
-                  <th className="px-5 py-4 text-center">
+                  <th>Document</th>
+                  <th>Employee ID</th>
+                  <th>Employee Name</th>
+                  <th>Category</th>
+                  <th>Department</th>
+                  <th>Uploaded</th>
+                  <th>Expiry</th>
+                  <th>Status</th>
+                  <th className="actions-header">
                     Actions
                   </th>
 
@@ -693,56 +842,62 @@ function Documents() {
               <tbody>
 
                 {filteredDocuments.length > 0 ? (
+
                   filteredDocuments.map((doc) => (
 
-                    <tr
-                      key={doc.id}
-                      className="border-b transition hover:bg-slate-50"
-                    >
+                    <tr key={doc.id}>
 
-                      <td className="px-5 py-4">
+                      {/* DOCUMENT */}
 
-                        <div className="flex items-center gap-3">
+                      <td>
 
-                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-lg">
+                        <div className="document-info">
+
+                          <div className="document-icon">
                             📄
                           </div>
 
-                          <div>
-                            <p className="font-semibold text-slate-800">
+                          <div className="document-text">
+
+                            <p className="document-name">
                               {doc.documentName}
                             </p>
 
-                            <p className="text-xs text-slate-400">
-                              {doc.documentId} • {doc.size}
-                            </p>
+                            <span>
+                              {doc.documentId}
+                              {" • "}
+                              {doc.size}
+                            </span>
+
                           </div>
 
                         </div>
 
                       </td>
 
-                      <td className="px-5 py-4">
+                      {/* EMPLOYEE ID */}
 
-                        <span className="font-semibold text-blue-600">
+                      <td>
+
+                        <span className="employee-id">
                           {doc.employeeId}
                         </span>
 
                       </td>
 
-                      <td className="px-5 py-4">
+                      {/* EMPLOYEE NAME */}
 
-                        <div className="flex items-center gap-2">
+                      <td>
 
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 text-xs font-bold">
-                            {doc.employeeName
-                              .split(" ")
-                              .map((name) => name[0])
-                              .join("")
-                              .slice(0, 2)}
+                        <div className="employee-info">
+
+                          <div className="employee-avatar">
+                            {getInitials(
+                              doc.employeeName
+                            )}
                           </div>
 
-                          <span className="font-medium">
+                          <span>
                             {doc.employeeName}
                           </span>
 
@@ -750,30 +905,58 @@ function Documents() {
 
                       </td>
 
-                      <td className="px-5 py-4">
+                      {/* CATEGORY */}
 
-                        <span className="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
+                      <td>
+
+                        <span className="category-badge">
                           {doc.category}
                         </span>
 
                       </td>
 
-                      <td className="px-5 py-4 text-sm">
-                        {doc.department}
+                      {/* DEPARTMENT */}
+
+                      <td>
+
+                        <span className="department-text">
+                          {doc.department}
+                        </span>
+
                       </td>
 
-                      <td className="px-5 py-4 text-sm text-slate-600">
-                        {doc.uploadedDate}
+                      {/* UPLOADED */}
+
+                      <td>
+
+                        <span className="date-text">
+                          {doc.uploadedDate}
+                        </span>
+
                       </td>
 
-                      <td className="px-5 py-4 text-sm text-slate-600">
-                        {doc.expiryDate}
-                      </td>
+                      {/* EXPIRY */}
 
-                      <td className="px-5 py-4">
+                      <td>
 
                         <span
-                          className={`rounded-full px-3 py-1 text-xs font-semibold ${statusStyle(
+                          className={
+                            doc.expiryDate !== "N/A"
+                              ? "expiry-warning"
+                              : "date-text"
+                          }
+                        >
+                          {doc.expiryDate}
+                        </span>
+
+                      </td>
+
+                      {/* STATUS */}
+
+                      <td>
+
+                        <span
+                          className={`status-badge ${statusClass(
                             doc.status
                           )}`}
                         >
@@ -782,13 +965,17 @@ function Documents() {
 
                       </td>
 
-                      <td className="px-5 py-4">
+                      {/* ACTIONS */}
 
-                        <div className="flex justify-center gap-2">
+                      <td>
+
+                        <div className="table-actions">
 
                           <button
-                            onClick={() => setShowDetails(doc)}
-                            className="rounded-md border px-3 py-1.5 text-xs font-medium hover:bg-slate-50"
+                            onClick={() =>
+                              setShowDetails(doc)
+                            }
+                            className="view-btn"
                           >
                             View
                           </button>
@@ -799,14 +986,16 @@ function Documents() {
                                 `Download: ${doc.documentName}`
                               )
                             }
-                            className="rounded-md bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-600 hover:bg-blue-100"
+                            className="download-btn"
                           >
                             Download
                           </button>
 
                           <button
-                            onClick={() => deleteDocument(doc.id)}
-                            className="rounded-md bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100"
+                            onClick={() =>
+                              deleteDocument(doc.id)
+                            }
+                            className="delete-btn"
                           >
                             Delete
                           </button>
@@ -818,27 +1007,41 @@ function Documents() {
                     </tr>
 
                   ))
+
                 ) : (
 
                   <tr>
+
                     <td
                       colSpan="9"
-                      className="px-5 py-16 text-center"
+                      className="empty-table-cell"
                     >
 
-                      <div className="text-4xl">
-                        📂
+                      <div className="empty-state">
+
+                        <div className="empty-icon">
+                          📂
+                        </div>
+
+                        <h3>
+                          No documents found
+                        </h3>
+
+                        <p>
+                          Try changing your search or filters.
+                        </p>
+
+                        <button
+                          onClick={clearFilters}
+                          className="empty-clear-btn"
+                        >
+                          Clear Filters
+                        </button>
+
                       </div>
 
-                      <h3 className="mt-3 font-semibold text-slate-800">
-                        No documents found
-                      </h3>
-
-                      <p className="mt-1 text-sm text-slate-500">
-                        Try changing your search or filters.
-                      </p>
-
                     </td>
+
                   </tr>
 
                 )}
@@ -849,32 +1052,37 @@ function Documents() {
 
           </div>
 
-        </div>
+        </section>
 
-      </div>
+      </main>
 
-      {/* UPLOAD MODAL */}
+      {/* =================================================
+          UPLOAD MODAL
+      ================================================= */}
+
       {showUpload && (
 
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div className="modal-overlay">
 
-          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
+          <div className="upload-modal">
 
-            <div className="flex items-center justify-between border-b px-6 py-5">
+            <div className="modal-header">
 
               <div>
-                <h2 className="text-xl font-bold text-slate-900">
+
+                <h2>
                   Upload Document
                 </h2>
 
-                <p className="text-sm text-slate-500">
+                <p>
                   Add a new document to the ERP system.
                 </p>
+
               </div>
 
               <button
                 onClick={() => setShowUpload(false)}
-                className="rounded-lg px-3 py-2 text-xl hover:bg-slate-100"
+                className="modal-close-btn"
               >
                 ×
               </button>
@@ -883,14 +1091,17 @@ function Documents() {
 
             <form
               onSubmit={handleUpload}
-              className="space-y-5 p-6"
+              className="upload-form"
             >
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="form-grid">
 
-                <div>
-                  <label className="mb-1 block text-sm font-semibold">
-                    Employee ID *
+                {/* EMPLOYEE ID */}
+
+                <div className="form-field">
+
+                  <label>
+                    Employee ID <span>*</span>
                   </label>
 
                   <input
@@ -898,13 +1109,16 @@ function Documents() {
                     value={newDocument.employeeId}
                     onChange={handleInputChange}
                     placeholder="EMP-001"
-                    className="w-full rounded-lg border px-4 py-2.5 outline-none focus:border-blue-500"
                   />
+
                 </div>
 
-                <div>
-                  <label className="mb-1 block text-sm font-semibold">
-                    Employee Name *
+                {/* EMPLOYEE NAME */}
+
+                <div className="form-field">
+
+                  <label>
+                    Employee Name <span>*</span>
                   </label>
 
                   <input
@@ -912,13 +1126,16 @@ function Documents() {
                     value={newDocument.employeeName}
                     onChange={handleInputChange}
                     placeholder="Employee name"
-                    className="w-full rounded-lg border px-4 py-2.5 outline-none focus:border-blue-500"
                   />
+
                 </div>
 
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-semibold">
-                    Document Name *
+                {/* DOCUMENT NAME */}
+
+                <div className="form-field form-full">
+
+                  <label>
+                    Document Name <span>*</span>
                   </label>
 
                   <input
@@ -926,12 +1143,15 @@ function Documents() {
                     value={newDocument.documentName}
                     onChange={handleInputChange}
                     placeholder="Example: Aadhaar Card"
-                    className="w-full rounded-lg border px-4 py-2.5 outline-none focus:border-blue-500"
                   />
+
                 </div>
 
-                <div>
-                  <label className="mb-1 block text-sm font-semibold">
+                {/* CATEGORY */}
+
+                <div className="form-field">
+
+                  <label>
                     Category
                   </label>
 
@@ -939,7 +1159,6 @@ function Documents() {
                     name="category"
                     value={newDocument.category}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border px-4 py-2.5 outline-none focus:border-blue-500"
                   >
                     <option>Employee Documents</option>
                     <option>HR Documents</option>
@@ -948,10 +1167,14 @@ function Documents() {
                     <option>Attendance Documents</option>
                     <option>Company Documents</option>
                   </select>
+
                 </div>
 
-                <div>
-                  <label className="mb-1 block text-sm font-semibold">
+                {/* DOCUMENT TYPE */}
+
+                <div className="form-field">
+
+                  <label>
                     Document Type
                   </label>
 
@@ -959,7 +1182,6 @@ function Documents() {
                     name="type"
                     value={newDocument.type}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border px-4 py-2.5 outline-none focus:border-blue-500"
                   >
                     <option>ID Proof</option>
                     <option>Appointment Letter</option>
@@ -968,10 +1190,14 @@ function Documents() {
                     <option>Medical Certificate</option>
                     <option>Production Report</option>
                   </select>
+
                 </div>
 
-                <div>
-                  <label className="mb-1 block text-sm font-semibold">
+                {/* DEPARTMENT */}
+
+                <div className="form-field">
+
+                  <label>
                     Department
                   </label>
 
@@ -979,17 +1205,20 @@ function Documents() {
                     name="department"
                     value={newDocument.department}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border px-4 py-2.5 outline-none focus:border-blue-500"
                   >
                     <option>HR</option>
                     <option>SPINNING</option>
                     <option>WEAVING-Rapier</option>
                     <option>WEAVING-S4</option>
                   </select>
+
                 </div>
 
-                <div>
-                  <label className="mb-1 block text-sm font-semibold">
+                {/* EXPIRY */}
+
+                <div className="form-field">
+
+                  <label>
                     Expiry Date
                   </label>
 
@@ -998,43 +1227,72 @@ function Documents() {
                     name="expiryDate"
                     value={newDocument.expiryDate}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border px-4 py-2.5 outline-none focus:border-blue-500"
                   />
+
                 </div>
 
-                <div className="md:col-span-2">
+                {/* FILE */}
 
-                  <label className="mb-1 block text-sm font-semibold">
+                <div className="form-field form-full">
+
+                  <label>
                     Select File
                   </label>
 
-                  <input
-                    type="file"
-                    onChange={handleFileChange}
-                    className="w-full rounded-lg border border-dashed p-4 text-sm"
-                  />
+                  <div className="file-upload-area">
 
-                  <p className="mt-1 text-xs text-slate-400">
-                    Supported files can be PDF, Excel, Word, JPG or PNG.
+                    <input
+                      type="file"
+                      onChange={handleFileChange}
+                      id="document-file"
+                    />
+
+                    <label
+                      htmlFor="document-file"
+                      className="file-upload-label"
+                    >
+
+                      <span className="file-upload-icon">
+                        📎
+                      </span>
+
+                      <span className="file-upload-title">
+                        {newDocument.file
+                          ? newDocument.file.name
+                          : "Choose a document"}
+                      </span>
+
+                      <span className="file-upload-subtitle">
+                        Click to browse from your computer
+                      </span>
+
+                    </label>
+
+                  </div>
+
+                  <p className="file-help-text">
+                    Supported files: PDF, Excel, Word, JPG or PNG.
                   </p>
 
                 </div>
 
               </div>
 
-              <div className="flex justify-end gap-3 border-t pt-5">
+              {/* MODAL FOOTER */}
+
+              <div className="modal-footer">
 
                 <button
                   type="button"
                   onClick={() => setShowUpload(false)}
-                  className="rounded-lg border px-5 py-2.5 text-sm font-semibold hover:bg-slate-50"
+                  className="cancel-btn"
                 >
                   Cancel
                 </button>
 
                 <button
                   type="submit"
-                  className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+                  className="submit-upload-btn"
                 >
                   Upload Document
                 </button>
@@ -1049,157 +1307,206 @@ function Documents() {
 
       )}
 
-      {/* DETAILS MODAL */}
+      {/* =================================================
+          DETAILS MODAL
+      ================================================= */}
+
       {showDetails && (
 
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div className="modal-overlay">
 
-          <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
+          <div className="details-modal">
 
-            <div className="flex items-center justify-between border-b p-6">
+            <div className="modal-header">
 
               <div>
-                <h2 className="text-xl font-bold">
+
+                <h2>
                   Document Details
                 </h2>
 
-                <p className="text-sm text-slate-500">
+                <p>
                   {showDetails.documentId}
                 </p>
+
               </div>
 
               <button
                 onClick={() => setShowDetails(null)}
-                className="rounded-lg px-3 py-2 text-xl hover:bg-slate-100"
+                className="modal-close-btn"
               >
                 ×
               </button>
 
             </div>
 
-            <div className="grid grid-cols-1 gap-5 p-6 md:grid-cols-2">
+            <div className="details-content">
 
-              <div>
-                <p className="text-xs text-slate-400">
+              {/* EMPLOYEE ID */}
+
+              <div className="detail-item">
+
+                <span>
                   Employee ID
-                </p>
+                </span>
 
-                <p className="mt-1 font-semibold">
+                <strong>
                   {showDetails.employeeId}
-                </p>
+                </strong>
+
               </div>
 
-              <div>
-                <p className="text-xs text-slate-400">
+              {/* EMPLOYEE NAME */}
+
+              <div className="detail-item">
+
+                <span>
                   Employee Name
-                </p>
+                </span>
 
-                <p className="mt-1 font-semibold">
+                <strong>
                   {showDetails.employeeName}
-                </p>
+                </strong>
+
               </div>
 
-              <div>
-                <p className="text-xs text-slate-400">
+              {/* DOCUMENT NAME */}
+
+              <div className="detail-item">
+
+                <span>
                   Document Name
-                </p>
+                </span>
 
-                <p className="mt-1 font-semibold">
+                <strong>
                   {showDetails.documentName}
-                </p>
+                </strong>
+
               </div>
 
-              <div>
-                <p className="text-xs text-slate-400">
+              {/* TYPE */}
+
+              <div className="detail-item">
+
+                <span>
                   Document Type
-                </p>
+                </span>
 
-                <p className="mt-1 font-semibold">
+                <strong>
                   {showDetails.type}
-                </p>
+                </strong>
+
               </div>
 
-              <div>
-                <p className="text-xs text-slate-400">
+              {/* CATEGORY */}
+
+              <div className="detail-item">
+
+                <span>
                   Category
-                </p>
+                </span>
 
-                <p className="mt-1 font-semibold">
+                <strong>
                   {showDetails.category}
-                </p>
+                </strong>
+
               </div>
 
-              <div>
-                <p className="text-xs text-slate-400">
+              {/* DEPARTMENT */}
+
+              <div className="detail-item">
+
+                <span>
                   Department
-                </p>
+                </span>
 
-                <p className="mt-1 font-semibold">
+                <strong>
                   {showDetails.department}
-                </p>
+                </strong>
+
               </div>
 
-              <div>
-                <p className="text-xs text-slate-400">
+              {/* UPLOADED DATE */}
+
+              <div className="detail-item">
+
+                <span>
                   Uploaded Date
-                </p>
+                </span>
 
-                <p className="mt-1 font-semibold">
+                <strong>
                   {showDetails.uploadedDate}
-                </p>
+                </strong>
+
               </div>
 
-              <div>
-                <p className="text-xs text-slate-400">
+              {/* EXPIRY */}
+
+              <div className="detail-item">
+
+                <span>
                   Expiry Date
-                </p>
+                </span>
 
-                <p className="mt-1 font-semibold">
+                <strong>
                   {showDetails.expiryDate}
-                </p>
+                </strong>
+
               </div>
 
-              <div>
-                <p className="text-xs text-slate-400">
+              {/* FILE SIZE */}
+
+              <div className="detail-item">
+
+                <span>
                   File Size
-                </p>
+                </span>
 
-                <p className="mt-1 font-semibold">
+                <strong>
                   {showDetails.size}
-                </p>
+                </strong>
+
               </div>
 
-              <div>
-                <p className="text-xs text-slate-400">
+              {/* UPLOADED BY */}
+
+              <div className="detail-item">
+
+                <span>
                   Uploaded By
-                </p>
+                </span>
 
-                <p className="mt-1 font-semibold">
+                <strong>
                   {showDetails.uploadedBy}
-                </p>
+                </strong>
+
               </div>
 
-              <div>
-                <p className="text-xs text-slate-400">
+              {/* STATUS */}
+
+              <div className="detail-item">
+
+                <span>
                   Status
-                </p>
+                </span>
 
                 <span
-                  className={`mt-1 inline-block rounded-full px-3 py-1 text-xs font-semibold ${statusStyle(
+                  className={`status-badge ${statusClass(
                     showDetails.status
                   )}`}
                 >
                   {showDetails.status}
                 </span>
+
               </div>
 
             </div>
 
-            <div className="flex justify-end border-t p-5">
+            <div className="details-footer">
 
               <button
                 onClick={() => setShowDetails(null)}
-                className="rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
+                className="close-details-btn"
               >
                 Close
               </button>
