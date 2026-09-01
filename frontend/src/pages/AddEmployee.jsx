@@ -725,6 +725,10 @@ function AddEmployee() {
                   Permanent
                 </option>
 
+                <option value="Probation">
+                  Probation
+                </option>
+
                 <option value="Contract">
                   Contract
                 </option>
@@ -781,6 +785,10 @@ function AddEmployee() {
                 value={employee.status}
                 onChange={handleChange}
               >
+
+                <option value="">
+                  Select status
+                </option>
 
                 <option value="Active">
                   Active

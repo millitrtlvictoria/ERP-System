@@ -11,6 +11,7 @@ import UserManagement from "../pages/UserManagement";
 import Payroll from "../pages/Payroll";
 import Documents from "../pages/Document";
 import RegistrationForm from "../pages/registration"; // Import the RegistrationForm component
+import AddUser from "../pages/AddUser"; // Import the AddUser component
 
 
 function AppRoutes() {
@@ -29,6 +30,7 @@ function AppRoutes() {
         <Route path="/payroll" element={<Payroll />} />
         <Route path="/documents" element={<Documents />} />
         <Route path="/register" element={<RegistrationForm />} /> 
+        <Route path="/add-user" element={<AddUser />} />
       </Routes>
     </BrowserRouter>
   );
