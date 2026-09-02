@@ -375,9 +375,7 @@ function AddUser() {
 
           </div>
 
-          <h1>
-            Add New User
-          </h1>
+          <h1> Add New User </h1>
 
           <p>
             Create a new user account and configure
@@ -459,9 +457,7 @@ function AddUser() {
 
             <div className="form-group">
 
-              <label>
-                Last Name <span>*</span>
-              </label>
+              <label> Last Name <span>*</span></label>
 
               <input
                 type="text"
@@ -488,9 +484,7 @@ function AddUser() {
 
             <div className="form-group">
 
-              <label>
-                Employee ID
-              </label>
+              <label> Employee ID </label>
 
               <input
                 type="text"
@@ -506,9 +500,7 @@ function AddUser() {
 
             <div className="form-group">
 
-              <label>
-                Email Address <span>*</span>
-              </label>
+              <label> Email Address <span>*</span> </label>
 
               <input
                 type="email"
@@ -535,9 +527,7 @@ function AddUser() {
 
             <div className="form-group">
 
-              <label>
-                Phone Number
-              </label>
+              <label>Phone Number </label>  
 
               <input
                 type="tel"
@@ -553,9 +543,7 @@ function AddUser() {
 
             <div className="form-group">
 
-              <label>
-                Department
-              </label>
+              <label> Department </label>
 
               <select
                 name="department"
@@ -581,9 +569,7 @@ function AddUser() {
 
             <div className="form-group">
 
-              <label>
-                Designation
-              </label>
+              <label> Designation</label>
 
               <input
                 type="text"

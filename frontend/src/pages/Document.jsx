@@ -251,7 +251,7 @@ function Documents() {
       type: "ID Proof",
       department: "HR",
       expiryDate: "",
-      file: null,
+      file: null,    
     });
 
     setShowUpload(false);
