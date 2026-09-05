@@ -3,1052 +3,1079 @@ import { useNavigate } from "react-router-dom";
 import "../styles/AddUser.css";
 
 function AddUser() {
-  const navigate = useNavigate();
+const navigate = useNavigate();
 
-  // =========================
-  // FORM DATA
-  // =========================
+// =====================================================
+// FORM DATA
+// =====================================================
 
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    employeeId: "",
-    email: "",
-    phone: "",
-    department: "",
-    designation: "",
-    username: "",
-    password: "",
-    confirmPassword: "",
-    role: "",
-    status: "Active",
-    joiningDate: "",
-  });
+const [formData, setFormData] = useState({
+employeeId: "",
+firstName: "",
+lastName: "",
+email: "",
+phone: "",
+username: "",
+password: "",
+confirmPassword: "",
+role: "",
+});
 
-  // =========================
-  // PERMISSIONS
-  // =========================
+// =====================================================
+// PERMISSIONS
+// =====================================================
 
-  const [permissions, setPermissions] = useState({
-    dashboard: {
-      view: true,
-      add: false,
-      edit: false,
-      delete: false,
-    },
+const [permissions, setPermissions] = useState({
+dashboard: {
+view: true,
+add: false,
+edit: false,
+delete: false,
+},
+employees: {
+view: true,
+add: false,
+edit: false,
+delete: false,
+},
+users: {
+view: false,
+add: false,
+edit: false,
+delete: false,
+},
+attendance: {
+view: false,
+add: false,
+edit: false,
+delete: false,
+},
+leave: {
+view: false,
+add: false,
+edit: false,
+delete: false,
+},
+payroll: {
+view: false,
+add: false,
+edit: false,
+delete: false,
+},
+reports: {
+view: false,
+add: false,
+edit: false,
+delete: false,
+},
+documents: {
+view: false,
+add: false,
+edit: false,
+delete: false,
+},
+});
 
-    employees: {
-      view: true,
-      add: false,
-      edit: false,
-      delete: false,
-    },
+// =====================================================
+// OTHER STATES
+// =====================================================
 
-    users: {
-      view: false,
-      add: false,
-      edit: false,
-      delete: false,
-    },
+const [errors, setErrors] = useState({});
+const [showPassword, setShowPassword] = useState(false);
+const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+const [isSubmitting, setIsSubmitting] = useState(false);
 
-    attendance: {
-      view: false,
-      add: false,
-      edit: false,
-      delete: false,
-    },
+// =====================================================
+// HANDLE FORM CHANGE
+// =====================================================
 
-    leave: {
-      view: false,
-      add: false,
-      edit: false,
-      delete: false,
-    },
+const handleChange = (e) => {
+const { name, value } = e.target;
 
-    payroll: {
-      view: false,
-      add: false,
-      edit: false,
-      delete: false,
-    },
+setFormData((previous) => ({
+  ...previous,
+  [name]: value,
+}));
 
-    reports: {
-      view: false,
-      add: false,
-      edit: false,
-      delete: false,
-    },
+if (errors[name]) {
+  setErrors((previous) => ({
+    ...previous,
+    [name]: "",
+  }));
+}
 
-    documents: {
-      view: false,
-      add: false,
-      edit: false,
-      delete: false,
-    },
-  });
 
-  // =========================
-  // OTHER STATES
-  // =========================
+};
 
-  const [errors, setErrors] = useState({});
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+// =====================================================
+// HANDLE PERMISSION CHANGE
+// =====================================================
 
-  // =========================
-  // HANDLE FORM CHANGE
-  // =========================
+const handlePermissionChange = (module, permission) => {
+setPermissions((previous) => ({
+...previous,
+[module]: {
+...previous[module],
+[permission]: !previous[module][permission],
+},
+}));
+};
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+// =====================================================
+// SELECT ALL PERMISSIONS
+// =====================================================
 
-    setFormData((previous) => ({
-      ...previous,
-      [name]: value,
-    }));
+const handleSelectAll = (module, checked) => {
+setPermissions((previous) => ({
+...previous,
+[module]: {
+view: checked,
+add: checked,
+edit: checked,
+delete: checked,
+},
+}));
+};
 
-    if (errors[name]) {
-      setErrors((previous) => ({
-        ...previous,
-        [name]: "",
-      }));
-    }
+// =====================================================
+// VALIDATE FORM
+// =====================================================
+
+const validateForm = () => {
+const newErrors = {};
+
+
+// Employee ID
+if (!formData.employeeId.trim()) {
+  newErrors.employeeId = "Employee ID is required";
+}
+
+// First Name
+if (!formData.firstName.trim()) {
+  newErrors.firstName = "First name is required";
+}
+
+// Last Name
+if (!formData.lastName.trim()) {
+  newErrors.lastName = "Last name is required";
+}
+
+// Email
+if (!formData.email.trim()) {
+  newErrors.email = "Email address is required";
+} else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+  newErrors.email = "Enter a valid email address";
+}
+
+// Phone
+if (!formData.phone.trim()) {
+  newErrors.phone = "Phone number is required";
+}
+
+// Username
+if (!formData.username.trim()) {
+  newErrors.username = "Username is required";
+}
+
+// Password
+if (!formData.password) {
+  newErrors.password = "Password is required";
+} else if (formData.password.length < 6) {
+  newErrors.password =
+    "Password must contain at least 6 characters";
+}
+
+// Confirm Password
+if (!formData.confirmPassword) {
+  newErrors.confirmPassword =
+    "Please confirm your password";
+} else if (
+  formData.password !== formData.confirmPassword
+) {
+  newErrors.confirmPassword =
+    "Passwords do not match";
+}
+
+// Role
+if (!formData.role) {
+  newErrors.role = "Please select a role";
+}
+
+setErrors(newErrors);
+
+return Object.keys(newErrors).length === 0;
+
+
+};
+
+// =====================================================
+// SUBMIT FORM
+// =====================================================
+
+const handleSubmit = async (e) => {
+e.preventDefault();
+
+if (!validateForm()) {
+  return;
+}
+
+setIsSubmitting(true);
+
+try {
+  // =================================================
+  // CONVERT FRONTEND DATA TO BACKEND FORMAT
+  // =================================================
+
+  const userData = {
+    employee_id: formData.employeeId.trim(),
+    first_name: formData.firstName.trim(),
+    last_name: formData.lastName.trim(),
+    email: formData.email.trim(),
+    phone: formData.phone.trim(),
+    username: formData.username.trim(),
+    password: formData.password,
+    confirm_password: formData.confirmPassword,
+    role: formData.role,
+    permissions: permissions,
   };
 
-  // =========================
-  // HANDLE PERMISSION CHANGE
-  // =========================
+  console.log("Sending user data:", userData);
 
-  const handlePermissionChange = (module, permission) => {
-    setPermissions((previous) => ({
-      ...previous,
-      [module]: {
-        ...previous[module],
-        [permission]: !previous[module][permission],
+  // =================================================
+  // SEND DATA TO FASTAPI
+  // =================================================
+
+  const response = await fetch(
+    "http://127.0.0.1:8000/api/user-2",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
       },
-    }));
-  };
+      body: JSON.stringify(userData),
+    }
+  );
 
-  // =========================
-  // SELECT ALL PERMISSIONS
-  // =========================
+  // =================================================
+  // HANDLE BACKEND ERROR
+  // =================================================
 
-  const handleSelectAll = (module, checked) => {
-    setPermissions((previous) => ({
-      ...previous,
-      [module]: {
-        view: checked,
-        add: checked,
-        edit: checked,
-        delete: checked,
-      },
-    }));
-  };
+  if (!response.ok) {
+    const errorData = await response.json();
 
-  // =========================
-  // VALIDATE FORM
-  // =========================
+    let errorMessage = "Failed to create user.";
 
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = "First name is required";
+    if (errorData.detail) {
+      if (typeof errorData.detail === "string") {
+        errorMessage = errorData.detail;
+      } else {
+        errorMessage = JSON.stringify(errorData.detail);
+      }
     }
 
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = "Last name is required";
-    }
+    throw new Error(errorMessage);
+  }
 
-    if (!formData.email.trim()) {
-      newErrors.email = "Email address is required";
-    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
-      newErrors.email = "Enter a valid email address";
-    }
+  // =================================================
+  // SUCCESS
+  // =================================================
 
-    if (!formData.username.trim()) {
-      newErrors.username = "Username is required";
-    }
+  const createdUser = await response.json();
 
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password =
-        "Password must contain at least 6 characters";
-    }
+  console.log(
+    "User created successfully:",
+    createdUser
+  );
 
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword =
-        "Please confirm your password";
-    } else if (
-      formData.password !== formData.confirmPassword
-    ) {
-      newErrors.confirmPassword =
-        "Passwords do not match";
-    }
+  alert("User created successfully!");
 
-    if (!formData.role) {
-      newErrors.role = "Please select a role";
-    }
+  navigate("/user-management");
+} catch (error) {
+  console.error("Error creating user:", error);
 
-    setErrors(newErrors);
+  alert(
+    `Unable to create user.\n\n${error.message}`
+  );
+} finally {
+  setIsSubmitting(false);
+}
 
-    return Object.keys(newErrors).length === 0;
-  };
 
-  // =========================
-  // SUBMIT FORM
-  // =========================
+};
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+// =====================================================
+// RESET FORM
+// =====================================================
 
-    if (!validateForm()) {
-      return;
-    }
+const handleReset = () => {
+setFormData({
+employeeId: "",
+firstName: "",
+lastName: "",
+email: "",
+phone: "",
+username: "",
+password: "",
+confirmPassword: "",
+role: "",
+});
 
-    const userData = {
-      ...formData,
-      permissions,
-    };
 
-    console.log("User data:", userData);
+setPermissions({
+  dashboard: {
+    view: true,
+    add: false,
+    edit: false,
+    delete: false,
+  },
+  employees: {
+    view: true,
+    add: false,
+    edit: false,
+    delete: false,
+  },
+  users: {
+    view: false,
+    add: false,
+    edit: false,
+    delete: false,
+  },
+  attendance: {
+    view: false,
+    add: false,
+    edit: false,
+    delete: false,
+  },
+  leave: {
+    view: false,
+    add: false,
+    edit: false,
+    delete: false,
+  },
+  payroll: {
+    view: false,
+    add: false,
+    edit: false,
+    delete: false,
+  },
+  reports: {
+    view: false,
+    add: false,
+    edit: false,
+    delete: false,
+  },
+  documents: {
+    view: false,
+    add: false,
+    edit: false,
+    delete: false,
+  },
+});
 
-    alert("User created successfully!");
+setErrors({});
 
-    // Go back to User Management
-    navigate("/user-management");
-  };
 
-  // =========================
-  // RESET FORM
-  // =========================
+};
 
-  const handleReset = () => {
-    setFormData({
-      firstName: "",
-      lastName: "",
-      employeeId: "",
-      email: "",
-      phone: "",
-      department: "",
-      designation: "",
-      username: "",
-      password: "",
-      confirmPassword: "",
-      role: "",
-      status: "Active",
-      joiningDate: "",
-    });
+// =====================================================
+// MODULES
+// =====================================================
 
-    setPermissions({
-      dashboard: {
-        view: true,
-        add: false,
-        edit: false,
-        delete: false,
-      },
+const modules = [
+{
+key: "dashboard",
+label: "Dashboard",
+},
+{
+key: "employees",
+label: "Employee Management",
+},
+{
+key: "users",
+label: "User Management",
+},
+{
+key: "attendance",
+label: "Attendance",
+},
+{
+key: "leave",
+label: "Leave Management",
+},
+{
+key: "payroll",
+label: "Payroll",
+},
+{
+key: "reports",
+label: "Reports",
+},
+{
+key: "documents",
+label: "Documents",
+},
+];
 
-      employees: {
-        view: true,
-        add: false,
-        edit: false,
-        delete: false,
-      },
+// =====================================================
+// RENDER
+// =====================================================
 
-      users: {
-        view: false,
-        add: false,
-        edit: false,
-        delete: false,
-      },
+return ( <div className="add-user-page">
 
-      attendance: {
-        view: false,
-        add: false,
-        edit: false,
-        delete: false,
-      },
 
-      leave: {
-        view: false,
-        add: false,
-        edit: false,
-        delete: false,
-      },
+  {/* =================================================
+      HEADER
+  ================================================= */}
 
-      payroll: {
-        view: false,
-        add: false,
-        edit: false,
-        delete: false,
-      },
+  <div className="add-user-header">
+    <div>
+      <div className="breadcrumb">
 
-      reports: {
-        view: false,
-        add: false,
-        edit: false,
-        delete: false,
-      },
-
-      documents: {
-        view: false,
-        add: false,
-        edit: false,
-        delete: false,
-      },
-    });
-
-    setErrors({});
-  };
-
-  // =========================
-  // MODULES
-  // =========================
-
-  const modules = [
-    {
-      key: "dashboard",
-      label: "Dashboard",
-    },
-    {
-      key: "employees",
-      label: "Employee Management",
-    },
-    {
-      key: "users",
-      label: "User Management",
-    },
-    {
-      key: "attendance",
-      label: "Attendance",
-    },
-    {
-      key: "leave",
-      label: "Leave Management",
-    },
-    {
-      key: "payroll",
-      label: "Payroll",
-    },
-    {
-      key: "reports",
-      label: "Reports",
-    },
-    {
-      key: "documents",
-      label: "Documents",
-    },
-  ];
-
-  // =========================
-  // RENDER
-  // =========================
-
-  return (
-    <div className="add-user-page">
-
-      {/* =========================
-          HEADER
-      ========================= */}
-
-      <div className="add-user-header">
-        <div>
-
-          <div className="breadcrumb">
-
-            <span
-              onClick={() =>
-                navigate("/user-management")
-              }
-            >
-              User Management
-            </span>
-
-            <span className="breadcrumb-separator">
-              /
-            </span>
-
-            <span>
-              Add User
-            </span>
-
-          </div>
-
-          <h1> Add New User </h1>
-
-          <p>
-            Create a new user account and configure
-            their access to the ERP system.
-          </p>
-
-        </div>
-
-        <button
-          type="button"
-          className="back-button"
+        <span
           onClick={() =>
             navigate("/user-management")
           }
         >
-          ← Back to Users
-        </button>
+          User Management
+        </span>
+
+        <span className="breadcrumb-separator">
+          /
+        </span>
+
+        <span>
+          Add User
+        </span>
 
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <h1>Add New User</h1>
 
-        {/* =========================
-            PERSONAL INFORMATION
-        ========================= */}
+      <p>
+        Create a new user account and configure
+        their access to the ERP system.
+      </p>
+    </div>
 
-        <section className="user-card">
+    <button
+      type="button"
+      className="back-button"
+      onClick={() =>
+        navigate("/user-management")
+      }
+    >
+      ← Back to Users
+    </button>
+  </div>
 
-          <div className="section-header">
+  <form onSubmit={handleSubmit}>
+
+    {/* =================================================
+        1. EMPLOYEE INFORMATION
+    ================================================= */}
+
+    <section className="user-card">
+
+      <div className="section-header">
+
+        <div className="section-icon">
+          👤
+        </div>
+
+        <div>
+          <h2>Employee Information</h2>
+
+          <p>
+            Enter the basic information of the user.
+          </p>
+        </div>
+
+      </div>
+
+      <div className="form-grid">
+
+        {/* EMPLOYEE ID */}
+
+        <div className="form-group">
+
+          <label>
+            Employee ID <span>*</span>
+          </label>
+
+          <input
+            type="text"
+            name="employeeId"
+            value={formData.employeeId}
+            onChange={handleChange}
+            placeholder="e.g. EMP001"
+            className={
+              errors.employeeId
+                ? "input-error"
+                : ""
+            }
+          />
+
+          {errors.employeeId && (
+            <small className="error-message">
+              {errors.employeeId}
+            </small>
+          )}
+
+        </div>
+
+        {/* FIRST NAME */}
+
+        <div className="form-group">
+
+          <label>
+            First Name <span>*</span>
+          </label>
+
+          <input
+            type="text"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
+            placeholder="Enter first name"
+            className={
+              errors.firstName
+                ? "input-error"
+                : ""
+            }
+          />
+
+          {errors.firstName && (
+            <small className="error-message">
+              {errors.firstName}
+            </small>
+          )}
+
+        </div>
+
+        {/* LAST NAME */}
+
+        <div className="form-group">
+
+          <label>
+            Last Name <span>*</span>
+          </label>
+
+          <input
+            type="text"
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
+            placeholder="Enter last name"
+            className={
+              errors.lastName
+                ? "input-error"
+                : ""
+            }
+          />
+
+          {errors.lastName && (
+            <small className="error-message">
+              {errors.lastName}
+            </small>
+          )}
+
+        </div>
+
+        {/* EMAIL */}
+
+        <div className="form-group">
+
+          <label>
+            Email Address <span>*</span>
+          </label>
+
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="user@example.com"
+            className={
+              errors.email
+                ? "input-error"
+                : ""
+            }
+          />
+
+          {errors.email && (
+            <small className="error-message">
+              {errors.email}
+            </small>
+          )}
+
+        </div>
+
+        {/* PHONE */}
+
+        <div className="form-group">
+
+          <label>
+            Phone Number <span>*</span>
+          </label>
+
+          <input
+            type="tel"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            placeholder="Enter phone number"
+            className={
+              errors.phone
+                ? "input-error"
+                : ""
+            }
+          />
+
+          {errors.phone && (
+            <small className="error-message">
+              {errors.phone}
+            </small>
+          )}
+
+        </div>
+
+      </div>
+
+    </section>
+
+    {/* =================================================
+        2. ACCOUNT INFORMATION
+    ================================================= */}
+
+    <section className="user-card">
+
+      <div className="section-header">
+
+        <div className="section-icon">
+          🔐
+        </div>
+
+        <div>
+
+          <h2>Account Information</h2>
+
+          <p>
+            Configure login credentials and account role.
+          </p>
+
+        </div>
+
+      </div>
+
+      <div className="form-grid">
+
+        {/* USERNAME */}
+
+        <div className="form-group">
+
+          <label>
+            Username <span>*</span>
+          </label>
+
+          <input
+            type="text"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            placeholder="Enter username"
+            className={
+              errors.username
+                ? "input-error"
+                : ""
+            }
+          />
+
+          {errors.username && (
+            <small className="error-message">
+              {errors.username}
+            </small>
+          )}
+
+        </div>
+
+        {/* PASSWORD */}
+
+        <div className="form-group">
+
+          <label>
+            Password <span>*</span>
+          </label>
+
+          <div className="password-wrapper">
+
+            <input
+              type={
+                showPassword
+                  ? "text"
+                  : "password"
+              }
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter password"
+              className={
+                errors.password
+                  ? "input-error"
+                  : ""
+              }
+            />
+
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() =>
+                setShowPassword(
+                  !showPassword
+                )
+              }
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+
+          </div>
+
+          {errors.password && (
+            <small className="error-message">
+              {errors.password}
+            </small>
+          )}
+
+          <small className="field-hint">
+            Password must contain at least 6
+            characters.
+          </small>
+
+        </div>
+
+        {/* CONFIRM PASSWORD */}
+
+        <div className="form-group">
+
+          <label>
+            Confirm Password <span>*</span>
+          </label>
+
+          <div className="password-wrapper">
+
+            <input
+              type={
+                showConfirmPassword
+                  ? "text"
+                  : "password"
+              }
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="Confirm password"
+              className={
+                errors.confirmPassword
+                  ? "input-error"
+                  : ""
+              }
+            />
+
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() =>
+                setShowConfirmPassword(
+                  !showConfirmPassword
+                )
+              }
+            >
+              {showConfirmPassword
+                ? "Hide"
+                : "Show"}
+            </button>
+
+          </div>
+
+          {errors.confirmPassword && (
+            <small className="error-message">
+              {errors.confirmPassword}
+            </small>
+          )}
+
+        </div>
+
+        {/* ROLE */}
+
+        <div className="form-group">
+
+          <label>
+            Role <span>*</span>
+          </label>
+
+          <select
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            className={
+              errors.role
+                ? "input-error"
+                : ""
+            }
+          >
+            <option value="">
+              Select role
+            </option>
+
+            <option value="Admin">
+              Administrator
+            </option>
+
+            <option value="HR">
+              HR Manager
+            </option>
+
+            <option value="Manager">
+              Manager
+            </option>
+
+            <option value="Employee">
+              Employee
+            </option>
+
+            <option value="IT">
+              IT Officer
+            </option>
+
+          </select>
+
+          {errors.role && (
+            <small className="error-message">
+              {errors.role}
+            </small>
+          )}
+
+        </div>
+
+      </div>
+
+    </section>
+
+    {/* =================================================
+        3. PERMISSIONS
+    ================================================= */}
+
+    <section className="user-card">
+
+      <div className="section-header permission-header">
+
+        <div>
+
+          <div className="section-title-row">
 
             <div className="section-icon">
-              👤
+              🛡️
             </div>
 
             <div>
+
               <h2>
-                Personal Information
+                System Access & Permissions
               </h2>
 
               <p>
-                Enter the basic information of the user.
+                Select what this user can view,
+                create, edit, or delete.
               </p>
-            </div>
-
-          </div>
-
-          <div className="form-grid">
-
-            {/* FIRST NAME */}
-
-            <div className="form-group">
-
-              <label>
-                First Name <span>*</span>
-              </label>
-
-              <input
-                type="text"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                placeholder="Enter first name"
-                className={
-                  errors.firstName
-                    ? "input-error"
-                    : ""
-                }
-              />
-
-              {errors.firstName && (
-                <small className="error-message">
-                  {errors.firstName}
-                </small>
-              )}
-
-            </div>
-
-            {/* LAST NAME */}
-
-            <div className="form-group">
-
-              <label> Last Name <span>*</span></label>
-
-              <input
-                type="text"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                placeholder="Enter last name"
-                className={
-                  errors.lastName
-                    ? "input-error"
-                    : ""
-                }
-              />
-
-              {errors.lastName && (
-                <small className="error-message">
-                  {errors.lastName}
-                </small>
-              )}
-
-            </div>
-
-            {/* EMPLOYEE ID */}
-
-            <div className="form-group">
-
-              <label> Employee ID </label>
-
-              <input
-                type="text"
-                name="employeeId"
-                value={formData.employeeId}
-                onChange={handleChange}
-                placeholder="e.g. EMP001"
-              />
-
-            </div>
-
-            {/* EMAIL */}
-
-            <div className="form-group">
-
-              <label> Email Address <span>*</span> </label>
-
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="user@example.com"
-                className={
-                  errors.email
-                    ? "input-error"
-                    : ""
-                }
-              />
-
-              {errors.email && (
-                <small className="error-message">
-                  {errors.email}
-                </small>
-              )}
-
-            </div>
-
-            {/* PHONE */}
-
-            <div className="form-group">
-
-              <label>Phone Number </label>  
-
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                placeholder="Enter phone number"
-              />
-
-            </div>
-
-            {/* DEPARTMENT */}
-
-            <div className="form-group">
-
-              <label> Department </label>
-
-              <select
-                name="department"
-                value={formData.department}
-                onChange={handleChange}
-              >
-
-                <option value=""> Select department </option>
-                <option value="IT">IT</option>
-                <option value="HR">Human Resources</option>
-                <option value="Finance">Finance</option>
-                <option value="Accounts">Accounts</option>
-                <option value="Production">Production</option>
-                <option value="Sales">Sales</option>
-                <option value="Marketing">Marketing</option>
-                <option value="Administration">Administration</option>
-
-              </select>
-
-            </div>
-
-            {/* DESIGNATION */}
-
-            <div className="form-group">
-
-              <label> Designation</label>
-
-              <input
-                type="text"
-                name="designation"
-                value={formData.designation}
-                onChange={handleChange}
-                placeholder="Enter designation"
-              />
-
-            </div>
-
-            {/* JOINING DATE */}
-
-            <div className="form-group">
-
-              <label>Joining Date</label>
-
-              <input
-                type="date"
-                name="joiningDate"
-                value={formData.joiningDate}
-                onChange={handleChange}
-              />
 
             </div>
 
           </div>
 
-        </section>
+        </div>
 
-        {/* =========================
-            ACCOUNT INFORMATION
-        ========================= */}
+        <div className="permission-note">
+          Permissions can be changed later from
+          User Management.
+        </div>
 
-        <section className="user-card">
+      </div>
 
-          <div className="section-header">
+      <div className="permission-table-wrapper">
 
-            <div className="section-icon">
-              🔐
-            </div>
+        <table className="permission-table">
 
-            <div>
+          <thead>
 
-              <h2>Account Information</h2>
-              <p>Configure login credentials and account settings.</p>
-
-            </div>
-
-          </div>
-
-          <div className="form-grid">
-
-            {/* USERNAME */}
-
-            <div className="form-group">
-
-              <label> Username <span>*</span> </label>
-
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                placeholder="Enter username"
-                className={
-                  errors.username
-                    ? "input-error"
-                    : ""
-                }
-              />
-
-              {errors.username && (
-                <small className="error-message">
-                  {errors.username}
-                </small>
-              )}
+            <tr>
+              <th>Module</th>
+              <th>View</th>
+              <th>Add</th>
+              <th>Edit</th>
+              <th>Delete</th>
+              <th>Full Access</th>
+            </tr>
 
-            </div>
+          </thead>
 
-            {/* ROLE */}
-
-            <div className="form-group">
-
-              <label> Role <span>*</span> </label>
-
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className={
-                  errors.role
-                    ? "input-error"
-                    : ""
-                }
-              >
-
-                <option value="">Select role</option>
-                <option value="Admin"> Administrator </option>
-                <option value="HR"> HR Manager </option>
-                <option value="Manager"> Manager </option>
-                <option value="Employee"> Employee</option>
-                <option value="IT"> IT Officer </option>
-
-              </select>
-
-              {errors.role && (
-                <small className="error-message">
-                  {errors.role}
-                </small>
-              )}
-
-            </div>
-
-            {/* PASSWORD */}
-
-            <div className="form-group">
-
-              <label> Password <span>*</span> </label>
-
-              <div className="password-wrapper">
-
-                <input
-                  type={
-                    showPassword
-                      ? "text"
-                      : "password"
-                  }
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Enter password"
-                  className={
-                    errors.password
-                      ? "input-error"
-                      : ""
-                  }
-                />
-
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() =>
-                    setShowPassword(
-                      !showPassword
-                    )
-                  }
-                >
-                  {showPassword
-                    ? "Hide"
-                    : "Show"}
-                </button>
-
-              </div>
-
-              {errors.password && (
-                <small className="error-message">
-                  {errors.password}
-                </small>
-              )}
-
-              <small className="field-hint">
-                Password must contain at least 6
-                characters.
-              </small>
-
-            </div>
-
-            {/* CONFIRM PASSWORD */}
-
-            <div className="form-group">
-
-              <label> Confirm Password <span>*</span> </label>
-
-              <div className="password-wrapper">
-
-                <input
-                  type={
-                    showConfirmPassword
-                      ? "text"
-                      : "password"
-                  }
-                  name="confirmPassword"
-                  value={
-                    formData.confirmPassword
-                  }
-                  onChange={handleChange}
-                  placeholder="Confirm password"
-                  className={
-                    errors.confirmPassword
-                      ? "input-error"
-                      : ""
-                  }
-                />
-
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() =>
-                    setShowConfirmPassword(
-                      !showConfirmPassword
-                    )
-                  }
-                >
-                  {showConfirmPassword
-                    ? "Hide"
-                    : "Show"}
-                </button>
+          <tbody>
 
-              </div>
+            {modules.map((module) => {
 
-              {errors.confirmPassword && (
-                <small className="error-message">
-                  {errors.confirmPassword}
-                </small>
-              )}
+              const modulePermissions =
+                permissions[module.key];
 
-            </div>
+              const fullAccess =
+                modulePermissions.view &&
+                modulePermissions.add &&
+                modulePermissions.edit &&
+                modulePermissions.delete;
 
-            {/* STATUS */}
+              return (
+                <tr key={module.key}>
 
-            <div className="form-group">
+                  <td>
+                    <strong>
+                      {module.label}
+                    </strong>
+                  </td>
 
-              <label> Account Status </label>
+                  {[
+                    "view",
+                    "add",
+                    "edit",
+                    "delete",
+                  ].map((permission) => (
 
-              <div className="status-options">
+                    <td key={permission}>
 
-                <label className="radio-label">
+                      <label className="checkbox-container">
 
-                  <input
-                    type="radio"
-                    name="status"
-                    value="Active"
-                    checked={
-                      formData.status ===
-                      "Active"
-                    }
-                    onChange={handleChange}
-                  />
+                        <input
+                          type="checkbox"
+                          checked={
+                            modulePermissions[
+                              permission
+                            ]
+                          }
+                          onChange={() =>
+                            handlePermissionChange(
+                              module.key,
+                              permission
+                            )
+                          }
+                        />
 
-                  <span className="status-dot active"></span>
+                        <span className="custom-checkbox"></span>
 
-                  Active
+                      </label>
 
-                </label>
+                    </td>
 
-                <label className="radio-label">
+                  ))}
 
-                  <input
-                    type="radio"
-                    name="status"
-                    value="Inactive"
-                    checked={
-                      formData.status ===
-                      "Inactive"
-                    }
-                    onChange={handleChange}
-                  />
+                  <td>
 
-                  <span className="status-dot inactive"></span>
+                    <label className="checkbox-container">
 
-                  Inactive
+                      <input
+                        type="checkbox"
+                        checked={fullAccess}
+                        onChange={(e) =>
+                          handleSelectAll(
+                            module.key,
+                            e.target.checked
+                          )
+                        }
+                      />
 
-                </label>
+                      <span className="custom-checkbox"></span>
 
-              </div>
+                    </label>
 
-            </div>
+                  </td>
 
-          </div>
-
-        </section>
-
-        {/* =========================
-            PERMISSIONS
-        ========================= */}
-
-        <section className="user-card">
-
-          <div className="section-header permission-header">
-
-            <div>
-
-              <div className="section-title-row">
-
-                <div className="section-icon">
-                  🛡️
-                </div>
-
-                <div>
-
-                  <h2> System Access & Permissions </h2>
-                  <p>
-                    Select what this user can view,
-                    create, edit, or delete.
-                  </p>
-
-                </div>
-
-              </div>
-
-            </div>
-
-            <div className="permission-note">
-              Permissions can be changed later from
-              User Management.
-            </div>
-
-          </div>
-
-          <div className="permission-table-wrapper">
-
-            <table className="permission-table">
-
-              <thead>
-
-                <tr>
-                  <th>Module</th>
-                  <th>View</th>
-                  <th>Add</th>
-                  <th>Edit</th>
-                  <th>Delete</th>
-                  <th>Full Access</th>
                 </tr>
+              );
+            })}
 
-              </thead>
+          </tbody>
 
-              <tbody>
+        </table>
 
-                {modules.map((module) => {
+      </div>
 
-                  const modulePermissions =
-                    permissions[module.key];
+    </section>
 
-                  const fullAccess =
-                    modulePermissions.view &&
-                    modulePermissions.add &&
-                    modulePermissions.edit &&
-                    modulePermissions.delete;
+    {/* =================================================
+        SECURITY NOTICE
+    ================================================= */}
 
-                  return (
-                    <tr key={module.key}>
+    <div className="security-notice">
 
-                      <td>
-                        <strong>
-                          {module.label}
-                        </strong>
-                      </td>
+      <div className="security-icon">
+        🔒
+      </div>
 
-                      {[
-                        "view",
-                        "add",
-                        "edit",
-                        "delete",
-                      ].map((permission) => (
+      <div>
 
-                        <td key={permission}>
+        <h3>
+          Security Notice
+        </h3>
 
-                          <label className="checkbox-container">
+        <p>
+          User passwords should always be securely
+          hashed before being stored in the database.
+          Never store plain-text passwords.
+        </p>
 
-                            <input
-                              type="checkbox"
-                              checked={
-                                modulePermissions[
-                                  permission
-                                ]
-                              }
-                              onChange={() =>
-                                handlePermissionChange(
-                                  module.key,
-                                  permission
-                                )
-                              }
-                            />
-
-                            <span className="custom-checkbox"></span>
-
-                          </label>
-
-                        </td>
-
-                      ))}
-
-                      <td>
-
-                        <label className="checkbox-container">
-
-                          <input
-                            type="checkbox"
-                            checked={fullAccess}
-                            onChange={(e) =>
-                              handleSelectAll(
-                                module.key,
-                                e.target.checked
-                              )
-                            }
-                          />
-
-                          <span className="custom-checkbox"></span>
-
-                        </label>
-
-                      </td>
-
-                    </tr>
-                  );
-                })}
-
-              </tbody>
-
-            </table>
-
-          </div>
-
-        </section>
-
-        {/* =========================
-            SECURITY NOTICE
-        ========================= */}
-
-        <div className="security-notice">
-
-          <div className="security-icon">
-            🔒
-          </div>
-
-          <div>
-
-            <h3>
-              Security Notice
-            </h3>
-
-            <p>
-              User passwords should always be securely
-              hashed before being stored in the database.
-              Never store plain-text passwords.
-            </p>
-
-          </div>
-
-        </div>
-
-        {/* =========================
-            FORM ACTIONS
-        ========================= */}
-
-        <div className="form-actions">
-
-          <button
-            type="button"
-            className="cancel-button"
-            onClick={() =>
-              navigate("/user-management")
-            }
-          >
-            Cancel
-          </button>
-
-          <button
-            type="button"
-            className="reset-button"
-            onClick={handleReset}
-          >
-            Reset Form
-          </button>
-
-          <button
-            type="submit"
-            className="create-button"
-          >
-            + Create User
-          </button>
-
-        </div>
-
-      </form>
+      </div>
 
     </div>
-  );
+
+    {/* =================================================
+        FORM ACTIONS
+    ================================================= */}
+
+    <div className="form-actions">
+
+      <button
+        type="button"
+        className="cancel-button"
+        onClick={() =>
+          navigate("/user-management")
+        }
+        disabled={isSubmitting}
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        className="reset-button"
+        onClick={handleReset}
+        disabled={isSubmitting}
+      >
+        Reset Form
+      </button>
+
+      <button
+        type="submit"
+        className="create-button"
+        disabled={isSubmitting}
+      >
+        {isSubmitting
+          ? "Creating User..."
+          : "+ Create User"}
+      </button>
+
+    </div>
+
+  </form>
+
+</div>
+
+
+);
 }
 
 export default AddUser;

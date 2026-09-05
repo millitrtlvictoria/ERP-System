@@ -1,3 +1,4 @@
+
 from datetime import datetime
 
 from sqlalchemy import (
@@ -178,12 +179,12 @@ class Employee(Base):
 
 
 # =====================================================
-# USER MODEL
+# USER-2 MODEL
 # =====================================================
 
-class User(Base):
+class User2(Base):
 
-    __tablename__ = "users"
+    __tablename__ = "user_2"
 
     # -------------------------------------------------
     # PRIMARY KEY
@@ -196,8 +197,15 @@ class User(Base):
     )
 
     # -------------------------------------------------
-    # PERSONAL INFORMATION
+    # EMPLOYEE INFORMATION
     # -------------------------------------------------
+
+    employee_id = Column(
+        String(50),
+        unique=True,
+        nullable=False,
+        index=True
+    )
 
     first_name = Column(
         String(100),
@@ -210,7 +218,7 @@ class User(Base):
     )
 
     # -------------------------------------------------
-    # LOGIN INFORMATION
+    # CONTACT INFORMATION
     # -------------------------------------------------
 
     email = Column(
@@ -220,6 +228,15 @@ class User(Base):
         index=True
     )
 
+    phone = Column(
+        String(20),
+        nullable=False
+    )
+
+    # -------------------------------------------------
+    # LOGIN INFORMATION
+    # -------------------------------------------------
+
     username = Column(
         String(50),
         unique=True,
@@ -227,12 +244,26 @@ class User(Base):
         index=True
     )
 
-    # -------------------------------------------------
-    # PASSWORD
-    # -------------------------------------------------
-
     password_hash = Column(
         String(255),
+        nullable=False
+    )
+
+    # -------------------------------------------------
+    # ROLE
+    # -------------------------------------------------
+
+    role = Column(
+        String(50),
+        nullable=False
+    )
+
+    # -------------------------------------------------
+    # PERMISSIONS
+    # -------------------------------------------------
+
+    permissions = Column(
+        String(5000),
         nullable=False
     )
 
