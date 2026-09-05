@@ -140,9 +140,9 @@ function Login() {
   // REGISTER
   // =====================================================
 
-  const handleRegister = () => {
-    navigate("/register");
-  };
+  //  const handleRegister = () => {
+  //   navigate("/register");
+  //  };
 
   // =====================================================
   // PAGE
@@ -254,7 +254,7 @@ function Login() {
             REGISTRATION
         ================================================= */}
 
-        <div className="register-section">
+        {/* <div className="register-section">
 
           <p>
             Don't have an account?
@@ -269,7 +269,7 @@ function Login() {
             Register
           </button>
 
-        </div>
+        </div> */}
 
       </div>
 

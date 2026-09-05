@@ -96,11 +96,6 @@ class EmployeeCreate(BaseModel):
     monthly_salary: Optional[Decimal] = None
     status: str
 
-    photo_file_name: Optional[str] = None
-    photo_file_path: Optional[str] = None
-    photo_file_type: Optional[str] = None
-    photo_file_size: Optional[int] = None
-
 
 # ============================================================
 # EMPLOYEE UPDATE
@@ -125,11 +120,6 @@ class EmployeeUpdate(BaseModel):
     employment_type: Optional[str] = None
     monthly_salary: Optional[Decimal] = None
     status: Optional[str] = None
-
-    photo_file_name: Optional[str] = None
-    photo_file_path: Optional[str] = None
-    photo_file_type: Optional[str] = None
-    photo_file_size: Optional[int] = None
 
 
 # ============================================================
@@ -158,8 +148,18 @@ class EmployeeResponse(BaseModel):
     monthly_salary: Optional[Decimal] = None
     status: str
 
-    photo_file_name: Optional[str] = None
-    photo_file_path: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True)
+
+
+# ============================================================
+# EMPLOYEE PHOTO RESPONSE
+# ============================================================
+
+class EmployeePhotoResponse(BaseModel):
+    id: int
+    employee_id: int
+    photo_file_name: str
+    photo_file_path: str
     photo_file_type: Optional[str] = None
     photo_file_size: Optional[int] = None
 

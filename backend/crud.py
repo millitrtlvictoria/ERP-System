@@ -38,11 +38,7 @@ def create_employee(
         joining_date=employee.joining_date,
         employment_type=employee.employment_type,
         monthly_salary=employee.monthly_salary,
-        status=employee.status,
-        photo_file_name=employee.photo_file_name,
-        photo_file_path=employee.photo_file_path,
-        photo_file_type=employee.photo_file_type,
-        photo_file_size=employee.photo_file_size
+        status=employee.status
     )
 
     try:
@@ -170,6 +166,129 @@ def delete_employee(
         db.commit()
 
         return db_employee
+
+    except IntegrityError:
+        db.rollback()
+        raise
+
+
+# ============================================================
+# EMPLOYEE PHOTO CRUD
+# ============================================================
+
+
+# ============================================================
+# CREATE / SAVE EMPLOYEE PHOTO
+# ============================================================
+
+def create_employee_photo(
+    db: Session,
+    employee_id: int,
+    photo_file_name: str,
+    photo_file_path: str,
+    photo_file_type: str | None = None,
+    photo_file_size: int | None = None
+):
+    db_photo = models.EmployeePhoto(
+        employee_id=employee_id,
+        photo_file_name=photo_file_name,
+        photo_file_path=photo_file_path,
+        photo_file_type=photo_file_type,
+        photo_file_size=photo_file_size
+    )
+
+    try:
+        db.add(db_photo)
+        db.commit()
+        db.refresh(db_photo)
+
+        return db_photo
+
+    except IntegrityError:
+        db.rollback()
+        raise
+
+
+# ============================================================
+# GET EMPLOYEE PHOTO
+# ============================================================
+
+def get_employee_photo(
+    db: Session,
+    employee_id: int
+):
+    return (
+        db.query(models.EmployeePhoto)
+        .filter(
+            models.EmployeePhoto.employee_id == employee_id
+        )
+        .first()
+    )
+
+
+# ============================================================
+# UPDATE EMPLOYEE PHOTO
+# ============================================================
+
+def update_employee_photo(
+    db: Session,
+    employee_id: int,
+    photo_file_name: str,
+    photo_file_path: str,
+    photo_file_type: str | None = None,
+    photo_file_size: int | None = None
+):
+    db_photo = (
+        db.query(models.EmployeePhoto)
+        .filter(
+            models.EmployeePhoto.employee_id == employee_id
+        )
+        .first()
+    )
+
+    if not db_photo:
+        return None
+
+    db_photo.photo_file_name = photo_file_name
+    db_photo.photo_file_path = photo_file_path
+    db_photo.photo_file_type = photo_file_type
+    db_photo.photo_file_size = photo_file_size
+
+    try:
+        db.commit()
+        db.refresh(db_photo)
+
+        return db_photo
+
+    except IntegrityError:
+        db.rollback()
+        raise
+
+
+# ============================================================
+# DELETE EMPLOYEE PHOTO
+# ============================================================
+
+def delete_employee_photo(
+    db: Session,
+    employee_id: int
+):
+    db_photo = (
+        db.query(models.EmployeePhoto)
+        .filter(
+            models.EmployeePhoto.employee_id == employee_id
+        )
+        .first()
+    )
+
+    if not db_photo:
+        return None
+
+    try:
+        db.delete(db_photo)
+        db.commit()
+
+        return db_photo
 
     except IntegrityError:
         db.rollback()

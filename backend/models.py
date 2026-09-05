@@ -1,4 +1,3 @@
-
 from datetime import datetime
 
 from sqlalchemy import (
@@ -7,7 +6,8 @@ from sqlalchemy import (
     String,
     Date,
     DateTime,
-    Numeric
+    Numeric,
+    ForeignKey
 )
 
 from database import Base
@@ -139,17 +139,63 @@ class Employee(Base):
     )
 
     # -------------------------------------------------
-    # EMPLOYEE PHOTO INFORMATION
+    # SYSTEM TIMESTAMPS
+    # -------------------------------------------------
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
+
+    updated_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
+    )
+
+
+# =====================================================
+# EMPLOYEE PHOTO MODEL
+# =====================================================
+
+class EmployeePhoto(Base):
+
+    __tablename__ = "employee_photos"
+
+    # -------------------------------------------------
+    # PRIMARY KEY
+    # -------------------------------------------------
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    # -------------------------------------------------
+    # EMPLOYEE CONNECTION
+    # -------------------------------------------------
+
+    employee_id = Column(
+        Integer,
+        ForeignKey("employees.id"),
+        nullable=False,
+        unique=True,
+        index=True
+    )
+
+    # -------------------------------------------------
+    # PHOTO INFORMATION
     # -------------------------------------------------
 
     photo_file_name = Column(
         String(255),
-        nullable=True
+        nullable=False
     )
 
     photo_file_path = Column(
         String(500),
-        nullable=True
+        nullable=False
     )
 
     photo_file_type = Column(

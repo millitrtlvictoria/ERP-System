@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/AddEmployee.css";
-import { createEmployee } from "../services/employeeAPI";
+
+import {
+  createEmployee,
+  uploadEmployeePhoto,
+} from "../services/employeeAPI";
 
 
 function AddEmployee() {
@@ -53,10 +57,10 @@ function AddEmployee() {
   // PHOTO
   // =====================================================
 
-  // Stores the selected photo preview
+  // Preview URL for displaying selected photo
   const [photo, setPhoto] = useState(null);
 
-  // Stores the actual selected image file
+  // Actual image file
   const [photoFile, setPhotoFile] = useState(null);
 
 
@@ -99,16 +103,59 @@ function AddEmployee() {
     }
 
 
-    // -------------------------------------------------
+    // ---------------------------------------------------
+    // CHECK FILE TYPE
+    // ---------------------------------------------------
+
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ];
+
+
+    if (!allowedTypes.includes(file.type)) {
+
+      alert(
+        "Please select a JPG, PNG, or WEBP image."
+      );
+
+      e.target.value = "";
+
+      return;
+    }
+
+
+    // ---------------------------------------------------
+    // CHECK FILE SIZE
+    // Maximum 2 MB
+    // ---------------------------------------------------
+
+    const maxSize = 2 * 1024 * 1024;
+
+
+    if (file.size > maxSize) {
+
+      alert(
+        "Photo size must be less than 2 MB."
+      );
+
+      e.target.value = "";
+
+      return;
+    }
+
+
+    // ---------------------------------------------------
     // SAVE ACTUAL FILE
-    // -------------------------------------------------
+    // ---------------------------------------------------
 
     setPhotoFile(file);
 
 
-    // -------------------------------------------------
+    // ---------------------------------------------------
     // CREATE PREVIEW
-    // -------------------------------------------------
+    // ---------------------------------------------------
 
     const previewUrl = URL.createObjectURL(file);
 
@@ -125,9 +172,9 @@ function AddEmployee() {
     e.preventDefault();
 
 
-    // =================================================
+    // ===================================================
     // PREPARE EMPLOYEE DATA
-    // =================================================
+    // ===================================================
 
     const employeeData = {
 
@@ -192,8 +239,6 @@ function AddEmployee() {
 
       // -------------------------------------------------
       // EMERGENCY CONTACT
-      //
-      // These are now stored directly in employees table.
       // -------------------------------------------------
 
       emergency_name:
@@ -207,37 +252,12 @@ function AddEmployee() {
           : employee.emergencyPhone,
 
       emergency_relationship: null,
-
-
-      // -------------------------------------------------
-      // EMPLOYEE PHOTO
-      //
-      // The actual image upload is not being sent yet.
-      // We store the available file information.
-      // -------------------------------------------------
-
-      photo_file_name:
-        photoFile
-          ? photoFile.name
-          : null,
-
-      photo_file_path: null,
-
-      photo_file_type:
-        photoFile
-          ? photoFile.type
-          : null,
-
-      photo_file_size:
-        photoFile
-          ? photoFile.size
-          : null
     };
 
 
-    // =================================================
+    // ===================================================
     // DEBUG
-    // =================================================
+    // ===================================================
 
     console.log(
       "Sending employee data:",
@@ -245,9 +265,9 @@ function AddEmployee() {
     );
 
 
-    // =================================================
-    // SEND DATA TO BACKEND
-    // =================================================
+    // ===================================================
+    // CREATE EMPLOYEE
+    // ===================================================
 
     try {
 
@@ -257,18 +277,62 @@ function AddEmployee() {
 
 
       console.log(
-        "Server response:",
+        "Employee created:",
         result
       );
 
 
+      // -------------------------------------------------
+      // GET DATABASE EMPLOYEE ID
+      // -------------------------------------------------
+
+      const employeeId = result.id;
+
+
+      console.log(
+        "New employee database ID:",
+        employeeId
+      );
+
+
+      // =================================================
+      // UPLOAD PHOTO
+      // =================================================
+
+      if (photoFile) {
+
+        console.log(
+          "Uploading employee photo..."
+        );
+
+
+        const photoResult =
+          await uploadEmployeePhoto(
+            employeeId,
+            photoFile
+          );
+
+
+        console.log(
+          "Photo uploaded successfully:",
+          photoResult
+        );
+      }
+
+
+      // =================================================
+      // SUCCESS
+      // =================================================
+
       alert(
-        "Employee added successfully!"
+        photoFile
+          ? "Employee and photo added successfully!"
+          : "Employee added successfully!"
       );
 
 
       // -------------------------------------------------
-      // GO BACK TO DASHBOARD
+      // GO TO DASHBOARD
       // -------------------------------------------------
 
       navigate("/dashboard");
@@ -303,6 +367,22 @@ function AddEmployee() {
     setPhoto(null);
 
     setPhotoFile(null);
+
+
+    // ---------------------------------------------------
+    // Clear file input
+    // ---------------------------------------------------
+
+    const fileInput =
+      document.getElementById(
+        "employeePhoto"
+      );
+
+
+    if (fileInput) {
+
+      fileInput.value = "";
+    }
   };
 
 
@@ -383,9 +463,7 @@ function AddEmployee() {
           <div className="form-grid">
 
 
-            {/* =================================================
-                EMPLOYEE ID
-            ================================================= */}
+            {/* EMPLOYEE ID */}
 
             <div className="form-group">
 
@@ -406,9 +484,7 @@ function AddEmployee() {
             </div>
 
 
-            {/* =================================================
-                FIRST NAME
-            ================================================= */}
+            {/* FIRST NAME */}
 
             <div className="form-group">
 
@@ -429,9 +505,7 @@ function AddEmployee() {
             </div>
 
 
-            {/* =================================================
-                LAST NAME
-            ================================================= */}
+            {/* LAST NAME */}
 
             <div className="form-group">
 
@@ -452,9 +526,7 @@ function AddEmployee() {
             </div>
 
 
-            {/* =================================================
-                GENDER
-            ================================================= */}
+            {/* GENDER */}
 
             <div className="form-group">
 
@@ -491,9 +563,7 @@ function AddEmployee() {
             </div>
 
 
-            {/* =================================================
-                DATE OF BIRTH
-            ================================================= */}
+            {/* DATE OF BIRTH */}
 
             <div className="form-group">
 
@@ -513,9 +583,7 @@ function AddEmployee() {
             </div>
 
 
-            {/* =================================================
-                PHONE
-            ================================================= */}
+            {/* PHONE */}
 
             <div className="form-group">
 
@@ -536,9 +604,7 @@ function AddEmployee() {
             </div>
 
 
-            {/* =================================================
-                EMAIL
-            ================================================= */}
+            {/* EMAIL */}
 
             <div className="form-group full-width">
 
@@ -595,9 +661,7 @@ function AddEmployee() {
           <div className="form-grid">
 
 
-            {/* =================================================
-                DEPARTMENT
-            ================================================= */}
+            {/* DEPARTMENT */}
 
             <div className="form-group">
 
@@ -654,9 +718,7 @@ function AddEmployee() {
             </div>
 
 
-            {/* =================================================
-                DESIGNATION
-            ================================================= */}
+            {/* DESIGNATION */}
 
             <div className="form-group">
 
@@ -677,9 +739,7 @@ function AddEmployee() {
             </div>
 
 
-            {/* =================================================
-                JOINING DATE
-            ================================================= */}
+            {/* JOINING DATE */}
 
             <div className="form-group">
 
@@ -699,9 +759,7 @@ function AddEmployee() {
             </div>
 
 
-            {/* =================================================
-                EMPLOYMENT TYPE
-            ================================================= */}
+            {/* EMPLOYMENT TYPE */}
 
             <div className="form-group">
 
@@ -746,9 +804,7 @@ function AddEmployee() {
             </div>
 
 
-            {/* =================================================
-                MONTHLY SALARY
-            ================================================= */}
+            {/* MONTHLY SALARY */}
 
             <div className="form-group">
 
@@ -769,9 +825,7 @@ function AddEmployee() {
             </div>
 
 
-            {/* =================================================
-                STATUS
-            ================================================= */}
+            {/* STATUS */}
 
             <div className="form-group">
 
@@ -843,9 +897,7 @@ function AddEmployee() {
           <div className="form-grid">
 
 
-            {/* =================================================
-                ADDRESS
-            ================================================= */}
+            {/* ADDRESS */}
 
             <div className="form-group full-width">
 
@@ -865,9 +917,7 @@ function AddEmployee() {
             </div>
 
 
-            {/* =================================================
-                EMERGENCY NAME
-            ================================================= */}
+            {/* EMERGENCY NAME */}
 
             <div className="form-group">
 
@@ -887,9 +937,7 @@ function AddEmployee() {
             </div>
 
 
-            {/* =================================================
-                EMERGENCY PHONE
-            ================================================= */}
+            {/* EMERGENCY PHONE */}
 
             <div className="form-group">
 
@@ -983,15 +1031,15 @@ function AddEmployee() {
               <input
                 id="employeePhoto"
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp"
                 onChange={handlePhoto}
               />
 
 
               <p>
-                JPG, PNG or JPEG
+                JPG, PNG or WEBP
                 <br />
-                Maximum recommended size: 2 MB
+                Maximum size: 2 MB
               </p>
 
             </div>
@@ -1009,9 +1057,7 @@ function AddEmployee() {
         <div className="form-actions">
 
 
-          {/* =================================================
-              CANCEL
-          ================================================= */}
+          {/* CANCEL */}
 
           <button
             type="button"
@@ -1022,9 +1068,7 @@ function AddEmployee() {
           </button>
 
 
-          {/* =================================================
-              RESET
-          ================================================= */}
+          {/* RESET */}
 
           <button
             type="button"
@@ -1035,9 +1079,7 @@ function AddEmployee() {
           </button>
 
 
-          {/* =================================================
-              SAVE
-          ================================================= */}
+          {/* SAVE */}
 
           <button
             type="submit"

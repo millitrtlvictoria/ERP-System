@@ -1,16 +1,232 @@
-
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/employees.css";
 
+import {
+  uploadEmployeePhoto,
+  getEmployeePhoto,
+  deleteEmployeePhoto,
+} from "../services/employeeAPI";
+
 const API_URL = "http://127.0.0.1:8000";
 
+const DEPARTMENTS = [
+  "SPINNING",
+  "WEAVING-Rapier",
+  "WEAVING-S4",
+  "HR",
+  "IT",
+  "Administration",
+];
+
+const STATUSES = [
+  "Active",
+  "On Leave",
+  "Inactive",
+];
+
+const GENDERS = [
+  "Male",
+  "Female",
+];
+
+const EMPLOYMENT_TYPES = [
+  "Permanent",
+  "Contract",
+  "Temporary",
+  "Intern",
+];
+
+
+// =====================================================
+// HELPER FUNCTIONS
+// =====================================================
+
+function getEmployeeName(employee) {
+  if (employee.name) {
+    return employee.name;
+  }
+
+  return `${employee.first_name || ""} ${
+    employee.last_name || ""
+  }`.trim();
+}
+
+
+function getInitials(employee) {
+  const name = getEmployeeName(employee);
+
+  if (!name) {
+    return "NA";
+  }
+
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => word[0])
+    .join("")
+    .substring(0, 2)
+    .toUpperCase();
+}
+
+
+function formatDate(dateValue) {
+  if (!dateValue) {
+    return "-";
+  }
+
+  const date = new Date(dateValue);
+
+  if (Number.isNaN(date.getTime())) {
+    return dateValue;
+  }
+
+  return date.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+
+function formatSalary(salary) {
+  if (
+    salary === null ||
+    salary === undefined ||
+    salary === ""
+  ) {
+    return "-";
+  }
+
+  const number = Number(salary);
+
+  if (Number.isNaN(number)) {
+    return salary;
+  }
+
+  return `₹${number.toLocaleString("en-IN")}`;
+}
+
+
+function getStatusClass(status) {
+  if (status === "Active") {
+    return "status-active";
+  }
+
+  if (status === "On Leave") {
+    return "status-leave";
+  }
+
+  return "status-inactive";
+}
+
+
+function getPhotoUrl(photoPath) {
+  if (!photoPath) {
+    return "";
+  }
+
+  if (photoPath.startsWith("http")) {
+    return photoPath;
+  }
+
+  const cleanPath = photoPath.startsWith("/")
+    ? photoPath
+    : `/${photoPath}`;
+
+  return `${API_URL}${cleanPath}`;
+}
+
+
+// =====================================================
+// EMPLOYEE PHOTO THUMBNAIL
+// =====================================================
+
+function EmployeePhotoThumbnail({ employeeId, initials }) {
+  const [photoUrl, setPhotoUrl] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadPhoto = async () => {
+      try {
+        setLoading(true);
+
+        const photo = await getEmployeePhoto(employeeId);
+
+        if (!isMounted) {
+          return;
+        }
+
+        if (photo?.photo_file_path) {
+          setPhotoUrl(
+            getPhotoUrl(photo.photo_file_path)
+          );
+        } else {
+          setPhotoUrl("");
+        }
+      } catch (error) {
+        if (isMounted) {
+          setPhotoUrl("");
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadPhoto();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [employeeId]);
+
+
+  if (loading) {
+    return (
+      <div className="employee-photo-thumbnail photo-loading">
+        <span>...</span>
+      </div>
+    );
+  }
+
+
+  if (!photoUrl) {
+    return (
+      <div className="employee-photo-thumbnail photo-placeholder">
+        {initials}
+      </div>
+    );
+  }
+
+
+  return (
+    <div className="employee-photo-thumbnail">
+      <img
+        src={photoUrl}
+        alt="Employee"
+        onError={() => setPhotoUrl("")}
+      />
+    </div>
+  );
+}
+
+
+// =====================================================
+// MAIN COMPONENT
+// =====================================================
+
 function Employees() {
+
   // =====================================================
   // EMPLOYEE DATA
   // =====================================================
 
   const [employees, setEmployees] = useState([]);
+
 
   // =====================================================
   // FILTERS
@@ -22,6 +238,7 @@ function Employees() {
   const [gender, setGender] = useState("All");
   const [sortBy, setSortBy] = useState("name");
 
+
   // =====================================================
   // LOADING / ERROR
   // =====================================================
@@ -29,25 +246,33 @@ function Employees() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+
   // =====================================================
   // VIEW EMPLOYEE
   // =====================================================
 
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [viewLoading, setViewLoading] = useState(false);
-  const [viewError, setViewError] = useState("");
+  const [selectedEmployee, setSelectedEmployee] =
+    useState(null);
+
+  const [viewLoading, setViewLoading] =
+    useState(false);
+
+  const [viewError, setViewError] =
+    useState("");
+
+  const [viewPhoto, setViewPhoto] =
+    useState(null);
+
+  const [viewPhotoError, setViewPhotoError] =
+    useState(false);
+
 
   // =====================================================
   // EDIT EMPLOYEE
   // =====================================================
 
-  const [editingEmployee, setEditingEmployee] = useState(null);
-  const [editLoading, setEditLoading] = useState(false);
-  const [editError, setEditError] = useState("");
-
-  // =====================================================
-  // EDIT FORM
-  // =====================================================
+  const [editingEmployee, setEditingEmployee] =
+    useState(null);
 
   const [editForm, setEditForm] = useState({
     emp_id: "",
@@ -57,22 +282,48 @@ function Employees() {
     date_of_birth: "",
     phone: "",
     email: "",
+    address: "",
+    emergency_name: "",
+    emergency_phone: "",
+    emergency_relationship: "",
     department: "",
     designation: "",
     joining_date: "",
     employment_type: "",
     monthly_salary: "",
-    status: "",
-    address: "",
+    status: "Active",
   });
+
+  const [editLoading, setEditLoading] =
+    useState(false);
+
+  const [editError, setEditError] =
+    useState("");
+
+
+  // =====================================================
+  // EDIT PHOTO
+  // =====================================================
+
+  const [editPhoto, setEditPhoto] =
+    useState(null);
+
+  const [editPhotoFile, setEditPhotoFile] =
+    useState(null);
+
+  const [editPhotoLoading, setEditPhotoLoading] =
+    useState(false);
+
+  const [savedEditPhoto, setSavedEditPhoto] =
+    useState(null);
+
+  const [photoInputKey, setPhotoInputKey] =
+    useState(Date.now());
+
 
   // =====================================================
   // FETCH ALL EMPLOYEES
   // =====================================================
-
-  useEffect(() => {
-    fetchEmployees();
-  }, []);
 
   const fetchEmployees = async () => {
     try {
@@ -83,11 +334,6 @@ function Employees() {
         `${API_URL}/api/employees`
       );
 
-      console.log(
-        "GET employees status:",
-        response.status
-      );
-
       if (!response.ok) {
         throw new Error(
           `Server returned ${response.status}`
@@ -96,14 +342,10 @@ function Employees() {
 
       const data = await response.json();
 
-      console.log(
-        "Employees received from backend:",
-        data
-      );
-
       setEmployees(
         Array.isArray(data) ? data : []
       );
+
     } catch (err) {
       console.error(
         "Error fetching employees:",
@@ -113,181 +355,130 @@ function Employees() {
       setError(
         "Unable to load employee data. Make sure FastAPI is running."
       );
+
     } finally {
       setLoading(false);
     }
   };
 
-  // =====================================================
-  // GET EMPLOYEE NAME
-  // =====================================================
 
-  const getEmployeeName = (employee) => {
-    if (!employee) {
-      return "N/A";
-    }
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
 
-    if (employee.name) {
-      return employee.name;
-    }
-
-    return `${employee.first_name || ""} ${
-      employee.last_name || ""
-    }`.trim() || "N/A";
-  };
 
   // =====================================================
   // FILTER + SEARCH + SORT
   // =====================================================
 
   const filteredEmployees = useMemo(() => {
-    let result = employees.filter((employee) => {
-      const searchText =
-        search.trim().toLowerCase();
 
-      // -------------------------------------------------
-      // NAME
-      // -------------------------------------------------
+    let result = employees.filter(
+      (employee) => {
 
-      const employeeName =
-        getEmployeeName(employee).toLowerCase();
+        const searchText =
+          search.trim().toLowerCase();
 
-      // -------------------------------------------------
-      // EMPLOYEE ID
-      // -------------------------------------------------
+        const employeeName =
+          getEmployeeName(employee).toLowerCase();
 
-      const employeeId =
-        String(employee.emp_id || "").toLowerCase();
+        const employeeId =
+          String(
+            employee.emp_id || ""
+          ).toLowerCase();
 
-      // -------------------------------------------------
-      // DATABASE ID
-      // -------------------------------------------------
+        const employeeDatabaseId =
+          String(
+            employee.id || ""
+          ).toLowerCase();
 
-      const databaseId =
-        String(employee.id || "").toLowerCase();
+        const employeePhone =
+          String(
+            employee.phone || ""
+          ).toLowerCase();
 
-      // -------------------------------------------------
-      // PHONE
-      // -------------------------------------------------
+        const employeeEmail =
+          String(
+            employee.email || ""
+          ).toLowerCase();
 
-      const employeePhone =
-        String(employee.phone || "").toLowerCase();
+        const matchesSearch =
+          !searchText ||
+          employeeName.includes(searchText) ||
+          employeeId.includes(searchText) ||
+          employeeDatabaseId.includes(searchText) ||
+          employeePhone.includes(searchText) ||
+          employeeEmail.includes(searchText);
 
-      // -------------------------------------------------
-      // EMAIL
-      // -------------------------------------------------
+        const matchesDepartment =
+          department === "All" ||
+          String(
+            employee.department || ""
+          ).toLowerCase() ===
+            department.toLowerCase();
 
-      const employeeEmail =
-        String(employee.email || "").toLowerCase();
+        const matchesStatus =
+          status === "All" ||
+          String(
+            employee.status || ""
+          ).toLowerCase() ===
+            status.toLowerCase();
 
-      // -------------------------------------------------
-      // SEARCH
-      // -------------------------------------------------
+        const matchesGender =
+          gender === "All" ||
+          String(
+            employee.gender || ""
+          ).toLowerCase() ===
+            gender.toLowerCase();
 
-      const matchesSearch =
-        searchText === "" ||
-        employeeName.includes(searchText) ||
-        employeeId.includes(searchText) ||
-        databaseId.includes(searchText) ||
-        employeePhone.includes(searchText) ||
-        employeeEmail.includes(searchText);
-
-      // -------------------------------------------------
-      // DEPARTMENT
-      // -------------------------------------------------
-
-      const employeeDepartment =
-        String(employee.department || "")
-          .trim()
-          .toLowerCase();
-
-      const selectedDepartment =
-        String(department || "")
-          .trim()
-          .toLowerCase();
-
-      const matchesDepartment =
-        department === "All" ||
-        employeeDepartment === selectedDepartment;
-
-      // -------------------------------------------------
-      // STATUS
-      // -------------------------------------------------
-
-      const employeeStatus =
-        String(employee.status || "")
-          .trim()
-          .toLowerCase();
-
-      const selectedStatus =
-        String(status || "")
-          .trim()
-          .toLowerCase();
-
-      const matchesStatus =
-        status === "All" ||
-        employeeStatus === selectedStatus;
-
-      // -------------------------------------------------
-      // GENDER
-      // -------------------------------------------------
-
-      const employeeGender =
-        String(employee.gender || "")
-          .trim()
-          .toLowerCase();
-
-      const selectedGender =
-        String(gender || "")
-          .trim()
-          .toLowerCase();
-
-      const matchesGender =
-        gender === "All" ||
-        employeeGender === selectedGender;
-
-      return (
-        matchesSearch &&
-        matchesDepartment &&
-        matchesStatus &&
-        matchesGender
-      );
-    });
-
-    // ===================================================
-    // SORT
-    // ===================================================
-
-    result = [...result].sort((a, b) => {
-      if (sortBy === "name") {
-        return getEmployeeName(a).localeCompare(
-          getEmployeeName(b)
-        );
-      }
-
-      if (sortBy === "id") {
-        return String(a.emp_id || "").localeCompare(
-          String(b.emp_id || "")
-        );
-      }
-
-      if (sortBy === "department") {
-        return String(a.department || "").localeCompare(
-          String(b.department || "")
-        );
-      }
-
-      if (sortBy === "joiningDate") {
         return (
-          new Date(b.joining_date || 0) -
-          new Date(a.joining_date || 0)
+          matchesSearch &&
+          matchesDepartment &&
+          matchesStatus &&
+          matchesGender
         );
       }
+    );
 
-      return 0;
-    });
+
+    result = [...result].sort(
+      (a, b) => {
+
+        if (sortBy === "name") {
+          return getEmployeeName(a).localeCompare(
+            getEmployeeName(b)
+          );
+        }
+
+        if (sortBy === "id") {
+          return String(
+            a.emp_id || ""
+          ).localeCompare(
+            String(b.emp_id || "")
+          );
+        }
+
+        if (sortBy === "department") {
+          return String(
+            a.department || ""
+          ).localeCompare(
+            String(b.department || "")
+          );
+        }
+
+        if (sortBy === "joiningDate") {
+          return (
+            new Date(b.joining_date || 0) -
+            new Date(a.joining_date || 0)
+          );
+        }
+
+        return 0;
+      }
+    );
 
     return result;
+
   }, [
     employees,
     search,
@@ -296,6 +487,7 @@ function Employees() {
     gender,
     sortBy,
   ]);
+
 
   // =====================================================
   // COUNTS
@@ -307,26 +499,21 @@ function Employees() {
   const activeEmployees =
     employees.filter(
       (employee) =>
-        String(employee.status || "")
-          .trim()
-          .toLowerCase() === "active"
+        employee.status === "Active"
     ).length;
 
   const leaveEmployees =
     employees.filter(
       (employee) =>
-        String(employee.status || "")
-          .trim()
-          .toLowerCase() === "on leave"
+        employee.status === "On Leave"
     ).length;
 
   const inactiveEmployees =
     employees.filter(
       (employee) =>
-        String(employee.status || "")
-          .trim()
-          .toLowerCase() === "inactive"
+        employee.status === "Inactive"
     ).length;
+
 
   // =====================================================
   // RESET FILTERS
@@ -340,43 +527,33 @@ function Employees() {
     setSortBy("name");
   };
 
+
   // =====================================================
   // VIEW EMPLOYEE
   // =====================================================
 
   const handleViewEmployee = async (empId) => {
-    console.log(
-      "Fetching employee by EMP ID:",
-      empId
-    );
 
     try {
+
       setViewLoading(true);
       setViewError("");
       setSelectedEmployee(null);
+      setViewPhoto(null);
+      setViewPhotoError(false);
 
-      const url =
+      const response = await fetch(
         `${API_URL}/api/employees/emp/${encodeURIComponent(
           empId
-        )}`;
-
-      console.log(
-        "Employee details URL:",
-        url
-      );
-
-      const response = await fetch(url);
-
-      console.log(
-        "Employee details status:",
-        response.status
+        )}`
       );
 
       if (!response.ok) {
+
         const errorData =
-          await response.json().catch(
-            () => null
-          );
+          await response
+            .json()
+            .catch(() => null);
 
         throw new Error(
           errorData?.detail ||
@@ -384,16 +561,50 @@ function Employees() {
         );
       }
 
-      const data =
+      const employee =
         await response.json();
 
-      console.log(
-        "Employee details received:",
-        data
-      );
+      setSelectedEmployee(employee);
 
-      setSelectedEmployee(data);
+
+      // -----------------------------------------------
+      // LOAD EMPLOYEE PHOTO
+      // -----------------------------------------------
+
+      try {
+
+        const photo =
+          await getEmployeePhoto(
+            employee.id
+          );
+
+        if (
+          photo?.photo_file_path
+        ) {
+
+          setViewPhoto(
+            getPhotoUrl(
+              photo.photo_file_path
+            )
+          );
+
+        } else {
+
+          setViewPhoto(null);
+        }
+
+      } catch (photoError) {
+
+        console.error(
+          "Error loading employee photo:",
+          photoError
+        );
+
+        setViewPhoto(null);
+      }
+
     } catch (err) {
+
       console.error(
         "Error fetching employee:",
         err
@@ -403,22 +614,41 @@ function Employees() {
         err.message ||
           "Unable to fetch employee."
       );
+
     } finally {
+
       setViewLoading(false);
     }
   };
 
+
   // =====================================================
-  // OPEN EDIT FORM
+  // CLOSE VIEW MODAL
   // =====================================================
 
-  const handleEditEmployee = (employee) => {
-    console.log(
-      "Opening edit employee:",
-      employee
-    );
+  const closeViewModal = () => {
+    setSelectedEmployee(null);
+    setViewError("");
+    setViewPhoto(null);
+    setViewPhotoError(false);
+  };
+
+
+  // =====================================================
+  // OPEN EDIT MODAL
+  // =====================================================
+
+  const handleEditEmployee = async (employee) => {
+
+    setEditingEmployee(employee);
 
     setEditError("");
+
+    setEditPhoto(null);
+    setEditPhotoFile(null);
+    setSavedEditPhoto(null);
+
+    setPhotoInputKey(Date.now());
 
     setEditForm({
       emp_id: employee.emp_id || "",
@@ -429,6 +659,13 @@ function Employees() {
         employee.date_of_birth || "",
       phone: employee.phone || "",
       email: employee.email || "",
+      address: employee.address || "",
+      emergency_name:
+        employee.emergency_name || "",
+      emergency_phone:
+        employee.emergency_phone || "",
+      emergency_relationship:
+        employee.emergency_relationship || "",
       department:
         employee.department || "",
       designation:
@@ -436,34 +673,219 @@ function Employees() {
       joining_date:
         employee.joining_date || "",
       employment_type:
-        employee.employment_type || "",
+        employee.employment_type ||
+        employee.employment_type_ ||
+        "",
       monthly_salary:
         employee.monthly_salary ?? "",
-      status: employee.status || "",
-      address: employee.address || "",
+      status:
+        employee.status || "Active",
     });
 
-    setEditingEmployee(employee);
+
+    // -----------------------------------------------
+    // LOAD SAVED PHOTO
+    // -----------------------------------------------
+
+    try {
+
+      setEditPhotoLoading(true);
+
+      const photo =
+        await getEmployeePhoto(
+          employee.id
+        );
+
+      if (
+        photo?.photo_file_path
+      ) {
+
+        setSavedEditPhoto({
+          ...photo,
+          url: getPhotoUrl(
+            photo.photo_file_path
+          ),
+        });
+
+      } else {
+
+        setSavedEditPhoto(null);
+      }
+
+    } catch (err) {
+
+      console.error(
+        "Error loading edit photo:",
+        err
+      );
+
+      setSavedEditPhoto(null);
+
+    } finally {
+
+      setEditPhotoLoading(false);
+    }
   };
+
 
   // =====================================================
   // EDIT FORM CHANGE
   // =====================================================
 
   const handleEditChange = (e) => {
-    const { name, value } = e.target;
 
-    setEditForm((currentForm) => ({
-      ...currentForm,
-      [name]: value,
-    }));
+    const {
+      name,
+      value,
+    } = e.target;
+
+    setEditForm(
+      (previous) => ({
+        ...previous,
+        [name]: value,
+      })
+    );
   };
 
+
   // =====================================================
-  // SAVE EDITED EMPLOYEE
+  // SELECT NEW PHOTO
+  // =====================================================
+
+  const handleEditPhotoChange = (e) => {
+
+    const file =
+      e.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+    ];
+
+    if (
+      !allowedTypes.includes(
+        file.type
+      )
+    ) {
+
+      alert(
+        "Please select a JPEG, PNG or WebP image."
+      );
+
+      e.target.value = "";
+      return;
+    }
+
+    if (
+      file.size >
+      5 * 1024 * 1024
+    ) {
+
+      alert(
+        "Photo size must be 5 MB or less."
+      );
+
+      e.target.value = "";
+      return;
+    }
+
+    if (editPhoto) {
+      URL.revokeObjectURL(editPhoto);
+    }
+
+    const previewUrl =
+      URL.createObjectURL(file);
+
+    setEditPhoto(previewUrl);
+    setEditPhotoFile(file);
+  };
+
+
+  // =====================================================
+  // REMOVE SELECTED PHOTO
+  // =====================================================
+
+  const handleRemoveSelectedPhoto = () => {
+
+    if (editPhoto) {
+      URL.revokeObjectURL(editPhoto);
+    }
+
+    setEditPhoto(null);
+    setEditPhotoFile(null);
+
+    setPhotoInputKey(Date.now());
+  };
+
+
+  // =====================================================
+  // DELETE SAVED PHOTO
+  // =====================================================
+
+  const handleDeleteEmployeePhoto = async () => {
+
+    if (!editingEmployee) {
+      return;
+    }
+
+    const confirmDelete =
+      window.confirm(
+        "Are you sure you want to remove this employee photo?"
+      );
+
+    if (!confirmDelete) {
+      return;
+    }
+
+    try {
+
+      setEditPhotoLoading(true);
+
+      await deleteEmployeePhoto(
+        editingEmployee.id
+      );
+
+      setSavedEditPhoto(null);
+
+      setEditPhoto(null);
+      setEditPhotoFile(null);
+
+      setPhotoInputKey(Date.now());
+
+      alert(
+        "Employee photo removed successfully."
+      );
+
+    } catch (err) {
+
+      console.error(
+        "Delete photo error:",
+        err
+      );
+
+      alert(
+        err.message ||
+          "Unable to remove employee photo."
+      );
+
+    } finally {
+
+      setEditPhotoLoading(false);
+    }
+  };
+
+
+  // =====================================================
+  // SAVE EMPLOYEE
   // =====================================================
 
   const handleSaveEmployee = async (e) => {
+
     e.preventDefault();
 
     if (!editingEmployee) {
@@ -471,63 +893,67 @@ function Employees() {
     }
 
     try {
+
       setEditLoading(true);
       setEditError("");
 
-      console.log(
-        "Updating database employee ID:",
-        editingEmployee.id
-      );
-
-      const payload = {
-        emp_id: editForm.emp_id.trim(),
-
-        first_name:
-          editForm.first_name.trim(),
-
-        last_name:
-          editForm.last_name.trim(),
-
-        gender:
-          editForm.gender,
-
+      const employeeData = {
+        emp_id: editForm.emp_id,
+        first_name: editForm.first_name,
+        last_name: editForm.last_name,
+        gender: editForm.gender,
         date_of_birth:
           editForm.date_of_birth,
+        phone: editForm.phone,
+        email: editForm.email,
 
-        phone:
-          editForm.phone.trim(),
+        address:
+          editForm.address === ""
+            ? null
+            : editForm.address,
 
-        email:
-          editForm.email.trim(),
+        emergency_name:
+          editForm.emergency_name === ""
+            ? null
+            : editForm.emergency_name,
+
+        emergency_phone:
+          editForm.emergency_phone === ""
+            ? null
+            : editForm.emergency_phone,
+
+        emergency_relationship:
+          editForm.emergency_relationship === ""
+            ? null
+            : editForm.emergency_relationship,
 
         department:
-          editForm.department.trim(),
+          editForm.department,
 
         designation:
-          editForm.designation.trim(),
+          editForm.designation,
 
         joining_date:
           editForm.joining_date,
 
         employment_type:
-          editForm.employment_type.trim(),
+          editForm.employment_type,
 
         monthly_salary:
           editForm.monthly_salary === ""
             ? null
-            : Number(editForm.monthly_salary),
+            : Number(
+                editForm.monthly_salary
+              ),
 
         status:
           editForm.status,
-
-        address:
-          editForm.address.trim(),
       };
 
-      console.log(
-        "PUT payload:",
-        payload
-      );
+
+      // -----------------------------------------------
+      // UPDATE EMPLOYEE DATA
+      // -----------------------------------------------
 
       const response = await fetch(
         `${API_URL}/api/employees/id/${editingEmployee.id}`,
@@ -537,63 +963,70 @@ function Employees() {
           headers: {
             "Content-Type":
               "application/json",
-
-            Accept:
-              "application/json",
           },
 
-          body: JSON.stringify(payload),
+          body: JSON.stringify(
+            employeeData
+          ),
         }
       );
 
-      console.log(
-        "PUT employee status:",
-        response.status
-      );
 
       if (!response.ok) {
-        const errorData =
-          await response.json().catch(
-            () => null
-          );
 
-        console.error(
-          "Update backend error:",
-          errorData
-        );
+        const data =
+          await response
+            .json()
+            .catch(() => null);
 
         throw new Error(
-          errorData?.detail ||
-            `Failed to update employee (${response.status})`
+          data?.detail ||
+            "Failed to update employee."
         );
       }
 
-      const updatedEmployee =
-        await response.json();
 
-      console.log(
-        "Employee updated:",
-        updatedEmployee
-      );
+      // -----------------------------------------------
+      // UPLOAD NEW PHOTO IF SELECTED
+      // -----------------------------------------------
 
-      // -------------------------------------------------
-      // CLOSE EDIT MODAL
-      // -------------------------------------------------
+      if (editPhotoFile) {
 
-      setEditingEmployee(null);
+        await uploadEmployeePhoto(
+          editingEmployee.id,
+          editPhotoFile
+        );
+      }
 
-      // -------------------------------------------------
+
+      // -----------------------------------------------
       // REFRESH EMPLOYEE LIST
-      // -------------------------------------------------
+      // -----------------------------------------------
 
       await fetchEmployees();
 
       alert(
         "Employee updated successfully."
       );
+
+
+      // -----------------------------------------------
+      // CLOSE MODAL
+      // -----------------------------------------------
+
+      if (editPhoto) {
+        URL.revokeObjectURL(editPhoto);
+      }
+
+      setEditingEmployee(null);
+      setEditPhoto(null);
+      setEditPhotoFile(null);
+      setSavedEditPhoto(null);
+
     } catch (err) {
+
       console.error(
-        "Error updating employee:",
+        "Update employee error:",
         err
       );
 
@@ -601,16 +1034,42 @@ function Employees() {
         err.message ||
           "Unable to update employee."
       );
+
     } finally {
+
       setEditLoading(false);
     }
   };
+
+
+  // =====================================================
+  // CLOSE EDIT MODAL
+  // =====================================================
+
+  const closeEditModal = () => {
+
+    if (editPhoto) {
+      URL.revokeObjectURL(editPhoto);
+    }
+
+    setEditingEmployee(null);
+
+    setEditError("");
+
+    setEditPhoto(null);
+    setEditPhotoFile(null);
+    setSavedEditPhoto(null);
+
+    setPhotoInputKey(Date.now());
+  };
+
 
   // =====================================================
   // DELETE EMPLOYEE
   // =====================================================
 
   const handleDelete = async (databaseId) => {
+
     const confirmDelete =
       window.confirm(
         "Are you sure you want to delete this employee?"
@@ -621,6 +1080,7 @@ function Employees() {
     }
 
     try {
+
       const response = await fetch(
         `${API_URL}/api/employees/id/${databaseId}`,
         {
@@ -629,10 +1089,11 @@ function Employees() {
       );
 
       if (!response.ok) {
+
         const data =
-          await response.json().catch(
-            () => null
-          );
+          await response
+            .json()
+            .catch(() => null);
 
         throw new Error(
           data?.detail ||
@@ -645,7 +1106,9 @@ function Employees() {
       alert(
         "Employee deleted successfully."
       );
+
     } catch (err) {
+
       console.error(
         "Delete error:",
         err
@@ -658,42 +1121,22 @@ function Employees() {
     }
   };
 
-  // =====================================================
-  // CLOSE VIEW
-  // =====================================================
-
-  const closeView = () => {
-    setSelectedEmployee(null);
-    setViewError("");
-  };
-
-  // =====================================================
-  // CLOSE EDIT
-  // =====================================================
-
-  const closeEdit = () => {
-    if (editLoading) {
-      return;
-    }
-
-    setEditingEmployee(null);
-    setEditError("");
-  };
 
   // =====================================================
   // LOADING
   // =====================================================
 
   if (loading) {
+
     return (
       <div className="employees-page">
+
         <div className="employee-table-card">
-          <div
-            style={{
-              padding: "40px",
-              textAlign: "center",
-            }}
-          >
+
+          <div className="employees-state">
+
+            <div className="state-spinner"></div>
+
             <h2>
               Loading employees...
             </h2>
@@ -702,17 +1145,22 @@ function Employees() {
               Please wait while employee
               data is being loaded.
             </p>
+
           </div>
+
         </div>
+
       </div>
     );
   }
+
 
   // =====================================================
   // ERROR
   // =====================================================
 
   if (error) {
+
     return (
       <div className="employees-page">
 
@@ -738,14 +1186,15 @@ function Employees() {
 
         </div>
 
+
         <div className="employee-table-card">
 
-          <div
-            style={{
-              padding: "40px",
-              textAlign: "center",
-            }}
-          >
+          <div className="employees-state error-state">
+
+            <div className="state-icon">
+              !
+            </div>
+
             <h2>
               Unable to load employees
             </h2>
@@ -756,12 +1205,8 @@ function Employees() {
 
             <button
               type="button"
+              className="try-again-btn"
               onClick={fetchEmployees}
-              style={{
-                marginTop: "15px",
-                padding: "10px 20px",
-                cursor: "pointer",
-              }}
             >
               Try Again
             </button>
@@ -774,6 +1219,7 @@ function Employees() {
     );
   }
 
+
   // =====================================================
   // MAIN PAGE
   // =====================================================
@@ -781,8 +1227,9 @@ function Employees() {
   return (
     <div className="employees-page">
 
+
       {/* =================================================
-          HEADER
+          PAGE HEADER
       ================================================= */}
 
       <div className="employees-header">
@@ -793,10 +1240,11 @@ function Employees() {
           </h1>
 
           <p>
-            Manage employee information and
-            workforce details
+            Manage employee information
+            and workforce details
           </p>
         </div>
+
 
         <Link
           to="/add-employee"
@@ -813,6 +1261,7 @@ function Employees() {
       ================================================= */}
 
       <div className="employee-summary">
+
 
         <div className="employee-summary-card">
 
@@ -906,9 +1355,11 @@ function Employees() {
             </h2>
 
             <p>
-              Search and filter employee records
+              Search and filter employee
+              records
             </p>
           </div>
+
 
           <span className="result-count">
             {filteredEmployees.length} employee
@@ -921,6 +1372,7 @@ function Employees() {
 
 
         <div className="filter-row">
+
 
           {/* SEARCH */}
 
@@ -935,7 +1387,9 @@ function Employees() {
               placeholder="Search name, EMP ID, phone or email..."
               value={search}
               onChange={(e) =>
-                setSearch(e.target.value)
+                setSearch(
+                  e.target.value
+                )
               }
             />
 
@@ -953,7 +1407,9 @@ function Employees() {
             <select
               value={department}
               onChange={(e) =>
-                setDepartment(e.target.value)
+                setDepartment(
+                  e.target.value
+                )
               }
             >
 
@@ -961,29 +1417,16 @@ function Employees() {
                 All Departments
               </option>
 
-              <option value="SPINNING">
-                SPINNING
-              </option>
-
-              <option value="WEAVING-Rapier">
-                WEAVING-Rapier
-              </option>
-
-              <option value="WEAVING-S4">
-                WEAVING-S4
-              </option>
-
-              <option value="HR">
-                HR
-              </option>
-
-              <option value="IT">
-                IT
-              </option>
-
-              <option value="Administration">
-                Administration
-              </option>
+              {DEPARTMENTS.map(
+                (item) => (
+                  <option
+                    key={item}
+                    value={item}
+                  >
+                    {item}
+                  </option>
+                )
+              )}
 
             </select>
 
@@ -1001,7 +1444,9 @@ function Employees() {
             <select
               value={status}
               onChange={(e) =>
-                setStatus(e.target.value)
+                setStatus(
+                  e.target.value
+                )
               }
             >
 
@@ -1009,17 +1454,16 @@ function Employees() {
                 All Status
               </option>
 
-              <option value="Active">
-                Active
-              </option>
-
-              <option value="On Leave">
-                On Leave
-              </option>
-
-              <option value="Inactive">
-                Inactive
-              </option>
+              {STATUSES.map(
+                (item) => (
+                  <option
+                    key={item}
+                    value={item}
+                  >
+                    {item}
+                  </option>
+                )
+              )}
 
             </select>
 
@@ -1037,7 +1481,9 @@ function Employees() {
             <select
               value={gender}
               onChange={(e) =>
-                setGender(e.target.value)
+                setGender(
+                  e.target.value
+                )
               }
             >
 
@@ -1045,13 +1491,16 @@ function Employees() {
                 All Gender
               </option>
 
-              <option value="Male">
-                Male
-              </option>
-
-              <option value="Female">
-                Female
-              </option>
+              {GENDERS.map(
+                (item) => (
+                  <option
+                    key={item}
+                    value={item}
+                  >
+                    {item}
+                  </option>
+                )
+              )}
 
             </select>
 
@@ -1084,7 +1533,9 @@ function Employees() {
             <select
               value={sortBy}
               onChange={(e) =>
-                setSortBy(e.target.value)
+                setSortBy(
+                  e.target.value
+                )
               }
             >
 
@@ -1127,9 +1578,7 @@ function Employees() {
             </h2>
 
             <p>
-              Showing{" "}
-              {filteredEmployees.length}{" "}
-              of{" "}
+              Showing {filteredEmployees.length} of{" "}
               {employees.length} employees
             </p>
           </div>
@@ -1144,6 +1593,10 @@ function Employees() {
             <thead>
 
               <tr>
+
+                <th>
+                  Photo
+                </th>
 
                 <th>
                   Employee
@@ -1193,15 +1646,37 @@ function Employees() {
                 filteredEmployees.map(
                   (employee) => {
 
-                    const employeeName =
+                    const name =
                       getEmployeeName(
                         employee
                       );
+
+                    const initials =
+                      getInitials(
+                        employee
+                      );
+
 
                     return (
                       <tr
                         key={employee.id}
                       >
+
+                        {/* PHOTO */}
+
+                        <td>
+
+                          <EmployeePhotoThumbnail
+                            employeeId={
+                              employee.id
+                            }
+                            initials={
+                              initials
+                            }
+                          />
+
+                        </td>
+
 
                         {/* EMPLOYEE */}
 
@@ -1211,19 +1686,7 @@ function Employees() {
 
                             <div className="employee-avatar">
 
-                              {employeeName
-                                .split(" ")
-                                .filter(Boolean)
-                                .map(
-                                  (word) =>
-                                    word[0]
-                                )
-                                .join("")
-                                .substring(
-                                  0,
-                                  2
-                                )
-                                .toUpperCase()}
+                              {initials}
 
                             </div>
 
@@ -1231,12 +1694,11 @@ function Employees() {
                             <div>
 
                               <strong>
-                                {employeeName}
+                                {name || "Unknown Employee"}
                               </strong>
 
                               <small>
-                                {employee.email ||
-                                  "No email"}
+                                {employee.email || "-"}
                               </small>
 
                             </div>
@@ -1260,7 +1722,7 @@ function Employees() {
                         {/* PHONE */}
 
                         <td>
-                          {employee.phone}
+                          {employee.phone || "-"}
                         </td>
 
 
@@ -1269,7 +1731,7 @@ function Employees() {
                         <td>
 
                           <span className="department-badge">
-                            {employee.department}
+                            {employee.department || "-"}
                           </span>
 
                         </td>
@@ -1278,21 +1740,23 @@ function Employees() {
                         {/* DESIGNATION */}
 
                         <td>
-                          {employee.designation}
+                          {employee.designation || "-"}
                         </td>
 
 
                         {/* GENDER */}
 
                         <td>
-                          {employee.gender}
+                          {employee.gender || "-"}
                         </td>
 
 
                         {/* JOINING DATE */}
 
                         <td>
-                          {employee.joining_date}
+                          {formatDate(
+                            employee.joining_date
+                          )}
                         </td>
 
 
@@ -1301,37 +1765,21 @@ function Employees() {
                         <td>
 
                           <span
-                            className={`employee-status ${
-                              String(
-                                employee.status ||
-                                  ""
-                              )
-                                .toLowerCase() ===
-                              "active"
-                                ? "status-active"
-                                : String(
-                                    employee.status ||
-                                      ""
-                                  )
-                                    .toLowerCase() ===
-                                  "on leave"
-                                ? "status-leave"
-                                : "status-inactive"
-                            }`}
+                            className={`employee-status ${getStatusClass(
+                              employee.status
+                            )}`}
                           >
-                            {employee.status}
+                            {employee.status || "-"}
                           </span>
 
                         </td>
 
 
-                        {/* ACTION */}
+                        {/* ACTIONS */}
 
                         <td>
 
                           <div className="employee-actions">
-
-                            {/* VIEW */}
 
                             <button
                               type="button"
@@ -1347,8 +1795,6 @@ function Employees() {
                             </button>
 
 
-                            {/* EDIT */}
-
                             <button
                               type="button"
                               className="action-edit"
@@ -1362,8 +1808,6 @@ function Employees() {
                               ✏️
                             </button>
 
-
-                            {/* DELETE */}
 
                             <button
                               type="button"
@@ -1392,7 +1836,7 @@ function Employees() {
                 <tr>
 
                   <td
-                    colSpan="9"
+                    colSpan="10"
                     className="no-employees"
                   >
 
@@ -1437,51 +1881,29 @@ function Employees() {
         selectedEmployee) && (
 
         <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background:
-              "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 9999,
-            padding: "20px",
-          }}
+          className="employee-modal-overlay"
           onClick={() => {
             if (!viewLoading) {
-              closeView();
+              closeViewModal();
             }
           }}
         >
 
           <div
-            style={{
-              background: "#fff",
-              width: "90%",
-              maxWidth: "700px",
-              maxHeight: "90vh",
-              overflowY: "auto",
-              borderRadius: "12px",
-              padding: "30px",
-              boxShadow:
-                "0 20px 60px rgba(0,0,0,0.25)",
-            }}
+            className="employee-modal view-modal"
             onClick={(e) =>
               e.stopPropagation()
             }
           >
 
-            {/* LOADING */}
+
+            {/* VIEW LOADING */}
 
             {viewLoading && (
 
-              <div
-                style={{
-                  textAlign: "center",
-                  padding: "40px",
-                }}
-              >
+              <div className="modal-state">
+
+                <div className="state-spinner"></div>
 
                 <h2>
                   Loading employee...
@@ -1497,12 +1919,16 @@ function Employees() {
             )}
 
 
-            {/* ERROR */}
+            {/* VIEW ERROR */}
 
             {!viewLoading &&
               viewError && (
 
-                <div>
+                <div className="modal-state error-state">
+
+                  <div className="state-icon">
+                    !
+                  </div>
 
                   <h2>
                     Unable to fetch employee
@@ -1514,37 +1940,34 @@ function Employees() {
 
                   <button
                     type="button"
-                    onClick={closeView}
+                    className="modal-primary-btn"
+                    onClick={
+                      closeViewModal
+                    }
                   >
                     Close
                   </button>
 
                 </div>
-
               )}
 
 
-            {/* DETAILS */}
+            {/* EMPLOYEE DETAILS */}
 
             {!viewLoading &&
               !viewError &&
               selectedEmployee && (
 
-                <div>
+                <>
 
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent:
-                        "space-between",
-                      alignItems:
-                        "center",
-                      marginBottom:
-                        "25px",
-                    }}
-                  >
+                  {/* =================================================
+                      VIEW MODAL HEADER
+                      PHOTO MOVED TO TOP-RIGHT
+                  ================================================= */}
 
-                    <div>
+                  <div className="modal-header">
+
+                    <div className="view-employee-title">
 
                       <h2>
                         {getEmployeeName(
@@ -1564,13 +1987,40 @@ function Employees() {
                     </div>
 
 
+                    <div className="view-photo-large">
+
+                      {viewPhoto &&
+                      !viewPhotoError ? (
+
+                        <img
+                          src={viewPhoto}
+                          alt="Employee"
+                          onError={() =>
+                            setViewPhotoError(
+                              true
+                            )
+                          }
+                        />
+
+                      ) : (
+
+                        <span>
+                          {getInitials(
+                            selectedEmployee
+                          )}
+                        </span>
+
+                      )}
+
+                    </div>
+
+
                     <button
                       type="button"
-                      onClick={closeView}
-                      style={{
-                        fontSize: "20px",
-                        cursor: "pointer",
-                      }}
+                      className="modal-close-btn"
+                      onClick={
+                        closeViewModal
+                      }
                     >
                       ✕
                     </button>
@@ -1578,300 +2028,348 @@ function Employees() {
                   </div>
 
 
-                  <hr />
+                  <div className="modal-divider"></div>
 
 
-                  <h3>
-                    Personal Information
-                  </h3>
+                  {/* PERSONAL INFORMATION */}
+
+                  <section className="details-section">
+
+                    <h3>
+                      Personal Information
+                    </h3>
 
 
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns:
-                        "1fr 1fr",
-                      gap: "15px",
-                      marginBottom:
-                        "25px",
-                    }}
-                  >
+                    <div className="details-grid">
 
-                    <div>
-                      <strong>
-                        First Name
-                      </strong>
+                      <div className="detail-item">
 
-                      <div>
-                        {
-                          selectedEmployee.first_name
-                        }
+                        <span>
+                          First Name
+                        </span>
+
+                        <strong>
+                          {
+                            selectedEmployee.first_name ||
+                            "-"
+                          }
+                        </strong>
+
                       </div>
+
+
+                      <div className="detail-item">
+
+                        <span>
+                          Last Name
+                        </span>
+
+                        <strong>
+                          {
+                            selectedEmployee.last_name ||
+                            "-"
+                          }
+                        </strong>
+
+                      </div>
+
+
+                      <div className="detail-item">
+
+                        <span>
+                          Gender
+                        </span>
+
+                        <strong>
+                          {
+                            selectedEmployee.gender ||
+                            "-"
+                          }
+                        </strong>
+
+                      </div>
+
+
+                      <div className="detail-item">
+
+                        <span>
+                          Date of Birth
+                        </span>
+
+                        <strong>
+                          {formatDate(
+                            selectedEmployee.date_of_birth
+                          )}
+                        </strong>
+
+                      </div>
+
+
+                      <div className="detail-item">
+
+                        <span>
+                          Phone
+                        </span>
+
+                        <strong>
+                          {
+                            selectedEmployee.phone ||
+                            "-"
+                          }
+                        </strong>
+
+                      </div>
+
+
+                      <div className="detail-item">
+
+                        <span>
+                          Email
+                        </span>
+
+                        <strong>
+                          {
+                            selectedEmployee.email ||
+                            "-"
+                          }
+                        </strong>
+
+                      </div>
+
+
+                      <div className="detail-item detail-full">
+
+                        <span>
+                          Address
+                        </span>
+
+                        <strong>
+                          {
+                            selectedEmployee.address ||
+                            "-"
+                          }
+                        </strong>
+
+                      </div>
+
                     </div>
 
+                  </section>
 
-                    <div>
-                      <strong>
-                        Last Name
-                      </strong>
 
-                      <div>
-                        {
-                          selectedEmployee.last_name
-                        }
+                  {/* EMERGENCY INFORMATION */}
+
+                  <section className="details-section">
+
+                    <h3>
+                      Emergency Contact
+                    </h3>
+
+
+                    <div className="details-grid">
+
+                      <div className="detail-item">
+
+                        <span>
+                          Contact Name
+                        </span>
+
+                        <strong>
+                          {
+                            selectedEmployee.emergency_name ||
+                            "-"
+                          }
+                        </strong>
+
                       </div>
+
+
+                      <div className="detail-item">
+
+                        <span>
+                          Contact Phone
+                        </span>
+
+                        <strong>
+                          {
+                            selectedEmployee.emergency_phone ||
+                            "-"
+                          }
+                        </strong>
+
+                      </div>
+
+
+                      <div className="detail-item">
+
+                        <span>
+                          Relationship
+                        </span>
+
+                        <strong>
+                          {
+                            selectedEmployee.emergency_relationship ||
+                            "-"
+                          }
+                        </strong>
+
+                      </div>
+
                     </div>
 
+                  </section>
 
-                    <div>
-                      <strong>
-                        Gender
-                      </strong>
 
-                      <div>
-                        {
-                          selectedEmployee.gender
-                        }
+                  {/* EMPLOYMENT INFORMATION */}
+
+                  <section className="details-section">
+
+                    <h3>
+                      Employment Information
+                    </h3>
+
+
+                    <div className="details-grid">
+
+                      <div className="detail-item">
+
+                        <span>
+                          Employee ID
+                        </span>
+
+                        <strong>
+                          {
+                            selectedEmployee.emp_id ||
+                            "-"
+                          }
+                        </strong>
+
                       </div>
+
+
+                      <div className="detail-item">
+
+                        <span>
+                          Department
+                        </span>
+
+                        <strong>
+                          {
+                            selectedEmployee.department ||
+                            "-"
+                          }
+                        </strong>
+
+                      </div>
+
+
+                      <div className="detail-item">
+
+                        <span>
+                          Designation
+                        </span>
+
+                        <strong>
+                          {
+                            selectedEmployee.designation ||
+                            "-"
+                          }
+                        </strong>
+
+                      </div>
+
+
+                      <div className="detail-item">
+
+                        <span>
+                          Joining Date
+                        </span>
+
+                        <strong>
+                          {formatDate(
+                            selectedEmployee.joining_date
+                          )}
+                        </strong>
+
+                      </div>
+
+
+                      <div className="detail-item">
+
+                        <span>
+                          Employment Type
+                        </span>
+
+                        <strong>
+                          {
+                            selectedEmployee.employment_type ||
+                            selectedEmployee.employment_type_ ||
+                            "-"
+                          }
+                        </strong>
+
+                      </div>
+
+
+                      <div className="detail-item">
+
+                        <span>
+                          Monthly Salary
+                        </span>
+
+                        <strong>
+                          {formatSalary(
+                            selectedEmployee.monthly_salary
+                          )}
+                        </strong>
+
+                      </div>
+
+
+                      <div className="detail-item">
+
+                        <span>
+                          Status
+                        </span>
+
+                        <strong
+                          className={`detail-status ${getStatusClass(
+                            selectedEmployee.status
+                          )}`}
+                        >
+                          {
+                            selectedEmployee.status ||
+                            "-"
+                          }
+                        </strong>
+
+                      </div>
+
                     </div>
 
-
-                    <div>
-                      <strong>
-                        Date of Birth
-                      </strong>
-
-                      <div>
-                        {
-                          selectedEmployee.date_of_birth
-                        }
-                      </div>
-                    </div>
+                  </section>
 
 
-                    <div>
-                      <strong>
-                        Phone
-                      </strong>
+                  <div className="modal-footer">
 
-                      <div>
-                        {
-                          selectedEmployee.phone
-                        }
-                      </div>
-                    </div>
-
-
-                    <div>
-                      <strong>
-                        Email
-                      </strong>
-
-                      <div>
-                        {
-                          selectedEmployee.email
-                        }
-                      </div>
-                    </div>
-
-
-                    <div
-                      style={{
-                        gridColumn:
-                          "1 / -1",
-                      }}
+                    <button
+                      type="button"
+                      className="modal-secondary-btn"
+                      onClick={
+                        closeViewModal
+                      }
                     >
-                      <strong>
-                        Address
-                      </strong>
-
-                      <div>
-                        {
-                          selectedEmployee.address ||
-                          "N/A"
-                        }
-                      </div>
-                    </div>
+                      Close
+                    </button>
 
                   </div>
 
-
-                  <h3>
-                    Emergency Contact
-                  </h3>
-
-
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns:
-                        "1fr 1fr",
-                      gap: "15px",
-                      marginBottom:
-                        "25px",
-                    }}
-                  >
-
-                    <div>
-                      <strong>
-                        Name
-                      </strong>
-
-                      <div>
-                        {
-                          selectedEmployee.emergency_name ||
-                          "N/A"
-                        }
-                      </div>
-                    </div>
-
-
-                    <div>
-                      <strong>
-                        Phone
-                      </strong>
-
-                      <div>
-                        {
-                          selectedEmployee.emergency_phone ||
-                          "N/A"
-                        }
-                      </div>
-                    </div>
-
-
-                    <div>
-                      <strong>
-                        Relationship
-                      </strong>
-
-                      <div>
-                        {
-                          selectedEmployee.emergency_relationship ||
-                          "N/A"
-                        }
-                      </div>
-                    </div>
-
-                  </div>
-
-
-                  <h3>
-                    Employment Information
-                  </h3>
-
-
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns:
-                        "1fr 1fr",
-                      gap: "15px",
-                    }}
-                  >
-
-                    <div>
-                      <strong>
-                        Employee ID
-                      </strong>
-
-                      <div>
-                        {
-                          selectedEmployee.emp_id
-                        }
-                      </div>
-                    </div>
-
-
-                    <div>
-                      <strong>
-                        Department
-                      </strong>
-
-                      <div>
-                        {
-                          selectedEmployee.department
-                        }
-                      </div>
-                    </div>
-
-
-                    <div>
-                      <strong>
-                        Designation
-                      </strong>
-
-                      <div>
-                        {
-                          selectedEmployee.designation
-                        }
-                      </div>
-                    </div>
-
-
-                    <div>
-                      <strong>
-                        Joining Date
-                      </strong>
-
-                      <div>
-                        {
-                          selectedEmployee.joining_date
-                        }
-                      </div>
-                    </div>
-
-
-                    <div>
-                      <strong>
-                        Employment Type
-                      </strong>
-
-                      <div>
-                        {
-                          selectedEmployee.employment_type ||
-                          "N/A"
-                        }
-                      </div>
-                    </div>
-
-
-                    <div>
-                      <strong>
-                        Monthly Salary
-                      </strong>
-
-                      <div>
-                        {
-                          selectedEmployee.monthly_salary ??
-                          "N/A"
-                        }
-                      </div>
-                    </div>
-
-
-                    <div>
-                      <strong>
-                        Status
-                      </strong>
-
-                      <div>
-                        {
-                          selectedEmployee.status
-                        }
-                      </div>
-                    </div>
-
-                  </div>
-
-                </div>
-
+                </>
               )}
 
           </div>
 
         </div>
-
       )}
 
 
@@ -1882,70 +2380,32 @@ function Employees() {
       {editingEmployee && (
 
         <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background:
-              "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 10000,
-            padding: "20px",
-          }}
+          className="employee-modal-overlay"
           onClick={() => {
             if (!editLoading) {
-              closeEdit();
+              closeEditModal();
             }
           }}
         >
 
           <div
-            style={{
-              background: "#fff",
-              width: "95%",
-              maxWidth: "900px",
-              maxHeight: "92vh",
-              overflowY: "auto",
-              borderRadius: "14px",
-              padding: "30px",
-              boxShadow:
-                "0 20px 60px rgba(0,0,0,0.3)",
-            }}
+            className="employee-modal edit-modal"
             onClick={(e) =>
               e.stopPropagation()
             }
           >
 
-            {/* EDIT HEADER */}
-
-            <div
-              style={{
-                display: "flex",
-                justifyContent:
-                  "space-between",
-                alignItems: "center",
-                marginBottom: "25px",
-              }}
-            >
+            <div className="modal-header">
 
               <div>
 
-                <h2
-                  style={{
-                    margin: 0,
-                  }}
-                >
+                <h2>
                   Edit Employee
                 </h2>
 
-                <p
-                  style={{
-                    marginTop: "6px",
-                    color: "#666",
-                  }}
-                >
+                <p>
                   Update employee information
+                  and profile photo.
                 </p>
 
               </div>
@@ -1953,15 +2413,11 @@ function Employees() {
 
               <button
                 type="button"
-                onClick={closeEdit}
+                className="modal-close-btn"
+                onClick={
+                  closeEditModal
+                }
                 disabled={editLoading}
-                style={{
-                  border: "none",
-                  background:
-                    "transparent",
-                  fontSize: "24px",
-                  cursor: "pointer",
-                }}
               >
                 ✕
               </button>
@@ -1969,713 +2425,677 @@ function Employees() {
             </div>
 
 
-            {/* ERROR */}
-
             {editError && (
 
-              <div
-                style={{
-                  background: "#ffe8e8",
-                  color: "#b00020",
-                  padding: "12px 15px",
-                  borderRadius: "8px",
-                  marginBottom: "20px",
-                }}
-              >
+              <div className="form-error-message">
                 {editError}
               </div>
 
             )}
 
 
-            {/* FORM */}
-
             <form
-              onSubmit={handleSaveEmployee}
+              className="edit-employee-form"
+              onSubmit={
+                handleSaveEmployee
+              }
             >
 
-              {/* =======================================
-                  PERSONAL INFORMATION
-              ======================================= */}
 
-              <h3>
-                Personal Information
-              </h3>
+              {/* BASIC INFORMATION */}
 
+              <section className="edit-section">
 
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns:
-                    "1fr 1fr",
-                  gap: "18px",
-                  marginBottom: "25px",
-                }}
-              >
+                <div className="edit-section-heading">
 
-                {/* EMP ID */}
+                  <div className="edit-section-icon">
+                    👤
+                  </div>
 
-                <div>
+                  <div>
 
-                  <label>
-                    Employee ID
-                  </label>
+                    <h3>
+                      Basic Information
+                    </h3>
 
-                  <input
-                    type="text"
-                    name="emp_id"
-                    value={
-                      editForm.emp_id
-                    }
-                    onChange={
-                      handleEditChange
-                    }
-                    required
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      marginTop: "6px",
-                      boxSizing:
-                        "border-box",
-                    }}
-                  />
+                    <p>
+                      Employee personal details
+                    </p>
+
+                  </div>
 
                 </div>
 
 
-                {/* FIRST NAME */}
+                <div className="edit-form-grid">
 
-                <div>
+                  <div className="edit-form-group">
 
-                  <label>
-                    First Name
-                  </label>
+                    <label>
+                      Employee ID
+                    </label>
 
-                  <input
-                    type="text"
-                    name="first_name"
-                    value={
-                      editForm.first_name
-                    }
-                    onChange={
-                      handleEditChange
-                    }
-                    required
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      marginTop: "6px",
-                      boxSizing:
-                        "border-box",
-                    }}
-                  />
+                    <input
+                      type="text"
+                      name="emp_id"
+                      value={
+                        editForm.emp_id
+                      }
+                      onChange={
+                        handleEditChange
+                      }
+                      required
+                    />
+
+                  </div>
+
+
+                  <div className="edit-form-group">
+
+                    <label>
+                      First Name
+                    </label>
+
+                    <input
+                      type="text"
+                      name="first_name"
+                      value={
+                        editForm.first_name
+                      }
+                      onChange={
+                        handleEditChange
+                      }
+                      required
+                    />
+
+                  </div>
+
+
+                  <div className="edit-form-group">
+
+                    <label>
+                      Last Name
+                    </label>
+
+                    <input
+                      type="text"
+                      name="last_name"
+                      value={
+                        editForm.last_name
+                      }
+                      onChange={
+                        handleEditChange
+                      }
+                      required
+                    />
+
+                  </div>
+
+
+                  <div className="edit-form-group">
+
+                    <label>
+                      Gender
+                    </label>
+
+                    <select
+                      name="gender"
+                      value={
+                        editForm.gender
+                      }
+                      onChange={
+                        handleEditChange
+                      }
+                      required
+                    >
+
+                      <option value="">
+                        Select Gender
+                      </option>
+
+                      {GENDERS.map(
+                        (item) => (
+                          <option
+                            key={item}
+                            value={item}
+                          >
+                            {item}
+                          </option>
+                        )
+                      )}
+
+                    </select>
+
+                  </div>
+
+
+                  <div className="edit-form-group">
+
+                    <label>
+                      Date of Birth
+                    </label>
+
+                    <input
+                      type="date"
+                      name="date_of_birth"
+                      value={
+                        editForm.date_of_birth
+                      }
+                      onChange={
+                        handleEditChange
+                      }
+                      required
+                    />
+
+                  </div>
+
+
+                  <div className="edit-form-group">
+
+                    <label>
+                      Phone
+                    </label>
+
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={
+                        editForm.phone
+                      }
+                      onChange={
+                        handleEditChange
+                      }
+                      required
+                    />
+
+                  </div>
+
+
+                  <div className="edit-form-group edit-full-width">
+
+                    <label>
+                      Email
+                    </label>
+
+                    <input
+                      type="email"
+                      name="email"
+                      value={
+                        editForm.email
+                      }
+                      onChange={
+                        handleEditChange
+                      }
+                      required
+                    />
+
+                  </div>
+
+
+                  <div className="edit-form-group edit-full-width">
+
+                    <label>
+                      Address
+                    </label>
+
+                    <textarea
+                      name="address"
+                      value={
+                        editForm.address
+                      }
+                      onChange={
+                        handleEditChange
+                      }
+                      rows="3"
+                    />
+
+                  </div>
+
+                </div>
+
+              </section>
+
+
+              {/* EMERGENCY CONTACT */}
+
+              <section className="edit-section">
+
+                <div className="edit-section-heading">
+
+                  <div className="edit-section-icon">
+                    ☎
+                  </div>
+
+                  <div>
+
+                    <h3>
+                      Emergency Contact
+                    </h3>
+
+                    <p>
+                      Emergency contact information
+                    </p>
+
+                  </div>
 
                 </div>
 
 
-                {/* LAST NAME */}
+                <div className="edit-form-grid">
 
-                <div>
+                  <div className="edit-form-group">
 
-                  <label>
-                    Last Name
-                  </label>
+                    <label>
+                      Contact Name
+                    </label>
 
-                  <input
-                    type="text"
-                    name="last_name"
-                    value={
-                      editForm.last_name
-                    }
-                    onChange={
-                      handleEditChange
-                    }
-                    required
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      marginTop: "6px",
-                      boxSizing:
-                        "border-box",
-                    }}
-                  />
+                    <input
+                      type="text"
+                      name="emergency_name"
+                      value={
+                        editForm.emergency_name
+                      }
+                      onChange={
+                        handleEditChange
+                      }
+                    />
+
+                  </div>
+
+
+                  <div className="edit-form-group">
+
+                    <label>
+                      Contact Phone
+                    </label>
+
+                    <input
+                      type="tel"
+                      name="emergency_phone"
+                      value={
+                        editForm.emergency_phone
+                      }
+                      onChange={
+                        handleEditChange
+                      }
+                    />
+
+                  </div>
+
+
+                  <div className="edit-form-group">
+
+                    <label>
+                      Relationship
+                    </label>
+
+                    <input
+                      type="text"
+                      name="emergency_relationship"
+                      value={
+                        editForm.emergency_relationship
+                      }
+                      onChange={
+                        handleEditChange
+                      }
+                      placeholder="e.g. Father, Mother, Spouse"
+                    />
+
+                  </div>
+
+                </div>
+
+              </section>
+
+
+              {/* EMPLOYMENT INFORMATION */}
+
+              <section className="edit-section">
+
+                <div className="edit-section-heading">
+
+                  <div className="edit-section-icon">
+                    💼
+                  </div>
+
+                  <div>
+
+                    <h3>
+                      Employment Information
+                    </h3>
+
+                    <p>
+                      Job and employment details
+                    </p>
+
+                  </div>
 
                 </div>
 
 
-                {/* GENDER */}
+                <div className="edit-form-grid">
 
-                <div>
+                  <div className="edit-form-group">
 
-                  <label>
-                    Gender
-                  </label>
+                    <label>
+                      Department
+                    </label>
 
-                  <select
-                    name="gender"
-                    value={
-                      editForm.gender
-                    }
-                    onChange={
-                      handleEditChange
-                    }
-                    required
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      marginTop: "6px",
-                      boxSizing:
-                        "border-box",
-                    }}
-                  >
+                    <select
+                      name="department"
+                      value={
+                        editForm.department
+                      }
+                      onChange={
+                        handleEditChange
+                      }
+                      required
+                    >
 
-                    <option value="">
-                      Select Gender
-                    </option>
+                      <option value="">
+                        Select Department
+                      </option>
 
-                    <option value="Male">
-                      Male
-                    </option>
+                      {DEPARTMENTS.map(
+                        (item) => (
+                          <option
+                            key={item}
+                            value={item}
+                          >
+                            {item}
+                          </option>
+                        )
+                      )}
 
-                    <option value="Female">
-                      Female
-                    </option>
+                    </select>
 
-                  </select>
+                  </div>
+
+
+                  <div className="edit-form-group">
+
+                    <label>
+                      Designation
+                    </label>
+
+                    <input
+                      type="text"
+                      name="designation"
+                      value={
+                        editForm.designation
+                      }
+                      onChange={
+                        handleEditChange
+                      }
+                      required
+                    />
+
+                  </div>
+
+
+                  <div className="edit-form-group">
+
+                    <label>
+                      Joining Date
+                    </label>
+
+                    <input
+                      type="date"
+                      name="joining_date"
+                      value={
+                        editForm.joining_date
+                      }
+                      onChange={
+                        handleEditChange
+                      }
+                      required
+                    />
+
+                  </div>
+
+
+                  <div className="edit-form-group">
+
+                    <label>
+                      Employment Type
+                    </label>
+
+                    <select
+                      name="employment_type"
+                      value={
+                        editForm.employment_type
+                      }
+                      onChange={
+                        handleEditChange
+                      }
+                      required
+                    >
+
+                      <option value="">
+                        Select Employment Type
+                      </option>
+
+                      {EMPLOYMENT_TYPES.map(
+                        (item) => (
+                          <option
+                            key={item}
+                            value={item}
+                          >
+                            {item}
+                          </option>
+                        )
+                      )}
+
+                    </select>
+
+                  </div>
+
+
+                  <div className="edit-form-group">
+
+                    <label>
+                      Monthly Salary
+                    </label>
+
+                    <input
+                      type="number"
+                      name="monthly_salary"
+                      value={
+                        editForm.monthly_salary
+                      }
+                      onChange={
+                        handleEditChange
+                      }
+                      min="0"
+                      step="0.01"
+                    />
+
+                  </div>
+
+
+                  <div className="edit-form-group">
+
+                    <label>
+                      Status
+                    </label>
+
+                    <select
+                      name="status"
+                      value={
+                        editForm.status
+                      }
+                      onChange={
+                        handleEditChange
+                      }
+                      required
+                    >
+
+                      {STATUSES.map(
+                        (item) => (
+                          <option
+                            key={item}
+                            value={item}
+                          >
+                            {item}
+                          </option>
+                        )
+                      )}
+
+                    </select>
+
+                  </div>
+
+                </div>
+
+              </section>
+
+
+              {/* EMPLOYEE PHOTO */}
+
+              <section className="edit-section">
+
+                <div className="edit-section-heading">
+
+                  <div className="edit-section-icon">
+                    📷
+                  </div>
+
+                  <div>
+
+                    <h3>
+                      Employee Photo
+                    </h3>
+
+                    <p>
+                      Upload or replace employee
+                      profile photo
+                    </p>
+
+                  </div>
 
                 </div>
 
 
-                {/* DOB */}
-
-                <div>
-
-                  <label>
-                    Date of Birth
-                  </label>
-
-                  <input
-                    type="date"
-                    name="date_of_birth"
-                    value={
-                      editForm.date_of_birth
-                    }
-                    onChange={
-                      handleEditChange
-                    }
-                    required
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      marginTop: "6px",
-                      boxSizing:
-                        "border-box",
-                    }}
-                  />
-
-                </div>
+                <div className="edit-photo-area">
 
 
-                {/* PHONE */}
+                  {/* CURRENT / PREVIEW PHOTO */}
 
-                <div>
+                  <div className="edit-photo-preview">
 
-                  <label>
-                    Phone
-                  </label>
+                    {editPhoto ? (
 
-                  <input
-                    type="text"
-                    name="phone"
-                    value={
-                      editForm.phone
-                    }
-                    onChange={
-                      handleEditChange
-                    }
-                    required
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      marginTop: "6px",
-                      boxSizing:
-                        "border-box",
-                    }}
-                  />
+                      <img
+                        src={editPhoto}
+                        alt="New employee preview"
+                      />
 
-                </div>
+                    ) : savedEditPhoto ? (
 
+                      <img
+                        src={
+                          savedEditPhoto.url
+                        }
+                        alt="Current employee"
+                        onError={() =>
+                          setSavedEditPhoto(
+                            null
+                          )
+                        }
+                      />
 
-                {/* EMAIL */}
+                    ) : (
 
-                <div>
+                      <span>
+                        {getInitials(
+                          editingEmployee
+                        )}
+                      </span>
 
-                  <label>
-                    Email
-                  </label>
+                    )}
 
-                  <input
-                    type="email"
-                    name="email"
-                    value={
-                      editForm.email
-                    }
-                    onChange={
-                      handleEditChange
-                    }
-                    required
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      marginTop: "6px",
-                      boxSizing:
-                        "border-box",
-                    }}
-                  />
-
-                </div>
+                  </div>
 
 
-                {/* ADDRESS */}
+                  <div className="edit-photo-controls">
 
-                <div
-                  style={{
-                    gridColumn:
-                      "1 / -1",
-                  }}
-                >
+                    <label
+                      htmlFor="editEmployeePhoto"
+                      className="choose-photo-btn"
+                    >
+                      Choose Photo
+                    </label>
 
-                  <label>
-                    Address
-                  </label>
+                    <input
+                      key={photoInputKey}
+                      id="editEmployeePhoto"
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={
+                        handleEditPhotoChange
+                      }
+                    />
 
-                  <textarea
-                    name="address"
-                    value={
-                      editForm.address
-                    }
-                    onChange={
-                      handleEditChange
-                    }
-                    rows="3"
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      marginTop: "6px",
-                      boxSizing:
-                        "border-box",
-                      resize: "vertical",
-                    }}
-                  />
+
+                    <p className="photo-help-text">
+                      JPG, PNG or WebP.
+                      Maximum size: 5 MB.
+                    </p>
+
+
+                    {editPhoto && (
+
+                      <button
+                        type="button"
+                        className="remove-selected-photo-btn"
+                        onClick={
+                          handleRemoveSelectedPhoto
+                        }
+                      >
+                        Remove Selected Photo
+                      </button>
+
+                    )}
+
+
+                    {!editPhoto &&
+                      savedEditPhoto && (
+
+                        <button
+                          type="button"
+                          className="remove-saved-photo-btn"
+                          onClick={
+                            handleDeleteEmployeePhoto
+                          }
+                          disabled={
+                            editPhotoLoading
+                          }
+                        >
+                          {editPhotoLoading
+                            ? "Removing..."
+                            : "Remove Current Photo"}
+                        </button>
+
+                      )}
+
+                  </div>
 
                 </div>
 
-              </div>
+              </section>
 
 
-              {/* =======================================
-                  EMERGENCY CONTACT
-              ======================================= */}
+              {/* FORM ACTIONS */}
 
-              <h3>
-                Emergency Contact
-              </h3>
-
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns:
-                    "1fr 1fr",
-                  gap: "18px",
-                  marginBottom: "25px",
-                }}
-              >
-
-                <div>
-
-                  <label>
-                    Emergency Name
-                  </label>
-
-                  <input
-                    type="text"
-                    value={
-                      editingEmployee.emergency_name ||
-                      ""
-                    }
-                    disabled
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      marginTop: "6px",
-                      boxSizing:
-                        "border-box",
-                      background:
-                        "#f5f5f5",
-                    }}
-                  />
-
-                </div>
-
-
-                <div>
-
-                  <label>
-                    Emergency Phone
-                  </label>
-
-                  <input
-                    type="text"
-                    value={
-                      editingEmployee.emergency_phone ||
-                      ""
-                    }
-                    disabled
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      marginTop: "6px",
-                      boxSizing:
-                        "border-box",
-                      background:
-                        "#f5f5f5",
-                    }}
-                  />
-
-                </div>
-
-
-                <div>
-
-                  <label>
-                    Relationship
-                  </label>
-
-                  <input
-                    type="text"
-                    value={
-                      editingEmployee.emergency_relationship ||
-                      ""
-                    }
-                    disabled
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      marginTop: "6px",
-                      boxSizing:
-                        "border-box",
-                      background:
-                        "#f5f5f5",
-                    }}
-                  />
-
-                </div>
-
-              </div>
-
-
-              {/* =======================================
-                  EMPLOYMENT INFORMATION
-              ======================================= */}
-
-              <h3>
-                Employment Information
-              </h3>
-
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns:
-                    "1fr 1fr",
-                  gap: "18px",
-                  marginBottom: "25px",
-                }}
-              >
-
-                {/* DEPARTMENT */}
-
-                <div>
-
-                  <label>
-                    Department
-                  </label>
-
-                  <select
-                    name="department"
-                    value={
-                      editForm.department
-                    }
-                    onChange={
-                      handleEditChange
-                    }
-                    required
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      marginTop: "6px",
-                      boxSizing:
-                        "border-box",
-                    }}
-                  >
-
-                    <option value="">
-                      Select Department
-                    </option>
-
-                    <option value="SPINNING">
-                      SPINNING
-                    </option>
-
-                    <option value="WEAVING-Rapier">
-                      WEAVING-Rapier
-                    </option>
-
-                    <option value="WEAVING-S4">
-                      WEAVING-S4
-                    </option>
-
-                    <option value="HR">
-                      HR
-                    </option>
-
-                    <option value="IT">
-                      IT
-                    </option>
-
-                    <option value="Administration">
-                      Administration
-                    </option>
-
-                  </select>
-
-                </div>
-
-
-                {/* DESIGNATION */}
-
-                <div>
-
-                  <label>
-                    Designation
-                  </label>
-
-                  <input
-                    type="text"
-                    name="designation"
-                    value={
-                      editForm.designation
-                    }
-                    onChange={
-                      handleEditChange
-                    }
-                    required
-                    placeholder="e.g. Jr Officer"
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      marginTop: "6px",
-                      boxSizing:
-                        "border-box",
-                    }}
-                  />
-
-                </div>
-
-
-                {/* JOINING DATE */}
-
-                <div>
-
-                  <label>
-                    Joining Date
-                  </label>
-
-                  <input
-                    type="date"
-                    name="joining_date"
-                    value={
-                      editForm.joining_date
-                    }
-                    onChange={
-                      handleEditChange
-                    }
-                    required
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      marginTop: "6px",
-                      boxSizing:
-                        "border-box",
-                    }}
-                  />
-
-                </div>
-
-
-                {/* EMPLOYMENT TYPE */}
-
-                <div>
-
-                  <label>
-                    Employment Type
-                  </label>
-
-                  <select
-                    name="employment_type"
-                    value={
-                      editForm.employment_type
-                    }
-                    onChange={
-                      handleEditChange
-                    }
-                    required
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      marginTop: "6px",
-                      boxSizing:
-                        "border-box",
-                    }}
-                  >
-
-                    <option value="">
-                      Select Type
-                    </option>
-
-                    <option value="Permanent">
-                      Permanent
-                    </option>
-
-                    <option value="Contract">
-                      Contract
-                    </option>
-
-                    <option value="Temporary">
-                      Temporary
-                    </option>
-
-                    <option value="Intern">
-                      Intern
-                    </option>
-
-                  </select>
-
-                </div>
-
-
-                {/* SALARY */}
-
-                <div>
-
-                  <label>
-                    Monthly Salary
-                  </label>
-
-                  <input
-                    type="number"
-                    name="monthly_salary"
-                    value={
-                      editForm.monthly_salary
-                    }
-                    onChange={
-                      handleEditChange
-                    }
-                    min="0"
-                    step="0.01"
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      marginTop: "6px",
-                      boxSizing:
-                        "border-box",
-                    }}
-                  />
-
-                </div>
-
-
-                {/* STATUS */}
-
-                <div>
-
-                  <label>
-                    Status
-                  </label>
-
-                  <select
-                    name="status"
-                    value={
-                      editForm.status
-                    }
-                    onChange={
-                      handleEditChange
-                    }
-                    required
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      marginTop: "6px",
-                      boxSizing:
-                        "border-box",
-                    }}
-                  >
-
-                    <option value="Active">
-                      Active
-                    </option>
-
-                    <option value="On Leave">
-                      On Leave
-                    </option>
-
-                    <option value="Inactive">
-                      Inactive
-                    </option>
-
-                  </select>
-
-                </div>
-
-              </div>
-
-
-              {/* =======================================
-                  BUTTONS
-              ======================================= */}
-
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent:
-                    "flex-end",
-                  gap: "12px",
-                  marginTop: "25px",
-                  borderTop:
-                    "1px solid #eee",
-                  paddingTop: "20px",
-                }}
-              >
+              <div className="edit-modal-actions">
 
                 <button
                   type="button"
-                  onClick={closeEdit}
+                  className="modal-secondary-btn"
+                  onClick={
+                    closeEditModal
+                  }
                   disabled={editLoading}
-                  style={{
-                    padding:
-                      "11px 22px",
-                    borderRadius:
-                      "8px",
-                    border:
-                      "1px solid #ccc",
-                    background:
-                      "#fff",
-                    cursor:
-                      editLoading
-                        ? "not-allowed"
-                        : "pointer",
-                  }}
                 >
                   Cancel
                 </button>
@@ -2683,29 +3103,12 @@ function Employees() {
 
                 <button
                   type="submit"
+                  className="modal-primary-btn"
                   disabled={editLoading}
-                  style={{
-                    padding:
-                      "11px 25px",
-                    borderRadius:
-                      "8px",
-                    border: "none",
-                    background:
-                      "#2563eb",
-                    color: "#fff",
-                    cursor:
-                      editLoading
-                        ? "not-allowed"
-                        : "pointer",
-                    fontWeight:
-                      "600",
-                  }}
                 >
-
                   {editLoading
                     ? "Saving..."
-                    : "Save Changes"}
-
+                    : "✓ Save Changes"}
                 </button>
 
               </div>
@@ -2715,11 +3118,11 @@ function Employees() {
           </div>
 
         </div>
-
       )}
 
     </div>
   );
 }
+
 
 export default Employees;

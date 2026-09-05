@@ -1,13 +1,20 @@
 from fastapi import (
     FastAPI,
     Depends,
-    HTTPException
+    HTTPException,
+    UploadFile,
+    File
 )
 
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+
+from pathlib import Path
+from uuid import uuid4
+
 
 import models
 import schemas
@@ -30,12 +37,45 @@ Base.metadata.create_all(
 
 
 # =====================================================
+# UPLOAD DIRECTORY
+# =====================================================
+
+BASE_DIR = Path(__file__).resolve().parent
+
+UPLOAD_DIR = (
+    BASE_DIR
+    / "uploads"
+    / "employee_photos"
+)
+
+UPLOAD_DIR.mkdir(
+    parents=True,
+    exist_ok=True
+)
+
+
+# =====================================================
 # FASTAPI APPLICATION
 # =====================================================
 
 app = FastAPI(
     title="ERP Employee Management API",
     version="1.0.0"
+)
+
+
+# =====================================================
+# SERVE UPLOADED FILES
+# =====================================================
+
+app.mount(
+    "/uploads",
+    StaticFiles(
+        directory=str(
+            BASE_DIR / "uploads"
+        )
+    ),
+    name="uploads"
 )
 
 
@@ -348,6 +388,333 @@ def delete_employee(
     return {
         "message": "Employee deleted successfully",
         "emp_id": employee.emp_id
+    }
+
+
+# =====================================================
+# EMPLOYEE PHOTO MANAGEMENT
+# =====================================================
+
+
+# =====================================================
+# UPLOAD EMPLOYEE PHOTO
+# =====================================================
+
+@app.post(
+    "/api/employees/id/{employee_id}/photo",
+    response_model=schemas.EmployeePhotoResponse
+)
+async def upload_employee_photo(
+    employee_id: int,
+    photo: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+
+    # -------------------------------------------------
+    # CHECK EMPLOYEE
+    # -------------------------------------------------
+
+    employee = crud.get_employee(
+        db,
+        employee_id
+    )
+
+    if not employee:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Employee not found"
+        )
+
+    # -------------------------------------------------
+    # CHECK FILE TYPE
+    # -------------------------------------------------
+
+    allowed_types = {
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    }
+
+    if photo.content_type not in allowed_types:
+
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Only JPG, PNG, and WEBP "
+                "images are allowed."
+            )
+        )
+
+    # -------------------------------------------------
+    # CHECK EXISTING PHOTO
+    # -------------------------------------------------
+
+    existing_photo = crud.get_employee_photo(
+        db,
+        employee_id
+    )
+
+    # -------------------------------------------------
+    # CREATE UNIQUE FILE NAME
+    # -------------------------------------------------
+
+    original_name = photo.filename or "employee_photo"
+
+    extension = Path(
+        original_name
+    ).suffix.lower()
+
+    unique_filename = (
+        f"{uuid4().hex}{extension}"
+    )
+
+    file_path = (
+        UPLOAD_DIR
+        / unique_filename
+    )
+
+    # -------------------------------------------------
+    # SAVE FILE
+    # -------------------------------------------------
+
+    try:
+
+        file_content = await photo.read()
+
+        with open(
+            file_path,
+            "wb"
+        ) as file:
+
+            file.write(
+                file_content
+            )
+
+    except Exception:
+
+        raise HTTPException(
+            status_code=500,
+            detail="Could not save employee photo."
+        )
+
+    # -------------------------------------------------
+    # IF PHOTO ALREADY EXISTS
+    # REPLACE DATABASE RECORD
+    # -------------------------------------------------
+
+    if existing_photo:
+
+        old_file_path = (
+            BASE_DIR
+            / existing_photo.photo_file_path
+        )
+
+        # ---------------------------------------------
+        # DELETE OLD FILE
+        # ---------------------------------------------
+
+        if old_file_path.exists():
+
+            try:
+                old_file_path.unlink()
+
+            except OSError:
+                pass
+
+        # ---------------------------------------------
+        # UPDATE DATABASE RECORD
+        # ---------------------------------------------
+
+        saved_photo = crud.update_employee_photo(
+            db=db,
+            employee_id=employee_id,
+            photo_file_name=original_name,
+            photo_file_path=str(
+                Path("uploads")
+                / "employee_photos"
+                / unique_filename
+            ),
+            photo_file_type=photo.content_type,
+            photo_file_size=len(file_content)
+        )
+
+    else:
+
+        # ---------------------------------------------
+        # CREATE DATABASE RECORD
+        # ---------------------------------------------
+
+        saved_photo = crud.create_employee_photo(
+            db=db,
+            employee_id=employee_id,
+            photo_file_name=original_name,
+            photo_file_path=str(
+                Path("uploads")
+                / "employee_photos"
+                / unique_filename
+            ),
+            photo_file_type=photo.content_type,
+            photo_file_size=len(file_content)
+        )
+
+    # -------------------------------------------------
+    # CHECK DATABASE RESULT
+    # -------------------------------------------------
+
+    if not saved_photo:
+
+        # Remove newly uploaded file if database
+        # operation did not return a record.
+
+        if file_path.exists():
+
+            try:
+                file_path.unlink()
+
+            except OSError:
+                pass
+
+        raise HTTPException(
+            status_code=500,
+            detail="Could not save employee photo information."
+        )
+
+    return saved_photo
+
+
+# =====================================================
+# GET EMPLOYEE PHOTO INFORMATION
+# =====================================================
+
+@app.get(
+    "/api/employees/id/{employee_id}/photo",
+    response_model=schemas.EmployeePhotoResponse
+)
+def get_employee_photo(
+    employee_id: int,
+    db: Session = Depends(get_db)
+):
+
+    # -------------------------------------------------
+    # CHECK EMPLOYEE
+    # -------------------------------------------------
+
+    employee = crud.get_employee(
+        db,
+        employee_id
+    )
+
+    if not employee:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Employee not found"
+        )
+
+    # -------------------------------------------------
+    # GET PHOTO
+    # -------------------------------------------------
+
+    photo = crud.get_employee_photo(
+        db,
+        employee_id
+    )
+
+    if not photo:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Employee photo not found"
+        )
+
+    return photo
+
+
+# =====================================================
+# DELETE EMPLOYEE PHOTO
+# =====================================================
+
+@app.delete(
+    "/api/employees/id/{employee_id}/photo"
+)
+def delete_employee_photo(
+    employee_id: int,
+    db: Session = Depends(get_db)
+):
+
+    # -------------------------------------------------
+    # CHECK EMPLOYEE
+    # -------------------------------------------------
+
+    employee = crud.get_employee(
+        db,
+        employee_id
+    )
+
+    if not employee:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Employee not found"
+        )
+
+    # -------------------------------------------------
+    # GET PHOTO
+    # -------------------------------------------------
+
+    photo = crud.get_employee_photo(
+        db,
+        employee_id
+    )
+
+    if not photo:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Employee photo not found"
+        )
+
+    # -------------------------------------------------
+    # DELETE PHYSICAL FILE
+    # -------------------------------------------------
+
+    file_path = (
+        BASE_DIR
+        / photo.photo_file_path
+    )
+
+    if file_path.exists():
+
+        try:
+            file_path.unlink()
+
+        except OSError:
+            pass
+
+    # -------------------------------------------------
+    # DELETE DATABASE RECORD
+    # -------------------------------------------------
+
+    deleted_photo = crud.delete_employee_photo(
+        db,
+        employee_id
+    )
+
+    if not deleted_photo:
+
+        raise HTTPException(
+            status_code=500,
+            detail="Could not delete employee photo."
+        )
+
+    # -------------------------------------------------
+    # SUCCESS
+    # -------------------------------------------------
+
+    return {
+        "message": "Employee photo deleted successfully",
+        "employee_id": employee_id
     }
 
 
