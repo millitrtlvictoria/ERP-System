@@ -1,27 +1,38 @@
 # Python
-__pycache__/
+
+**pycache**/
 *.py[cod]
 
 # Virtual environment
+
 venv/
 .venv/
 
 # Environment variables
+
 .env
 .env.*
 
-# SQLite database
+# SQLite databases
+
 *.db
 *.sqlite
 *.sqlite3
 
+# Keep ERP development database in Git
+
+!backend/erp.db
+
 # React / Node
+
 node_modules/
 dist/
 
 # VS Code
+
 .vscode/
 
 # OS files
+
 .DS_Store
 Thumbs.db
