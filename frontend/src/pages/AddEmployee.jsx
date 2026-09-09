@@ -45,6 +45,7 @@ function AddEmployee() {
 
     emergencyName: "",
     emergencyPhone: "",
+    emergencyRelationship: "",
   };
 
 
@@ -57,10 +58,8 @@ function AddEmployee() {
   // PHOTO
   // =====================================================
 
-  // Preview URL for displaying selected photo
   const [photo, setPhoto] = useState(null);
 
-  // Actual image file
   const [photoFile, setPhotoFile] = useState(null);
 
 
@@ -251,7 +250,10 @@ function AddEmployee() {
           ? null
           : employee.emergencyPhone,
 
-      emergency_relationship: null,
+      emergency_relationship:
+        employee.emergencyRelationship === ""
+          ? null
+          : employee.emergencyRelationship,
     };
 
 
@@ -917,42 +919,72 @@ function AddEmployee() {
             </div>
 
 
-            {/* EMERGENCY NAME */}
+            {/* =================================================
+                EMERGENCY CONTACT ROW
+            ================================================= */}
 
-            <div className="form-group">
-
-              <label>
-                Emergency Contact Name
-              </label>
+            <div className="contact-emergency-row">
 
 
-              <input
-                type="text"
-                name="emergencyName"
-                placeholder="Contact person name"
-                value={employee.emergencyName}
-                onChange={handleChange}
-              />
+              {/* EMERGENCY NAME */}
 
-            </div>
+              <div className="form-group">
+
+                <label>
+                  Emergency Contact Name
+                </label>
 
 
-            {/* EMERGENCY PHONE */}
+                <input
+                  type="text"
+                  name="emergencyName"
+                  placeholder="Contact person name"
+                  value={employee.emergencyName}
+                  onChange={handleChange}
+                />
 
-            <div className="form-group">
-
-              <label>
-                Emergency Contact Phone
-              </label>
+              </div>
 
 
-              <input
-                type="tel"
-                name="emergencyPhone"
-                placeholder="Contact phone number"
-                value={employee.emergencyPhone}
-                onChange={handleChange}
-              />
+              {/* EMERGENCY PHONE */}
+
+              <div className="form-group">
+
+                <label>
+                  Emergency Contact Phone
+                </label>
+
+
+                <input
+                  type="tel"
+                  name="emergencyPhone"
+                  placeholder="Contact phone number"
+                  value={employee.emergencyPhone}
+                  onChange={handleChange}
+                />
+
+              </div>
+
+
+              {/* EMERGENCY RELATIONSHIP */}
+
+              <div className="form-group">
+
+                <label>
+                  Emergency Contact Relationship
+                </label>
+
+
+                <input
+                  type="text"
+                  name="emergencyRelationship"
+                  placeholder="e.g. Father, Mother, Brother, Spouse"
+                  value={employee.emergencyRelationship}
+                  onChange={handleChange}
+                />
+
+              </div>
+
 
             </div>
 

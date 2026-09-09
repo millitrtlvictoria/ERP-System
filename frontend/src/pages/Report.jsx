@@ -7,6 +7,7 @@ import * as XLSX from "xlsx";
 
 import "../styles/report.css";
 
+
 function Reports() {
   const navigate = useNavigate();
 
@@ -27,7 +28,7 @@ function Reports() {
     useState("");
 
   const [department, setDepartment] =
-    useState("All Departments");
+    useState("Select Department");
 
   const [fromDate, setFromDate] =
     useState("");
@@ -43,6 +44,15 @@ function Reports() {
 
   const [employeeError, setEmployeeError] =
     useState("");
+
+  // =====================================================
+  // EMPLOYEE SELECTION
+  // =====================================================
+
+  // Stores Employee IDs selected by the user.
+  // Empty selection = keep the existing filtered-report behavior.
+  const [selectedEmployeeIds, setSelectedEmployeeIds] =
+    useState([]);
 
   // =====================================================
   // FETCH EMPLOYEES
@@ -585,36 +595,55 @@ function Reports() {
             reportType ===
             "employee"
           ) {
-            searchMatch = [
-              item.id,
-              item.emp_id,
-              item.first_name,
-              item.last_name,
-              item.gender,
-              item.date_of_birth,
-              item.phone,
-              item.email,
-              item.department,
-              item.designation,
-              item.joining_date,
-              item.employment_type_,
-              item.employment_type,
-              item.employmentType,
-              item.monthly_salary,
-              item.status,
-              item.address,
-              item.created_at,
-              item.updated_at,
-            ].some(
-              (value) =>
-                String(
-                  value ?? ""
-                )
+            // Multiple Employee ID search:
+            // EMP001, EMP003, EMP007
+            // or one ID per line.
+            const employeeIdList = search
+              .split(/[,;\n]+/)
+              .map((value) => value.trim().toLowerCase())
+              .filter(Boolean);
+
+            const isMultipleEmployeeIdSearch =
+              employeeIdList.length > 1;
+
+            if (isMultipleEmployeeIdSearch) {
+              searchMatch = employeeIdList.includes(
+                String(item.emp_id ?? "")
+                  .trim()
                   .toLowerCase()
-                  .includes(
-                    searchText
+              );
+            } else {
+              searchMatch = [
+                item.id,
+                item.emp_id,
+                item.first_name,
+                item.last_name,
+                item.gender,
+                item.date_of_birth,
+                item.phone,
+                item.email,
+                item.department,
+                item.designation,
+                item.joining_date,
+                item.employment_type_,
+                item.employment_type,
+                item.employmentType,
+                item.monthly_salary,
+                item.status,
+                item.address,
+                item.created_at,
+                item.updated_at,
+              ].some(
+                (value) =>
+                  String(
+                    value ?? ""
                   )
-            );
+                    .toLowerCase()
+                    .includes(
+                      searchText
+                    )
+              );
+            }
           } else {
             searchMatch =
               Object.values(
@@ -636,18 +665,15 @@ function Reports() {
         // DEPARTMENT
         // =================================================
 
-        if (
-          department !==
-            "All Departments" &&
-          item.department
-        ) {
+        // Department must be explicitly selected.
+        // By default, "Select Department" shows no data.
+        // "All Departments" shows all records.
+        if (department === "Select Department") {
+          departmentMatch = false;
+        } else if (department !== "All Departments") {
           departmentMatch =
-            String(
-              item.department
-            ).trim() ===
-            String(
-              department
-            ).trim();
+            String(item.department ?? "").trim() ===
+            String(department).trim();
         }
 
         // =================================================
@@ -688,6 +714,92 @@ function Reports() {
     );
 
   // =====================================================
+  // SELECTED REPORT DATA
+  // =====================================================
+
+  // If specific employees are selected, only those employees are
+  // included in the preview/downloads. If nothing is selected,
+  // the existing filteredData behavior remains unchanged.
+  const reportData = useMemo(() => {
+    if (
+      reportType !== "employee" ||
+      selectedEmployeeIds.length === 0
+    ) {
+      return filteredData;
+    }
+
+    const selectedSet = new Set(
+      selectedEmployeeIds.map((id) => String(id).trim().toLowerCase())
+    );
+
+    return filteredData.filter((employee) =>
+      selectedSet.has(
+        String(employee.emp_id ?? "").trim().toLowerCase()
+      )
+    );
+  }, [
+    filteredData,
+    reportType,
+    selectedEmployeeIds,
+  ]);
+
+  // =====================================================
+  // EMPLOYEE SELECTION HELPERS
+  // =====================================================
+
+  const toggleEmployeeSelection = (employeeId) => {
+    const id = String(employeeId ?? "").trim();
+
+    if (!id) return;
+
+    setSelectedEmployeeIds((current) =>
+      current.includes(id)
+        ? current.filter((value) => value !== id)
+        : [...current, id]
+    );
+  };
+
+  const toggleSelectAllEmployees = () => {
+    const visibleIds = filteredData
+      .map((employee) => String(employee.emp_id ?? "").trim())
+      .filter(Boolean);
+
+    if (visibleIds.length === 0) return;
+
+    setSelectedEmployeeIds((current) => {
+      const currentSet = new Set(current);
+      const allVisibleSelected = visibleIds.every((id) =>
+        currentSet.has(id)
+      );
+
+      if (allVisibleSelected) {
+        return current.filter((id) => !visibleIds.includes(id));
+      }
+
+      return [
+        ...current,
+        ...visibleIds.filter((id) => !currentSet.has(id)),
+      ];
+    });
+  };
+
+  const clearEmployeeSelection = () => {
+    setSelectedEmployeeIds([]);
+  };
+
+  const isEmployeeSelected = (employeeId) =>
+    selectedEmployeeIds.includes(
+      String(employeeId ?? "").trim()
+    );
+
+  const allVisibleEmployeesSelected =
+    filteredData.length > 0 &&
+    filteredData
+      .map((employee) => String(employee.emp_id ?? "").trim())
+      .filter(Boolean)
+      .every((id) => selectedEmployeeIds.includes(id));
+
+  // =====================================================
   // GET TABLE ROWS
   // =====================================================
 
@@ -700,7 +812,7 @@ function Reports() {
       reportType ===
       "employee"
     ) {
-      return filteredData.map(
+      return reportData.map(
         (employee) => [
           employee.emp_id ??
             "-",
@@ -842,10 +954,11 @@ function Reports() {
   const clearFilters = () => {
     setSearch("");
     setDepartment(
-      "All Departments"
+      "Select Department"
     );
     setFromDate("");
     setToDate("");
+    setSelectedEmployeeIds([]);
   };
 
   // =====================================================
@@ -997,7 +1110,7 @@ function Reports() {
   // =====================================================
 
   const downloadEmployeePDF = () => {
-  if (!filteredData.length) {
+  if (!reportData.length) {
     alert("No employees available for PDF.");
     return;
   }
@@ -1203,7 +1316,7 @@ function Reports() {
   // EACH EMPLOYEE = ONE PAGE
   // ============================================================
 
-  filteredData.forEach(
+  reportData.forEach(
     (employee, index) => {
       if (index > 0) {
         doc.addPage();
@@ -1760,7 +1873,7 @@ autoTable(doc, {
 
       doc.text(
         `Page ${index + 1} of ${
-          filteredData.length
+          reportData.length
         }`,
         right,
         footerY,
@@ -1901,6 +2014,14 @@ autoTable(doc, {
         ` | Search: ${search.trim()}`;
     }
 
+    if (
+      reportType === "employee" &&
+      selectedEmployeeIds.length > 0
+    ) {
+      filterText +=
+        ` | Selected Employees: ${selectedEmployeeIds.join(", ")}`;
+    }
+
     doc.text(
       filterText,
       14,
@@ -2022,7 +2143,7 @@ autoTable(doc, {
     // =================================================
 
     doc.save(
-      `${reportType}-report.pdf`
+        `${reportType}-report.pdf`
     );
   };
 
@@ -2056,12 +2177,13 @@ autoTable(doc, {
     setSearch("");
 
     setDepartment(
-      "All Departments"
+      "Select Department"
     );
 
     setFromDate("");
 
     setToDate("");
+    setSelectedEmployeeIds([]);
   };
 
   // =====================================================
@@ -2303,12 +2425,17 @@ autoTable(doc, {
                 department
               }
 
-              onChange={(e) =>
-                setDepartment(
-                  e.target.value
-                )
-              }
+              onChange={(e) => {
+                setDepartment(e.target.value);
+                if (reportType === "employee") {
+                  setSelectedEmployeeIds([]);
+                }
+              }}
             >
+
+              <option value="Select Department">
+                Select Department
+              </option>
 
               <option value="All Departments">
                 All Departments
@@ -2385,7 +2512,7 @@ autoTable(doc, {
               placeholder={
                 reportType ===
                 "employee"
-                  ? "Search employee..."
+                  ? "Search employee / Emp ID(s)..."
                   : "Search report..."
               }
 
@@ -2393,11 +2520,12 @@ autoTable(doc, {
                 search
               }
 
-              onChange={(e) =>
-                setSearch(
-                  e.target.value
-                )
-              }
+              onChange={(e) => {
+                setSearch(e.target.value);
+                if (reportType === "employee") {
+                  setSelectedEmployeeIds([]);
+                }
+              }}
             />
 
           </div>
@@ -2405,6 +2533,169 @@ autoTable(doc, {
         </div>
 
       </div>
+
+      {/* =================================================
+          EMPLOYEE SELECTION
+          Added without changing the existing report design.
+      ================================================= */}
+
+      {reportType === "employee" && !loadingEmployees && !employeeError && (
+        <div
+          style={{
+            marginTop: "15px",
+            padding: "16px 18px",
+            borderRadius: "8px",
+            background: "#ffffff",
+            border: "1px solid #e5e7eb",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: "15px",
+              flexWrap: "wrap",
+              marginBottom: "12px",
+            }}
+          >
+            <div>
+              <strong>
+                Select Employees
+              </strong>
+              <div
+                style={{
+                  marginTop: "4px",
+                  fontSize: "12px",
+                  color: "#666",
+                }}
+              >
+                Select specific employees for the report. Leave all unchecked to use the normal filtered report.
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                flexWrap: "wrap",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: "13px",
+                  fontWeight: 600,
+                }}
+              >
+                Selected: {selectedEmployeeIds.length}
+              </span>
+
+              <button
+                type="button"
+                className="clear-report-btn"
+                onClick={toggleSelectAllEmployees}
+                disabled={filteredData.length === 0}
+              >
+                {allVisibleEmployeesSelected
+                  ? "Deselect All"
+                  : "Select All"}
+              </button>
+
+              {selectedEmployeeIds.length > 0 && (
+                <button
+                  type="button"
+                  className="clear-report-btn"
+                  onClick={clearEmployeeSelection}
+                >
+                  Clear Selection
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div
+            style={{
+              maxHeight: "230px",
+              overflowY: "auto",
+              border: "1px solid #eeeeee",
+              borderRadius: "6px",
+            }}
+          >
+            {filteredData.length > 0 ? (
+              filteredData.map((employee) => {
+                const employeeId = String(
+                  employee.emp_id ?? ""
+                ).trim();
+
+                const employeeName = [
+                  employee.first_name,
+                  employee.last_name,
+                ]
+                  .filter(Boolean)
+                  .join(" ") || "-";
+
+                return (
+                  <label
+                    key={employeeId || employee.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      padding: "9px 12px",
+                      borderBottom: "1px solid #f1f1f1",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isEmployeeSelected(employeeId)}
+                      onChange={() =>
+                        toggleEmployeeSelection(employeeId)
+                      }
+                      disabled={!employeeId}
+                    />
+
+                    <span
+                      style={{
+                        minWidth: "85px",
+                        fontWeight: 600,
+                      }}
+                    >
+                      {employeeId || "-"}
+                    </span>
+
+                    <span>
+                      {employeeName}
+                    </span>
+
+                    <span
+                      style={{
+                        marginLeft: "auto",
+                        fontSize: "12px",
+                        color: "#777",
+                      }}
+                    >
+                      {employee.department || "-"}
+                    </span>
+                  </label>
+                );
+              })
+            ) : (
+              <div
+                style={{
+                  padding: "14px",
+                  textAlign: "center",
+                  color: "#777",
+                  fontSize: "13px",
+                }}
+              >
+                No employees match the current filters.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* =================================================
           ERROR
@@ -2470,50 +2761,36 @@ autoTable(doc, {
       )}
 
       {/* =================================================
-          REPORT PREVIEW
+          DOWNLOAD SECTION
+          Report preview/table intentionally removed.
       ================================================= */}
 
       <div className="report-preview-card">
 
-        {/* =================================================
-            PREVIEW HEADER
-        ================================================= */}
-
         <div className="report-preview-header">
 
           <div>
-
             <h2>
-              Report Preview
+              Download Report
             </h2>
 
             <p>
-              {loadingEmployees &&
-              reportType ===
-                "employee"
+              {loadingEmployees && reportType === "employee"
                 ? "Loading employee records..."
-                : `${filteredData.length} records found`}
+                : reportData.length > 0
+                  ? `${reportData.length} records ready for download`
+                  : "No records available for download"}
             </p>
-
           </div>
-
-          {/* =================================================
-              DOWNLOAD BUTTONS
-          ================================================= */}
 
           <div className="report-download-buttons">
 
             <button
               className="download-btn pdf"
-
-              onClick={
-                downloadPDF
-              }
-
+              onClick={downloadPDF}
               disabled={
                 loadingEmployees ||
-                filteredData.length ===
-                  0
+                reportData.length === 0
               }
             >
               ↓ Download PDF
@@ -2521,15 +2798,10 @@ autoTable(doc, {
 
             <button
               className="download-btn excel"
-
-              onClick={
-                downloadExcel
-              }
-
+              onClick={downloadExcel}
               disabled={
                 loadingEmployees ||
-                filteredData.length ===
-                  0
+                reportData.length === 0
               }
             >
               ↓ Download Excel
@@ -2537,15 +2809,10 @@ autoTable(doc, {
 
             <button
               className="download-btn csv"
-
-              onClick={
-                downloadCSV
-              }
-
+              onClick={downloadCSV}
               disabled={
                 loadingEmployees ||
-                filteredData.length ===
-                  0
+                reportData.length === 0
               }
             >
               ↓ Download CSV
@@ -2555,224 +2822,22 @@ autoTable(doc, {
 
         </div>
 
-        {/* =================================================
-            EMPLOYEE PDF NOTE
-        ================================================= */}
-
-        {reportType ===
-          "employee" && (
-
+        {reportType === "employee" && (
           <div
             style={{
-              margin:
-                "0 20px 15px",
-
-              padding:
-                "10px 14px",
-
-              borderRadius:
-                "8px",
-
-              background:
-                "#f5f5f5",
-
-              border:
-                "1px solid #dddddd",
-
-              color:
-                "#444444",
-
-              fontSize:
-                "13px",
+              margin: "0 20px 15px",
+              padding: "10px 14px",
+              borderRadius: "8px",
+              background: "#f5f5f5",
+              border: "1px solid #dddddd",
+              color: "#444444",
+              fontSize: "13px",
             }}
           >
-
-            <strong>
-              Employee PDF:
-            </strong>{" "}
-
-            A3 Landscape,
-            centered Worker
-            Details format using
-            employee database
-            information.
-
+            <strong>Employee PDF:</strong>{" "}
+            A3 Landscape, centered Worker Details format using employee database information.
           </div>
-
         )}
-
-        {/* =================================================
-            REPORT TABLE
-        ================================================= */}
-
-        <div className="report-table-wrapper">
-
-          <table className="report-table">
-
-            <thead>
-
-              <tr>
-
-                {reports[
-                  reportType
-                ].columns.map(
-                  (column) => (
-
-                    <th
-                      key={
-                        column
-                      }
-                    >
-                      {column}
-                    </th>
-
-                  )
-                )}
-
-              </tr>
-
-            </thead>
-
-            <tbody>
-
-              {reportType ===
-                "employee" &&
-              loadingEmployees ? (
-
-                <tr>
-
-                  <td
-                    colSpan={
-                      reports[
-                        reportType
-                      ].columns
-                        .length
-                    }
-
-                    className="no-report-data"
-                  >
-                    Loading employee
-                    data from backend...
-                  </td>
-
-                </tr>
-
-              ) : employeeError &&
-                reportType ===
-                  "employee" ? (
-
-                <tr>
-
-                  <td
-                    colSpan={
-                      reports[
-                        reportType
-                      ].columns
-                        .length
-                    }
-
-                    className="no-report-data"
-                  >
-                    Employee data
-                    could not be
-                    loaded.
-                  </td>
-
-                </tr>
-
-              ) : getRows()
-                  .length >
-                0 ? (
-
-                getRows().map(
-                  (
-                    row,
-                    rowIndex
-                  ) => (
-
-                    <tr
-                      key={
-                        rowIndex
-                      }
-                    >
-
-                      {row.map(
-                        (
-                          value,
-                          cellIndex
-                        ) => (
-
-                          <td
-                            key={
-                              cellIndex
-                            }
-                          >
-                            {
-                              value
-                            }
-                          </td>
-
-                        )
-                      )}
-
-                    </tr>
-
-                  )
-                )
-
-              ) : (
-
-                <tr>
-
-                  <td
-                    colSpan={
-                      reports[
-                        reportType
-                      ].columns
-                        .length
-                    }
-
-                    className="no-report-data"
-                  >
-                    No records
-                    found.
-                  </td>
-
-                </tr>
-
-              )}
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-        {/* =================================================
-            FOOTER
-        ================================================= */}
-
-        <div className="report-footer">
-
-          <span>
-            Total Records:{" "}
-
-            <strong>
-              {
-                filteredData.length
-              }
-            </strong>
-          </span>
-
-          <span>
-            {
-              reports[
-                reportType
-              ].title
-            }
-          </span>
-
-        </div>
 
       </div>
 
@@ -2780,4 +2845,4 @@ autoTable(doc, {
   );
 }
 
-export default Reports;
+export default Reports;         
