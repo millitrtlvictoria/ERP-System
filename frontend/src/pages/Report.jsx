@@ -288,6 +288,7 @@ function Reports() {
         "Last Name",
         "Gender",
         "Date of Birth",
+        "Age",
         "Phone",
         "Email",
         "Department",
@@ -297,6 +298,9 @@ function Reports() {
         "Monthly Salary",
         "Status",
         "Address",
+        "Emergency Name",
+        "Emergency Phone",
+        "Emergency Relationship",
         "Created At",
         "Updated At",
       ],
@@ -487,6 +491,40 @@ function Reports() {
   // FORMAT DATE TIME
   // =====================================================
 
+  // =====================================================
+  // CALCULATE AGE FROM DATE OF BIRTH
+  // =====================================================
+
+  const calculateAge = (dateOfBirth) => {
+    if (!dateOfBirth) return "-";
+
+    const birthDate = new Date(dateOfBirth);
+
+    if (Number.isNaN(birthDate.getTime())) {
+      return "-";
+    }
+
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+
+    const monthDifference =
+      today.getMonth() - birthDate.getMonth();
+
+    if (
+      monthDifference < 0 ||
+      (monthDifference === 0 &&
+        today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+
+    return age >= 0 ? String(age) : "-";
+  };
+
+  // =====================================================
+  // FORMAT DATE TIME
+  // =====================================================
+
   const formatDateTime = (value) => {
     if (!value) {
       return "-";
@@ -606,43 +644,70 @@ function Reports() {
             const isMultipleEmployeeIdSearch =
               employeeIdList.length > 1;
 
+            const employeeId =
+              String(item.emp_id ?? "")
+                .trim()
+                .toLowerCase();
+
             if (isMultipleEmployeeIdSearch) {
-              searchMatch = employeeIdList.includes(
-                String(item.emp_id ?? "")
-                  .trim()
-                  .toLowerCase()
-              );
+              // Multiple Employee IDs are ALWAYS exact matches.
+              // Example: EMP001, EMP003 must return only EMP001
+              // and EMP003, never employees whose other fields contain
+              // those values.
+              searchMatch = employeeIdList.includes(employeeId);
             } else {
-              searchMatch = [
-                item.id,
-                item.emp_id,
-                item.first_name,
-                item.last_name,
-                item.gender,
-                item.date_of_birth,
-                item.phone,
-                item.email,
-                item.department,
-                item.designation,
-                item.joining_date,
-                item.employment_type_,
-                item.employment_type,
-                item.employmentType,
-                item.monthly_salary,
-                item.status,
-                item.address,
-                item.created_at,
-                item.updated_at,
-              ].some(
-                (value) =>
-                  String(
-                    value ?? ""
-                  )
-                    .toLowerCase()
-                    .includes(
-                      searchText
-                    )
-              );
+              // IMPORTANT:
+              // If the entered value exactly matches an existing
+              // Employee ID, search ONLY by Employee ID.
+              //
+              // This prevents an Employee ID such as EMP001 from also
+              // returning another employee because "EMP001" happens
+              // to appear in another searchable field.
+              const exactEmployeeIdExists =
+                employeeData.some(
+                  (employee) =>
+                    String(employee.emp_id ?? "")
+                      .trim()
+                      .toLowerCase() === searchText
+                );
+
+              if (exactEmployeeIdExists) {
+                searchMatch =
+                  employeeId === searchText;
+              } else {
+                // If it is not an Employee ID, keep normal text search
+                // for employee name and other employee information.
+                searchMatch = [
+                  item.id,
+                  item.emp_id,
+                  item.first_name,
+                  item.last_name,
+                  item.gender,
+                  item.date_of_birth,
+                  calculateAge(item.date_of_birth),
+                  item.phone,
+                  item.email,
+                  item.department,
+                  item.designation,
+                  item.joining_date,
+                  item.employment_type_,
+                  item.employment_type,
+                  item.employmentType,
+                  item.monthly_salary,
+                  item.status,
+                  item.address,
+                  item.emergency_name,
+                  item.emergency_phone,
+                  item.emergency_relationship,
+                  item.created_at,
+                  item.updated_at,
+                ].some(
+                  (value) =>
+                    String(value ?? "")
+                      .toLowerCase()
+                      .includes(searchText)
+                );
+              }
             }
           } else {
             searchMatch =
@@ -665,15 +730,32 @@ function Reports() {
         // DEPARTMENT
         // =================================================
 
-        // Department must be explicitly selected.
-        // By default, "Select Department" shows no data.
-        // "All Departments" shows all records.
+        // =================================================
+        // DEPARTMENT + EMPLOYEE SEARCH
+        // =================================================
+        // Employee report:
+        // 1. "Select Department" + no search = show no employee data.
+        // 2. "Select Department" + Emp ID/name search = search all
+        //    employees without requiring a department.
+        // 3. "All Departments" = show all matching employees.
+        // 4. Specific department = only show matching employees
+        //    from that department.
+        //
+        // This makes Department optional when the user is searching
+        // for an employee, while keeping the default blank state.
         if (department === "Select Department") {
-          departmentMatch = false;
+          if (
+            reportType === "employee" &&
+            search.trim() !== ""
+          ) {
+            departmentMatch = true;
+          } else {
+            departmentMatch = false;
+          }
         } else if (department !== "All Departments") {
           departmentMatch =
-            String(item.department ?? "").trim() ===
-            String(department).trim();
+            String(item.department ?? "").trim().toLowerCase() ===
+            String(department).trim().toLowerCase();
         }
 
         // =================================================
@@ -830,6 +912,10 @@ function Reports() {
             employee.date_of_birth
           ),
 
+          calculateAge(
+            employee.date_of_birth
+          ),
+
           employee.phone ??
             "-",
 
@@ -858,6 +944,15 @@ function Reports() {
             "-",
 
           employee.address ??
+            "-",
+
+          employee.emergency_name ??
+            "-",
+
+          employee.emergency_phone ??
+            "-",
+
+          employee.emergency_relationship ??
             "-",
 
           formatDateTime(
@@ -1467,6 +1562,16 @@ function Reports() {
       leftY += rowGap;
 
       drawField(
+        "Age",
+        calculateAge(employee.date_of_birth),
+        leftX,
+        leftY,
+        columnWidth
+      );
+
+      leftY += rowGap;
+
+      drawField(
         "Phone",
         employee.phone,
         leftX,
@@ -1646,12 +1751,62 @@ function Reports() {
       );
 
       // ========================================================
+      // EMERGENCY CONTACT
       // ========================================================
-// LAST WORKING DETAILS
-// ========================================================
+
+      const emergencyTitleY =
+        addressY + addressHeight + 8;
+
+      doc.setFont(
+        "helvetica",
+        "bold"
+      );
+
+      doc.setFontSize(8);
+
+      doc.text(
+        "Emergency Contact",
+        left,
+        emergencyTitleY
+      );
+
+      const emergencyY =
+        emergencyTitleY + 6;
+
+      const emergencyGap = 10;
+      const emergencyWidth =
+        (width - emergencyGap * 2) / 3;
+
+      drawField(
+        "Name",
+        employee.emergency_name,
+        left,
+        emergencyY,
+        emergencyWidth
+      );
+
+      drawField(
+        "Phone",
+        employee.emergency_phone,
+        left + emergencyWidth + emergencyGap,
+        emergencyY,
+        emergencyWidth
+      );
+
+      drawField(
+        "Relationship",
+        employee.emergency_relationship,
+        left + (emergencyWidth + emergencyGap) * 2,
+        emergencyY,
+        emergencyWidth
+      );
+
+      // ========================================================
+      // LAST WORKING DETAILS
+      // ========================================================
 
 const lastWorkingTitleY =
-  addressY + 13;
+  emergencyY + 16;
 
 doc.setFont(
   "helvetica",
@@ -2834,12 +2989,12 @@ autoTable(doc, {
               fontSize: "13px",
             }}
           >
-            <strong>Employee PDF:</strong>{" "}
-            A3 Landscape, centered Worker Details format using employee database information.
+             {/* <strong>Employee PDF:</strong>{" "}
+            A3 Landscape, centered Worker Details format using employee database information.  */}
           </div>
         )}
 
-      </div>
+      </div>   
 
     </div>
   );
