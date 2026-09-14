@@ -1,10 +1,51 @@
+
 import { NavLink, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import "../styles/sidebar.css";
 
 function Sidebar({ isOpen }) {
   const navigate = useNavigate();
 
+  // =====================================================
+  // LOGGED-IN USER
+  // =====================================================
+
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    try {
+      const savedUser = localStorage.getItem("user");
+
+      if (savedUser) {
+        setUser(JSON.parse(savedUser));
+      }
+    } catch (error) {
+      console.error("Unable to read logged-in user:", error);
+    }
+  }, []);
+
+  // =====================================================
+  // USER INFORMATION
+  // =====================================================
+
+  const firstName = user?.first_name || "Admin";
+  const lastName = user?.last_name || "User";
+
+  const fullName = `${firstName} ${lastName}`.trim();
+
+  const role = user?.role || "Administrator";
+
+  const initials =
+    `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+
+  // =====================================================
+  // LOGOUT
+  // =====================================================
+
   const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("isLoggedIn");
+
     navigate("/");
   };
 
@@ -39,9 +80,9 @@ function Sidebar({ isOpen }) {
           to="/dashboard"
           className={({ isActive }) =>
             isActive ? "menu-item active" : "menu-item"
-          }>
+          }
+        >
           <span>📊</span>
-
           {isOpen && <span>Dashboard</span>}
         </NavLink>
 
@@ -50,9 +91,9 @@ function Sidebar({ isOpen }) {
           to="/employees"
           className={({ isActive }) =>
             isActive ? "menu-item active" : "menu-item"
-          }>
+          }
+        >
           <span>👤</span>
-
           {isOpen && <span>Employees</span>}
         </NavLink>
 
@@ -61,9 +102,9 @@ function Sidebar({ isOpen }) {
           to="/reports"
           className={({ isActive }) =>
             isActive ? "menu-item active" : "menu-item"
-          }>
+          }
+        >
           <span>📄</span>
-
           {isOpen && <span>Reports</span>}
         </NavLink>
 
@@ -72,9 +113,9 @@ function Sidebar({ isOpen }) {
           to="/user-management"
           className={({ isActive }) =>
             isActive ? "menu-item active" : "menu-item"
-          }>
+          }
+        >
           <span>👤</span>
-
           {isOpen && <span>User Management</span>}
         </NavLink>
 
@@ -83,20 +124,20 @@ function Sidebar({ isOpen }) {
           to="/documents"
           className={({ isActive }) =>
             isActive ? "menu-item active" : "menu-item"
-          }>
-          <span> 📁</span>
-
+          }
+        >
+          <span>📁</span>
           {isOpen && <span>Documents</span>}
         </NavLink>
-        
-      
+
+
         <NavLink
           to="/payroll"
           className={({ isActive }) =>
             isActive ? "menu-item active" : "menu-item"
-          }>
+          }
+        >
           <span>💰</span>
-
           {isOpen && <span>PayRoll</span>}
         </NavLink>
 
@@ -105,9 +146,9 @@ function Sidebar({ isOpen }) {
           to="/settings"
           className={({ isActive }) =>
             isActive ? "menu-item active" : "menu-item"
-          }>
+          }
+        >
           <span>⚙️</span>
-
           {isOpen && <span>Settings</span>}
         </NavLink>
 
@@ -121,12 +162,12 @@ function Sidebar({ isOpen }) {
           <div className="user-mini">
 
             <div className="avatar">
-              AD
+              {initials}
             </div>
 
             <div>
-              <strong>Admin User</strong>
-              <small>Administrator</small>
+              <strong>{fullName}</strong>
+              <small>{role}</small>
             </div>
 
           </div>
@@ -135,7 +176,8 @@ function Sidebar({ isOpen }) {
         <button
           type="button"
           className="logout-btn"
-          onClick={handleLogout}>
+          onClick={handleLogout}
+        >
           🚪
 
           {isOpen && <span>Logout</span>}
