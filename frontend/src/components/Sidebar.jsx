@@ -1,4 +1,3 @@
-
 import { NavLink, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "../styles/sidebar.css";
@@ -49,25 +48,71 @@ function Sidebar({ isOpen }) {
     navigate("/");
   };
 
-  return (
-    <aside className={`sidebar ${isOpen ? "open" : "closed"}`}>
+  // =====================================================
+  // MENU ITEM
+  // =====================================================
 
-      {/* LOGO */}
+  const MenuItem = ({ to, icon, children }) => {
+    return (
+      <NavLink
+        to={to}
+        className={({ isActive }) =>
+          `menu-item ${isActive ? "active" : ""}`
+        }
+      >
+        <span className="menu-icon">
+          {icon}
+        </span>
+
+        {isOpen && (
+          <span className="menu-text">
+            {children}
+          </span>
+        )}
+      </NavLink>
+    );
+  };
+
+  // =====================================================
+  // SIDEBAR
+  // =====================================================
+
+  return (
+    <aside
+      className={`sidebar ${
+        isOpen ? "open" : "closed"
+      }`}
+    >
+
+      {/* =================================================
+          LOGO
+      ================================================= */}
+
       <div className="logo">
+
         <div className="logo-icon">
           ERP
         </div>
 
         {isOpen && (
-          <div>
+          <div className="logo-content">
+
             <h2>ERP System</h2>
-            <span>ENTERPRISE MANAGEMENT</span>
+
+            <span>
+              ENTERPRISE MANAGEMENT
+            </span>
+
           </div>
         )}
+
       </div>
 
 
-      {/* MENU */}
+      {/* =================================================
+          MENU
+      ================================================= */}
+
       <nav className="sidebar-menu">
 
         {isOpen && (
@@ -76,86 +121,69 @@ function Sidebar({ isOpen }) {
           </p>
         )}
 
-        <NavLink
+
+        <MenuItem
           to="/dashboard"
-          className={({ isActive }) =>
-            isActive ? "menu-item active" : "menu-item"
-          }
+          icon="⌂"
         >
-          <span>📊</span>
-          {isOpen && <span>Dashboard</span>}
-        </NavLink>
+          Dashboard
+        </MenuItem>
 
 
-        <NavLink
+        <MenuItem
           to="/employees"
-          className={({ isActive }) =>
-            isActive ? "menu-item active" : "menu-item"
-          }
+          icon="♙"
         >
-          <span>👤</span>
-          {isOpen && <span>Employees</span>}
-        </NavLink>
+          Employees
+        </MenuItem>
 
 
-        <NavLink
+        <MenuItem
           to="/reports"
-          className={({ isActive }) =>
-            isActive ? "menu-item active" : "menu-item"
-          }
+          icon="▤"
         >
-          <span>📄</span>
-          {isOpen && <span>Reports</span>}
-        </NavLink>
+          Reports
+        </MenuItem>
 
 
-        <NavLink
+        <MenuItem
           to="/user-management"
-          className={({ isActive }) =>
-            isActive ? "menu-item active" : "menu-item"
-          }
+          icon="♙"
         >
-          <span>👤</span>
-          {isOpen && <span>User Management</span>}
-        </NavLink>
+          User Management
+        </MenuItem>
 
 
-        <NavLink
+        <MenuItem
           to="/documents"
-          className={({ isActive }) =>
-            isActive ? "menu-item active" : "menu-item"
-          }
+          icon="▱"
         >
-          <span>📁</span>
-          {isOpen && <span>Documents</span>}
-        </NavLink>
+          Documents
+        </MenuItem>
 
 
-        <NavLink
+        <MenuItem
           to="/payroll"
-          className={({ isActive }) =>
-            isActive ? "menu-item active" : "menu-item"
-          }
+          icon="₹"
         >
-          <span>💰</span>
-          {isOpen && <span>PayRoll</span>}
-        </NavLink>
+          Payroll
+        </MenuItem>
 
 
-        <NavLink
+        <MenuItem
           to="/settings"
-          className={({ isActive }) =>
-            isActive ? "menu-item active" : "menu-item"
-          }
+          icon="⚙"
         >
-          <span>⚙️</span>
-          {isOpen && <span>Settings</span>}
-        </NavLink>
+          Settings
+        </MenuItem>
 
       </nav>
 
 
-      {/* BOTTOM */}
+      {/* =================================================
+          BOTTOM USER SECTION
+      ================================================= */}
+
       <div className="sidebar-bottom">
 
         {isOpen && (
@@ -165,22 +193,42 @@ function Sidebar({ isOpen }) {
               {initials}
             </div>
 
-            <div>
-              <strong>{fullName}</strong>
-              <small>{role}</small>
+            <div className="user-mini-info">
+
+              <strong>
+                {fullName}
+              </strong>
+
+              <small>
+                {role}
+              </small>
+
             </div>
 
           </div>
         )}
+
+
+        {/* =================================================
+            LOGOUT
+        ================================================= */}
 
         <button
           type="button"
           className="logout-btn"
           onClick={handleLogout}
         >
-          🚪
 
-          {isOpen && <span>Logout</span>}
+          <span className="logout-icon">
+            ⇥
+          </span>
+
+          {isOpen && (
+            <span>
+              Logout
+            </span>
+          )}
+
         </button>
 
       </div>
