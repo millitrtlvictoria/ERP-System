@@ -1,9 +1,10 @@
-/* =========================================
-   PROFESSIONAL ERP NAVBAR
-========================================= */
+/* =========================================================
+   PROFESSIONAL ERP ANALYTICS NAVBAR
+   DARK ANALYTICS STYLE
+========================================================= */
 
 .navbar {
-  height: 80px;
+  height: 60px;
 
   width: 100%;
 
@@ -11,11 +12,11 @@
   align-items: center;
   justify-content: space-between;
 
-  padding: 0 30px;
+  padding: 0 18px;
 
-  background: #ffffff;
+  background: #09111f;
 
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #1c2a40;
 
   box-sizing: border-box;
 
@@ -25,96 +26,113 @@
 }
 
 
-/* =========================================
+/* =========================================================
    LEFT
-========================================= */
+========================================================= */
 
 .navbar-left {
   display: flex;
   align-items: center;
 
-  gap: 18px;
+  gap: 12px;
 
   min-width: 0;
 }
 
 
-/* =========================================
+/* =========================================================
    MENU BUTTON
-========================================= */
+========================================================= */
 
 .navbar-menu-btn {
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  border: none;
+  border: 1px solid #24364e;
 
-  border-radius: 8px;
+  border-radius: 6px;
 
-  background: #f3f4f6;
+  background: #111c2d;
 
-  color: #374151;
+  color: #9eafc3;
 
-  font-size: 18px;
+  font-size: 16px;
 
   cursor: pointer;
 
-  transition: all 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .navbar-menu-btn:hover {
-  background: #e5e7eb;
+  background: #17263b;
 
-  color: #2563eb;
+  border-color: #31506e;
+
+  color: #18d5e6;
 }
 
 
-/* =========================================
+/* =========================================================
    TITLE
-========================================= */
+========================================================= */
+
+.navbar-title {
+  min-width: 0;
+}
+
 
 .navbar-title h1 {
   margin: 0;
 
-  font-size: 21px;
+  font-size: 15px;
 
   font-weight: 700;
 
-  color: #111827;
+  color: #edf3f9;
+
+  white-space: nowrap;
 }
+
 
 .navbar-title p {
-  margin: 4px 0 0;
+  margin: 2px 0 0;
 
-  font-size: 12px;
+  font-size: 9px;
 
-  color: #6b7280;
+  color: #65778e;
+
+  white-space: nowrap;
 }
 
 
-/* =========================================
+/* =========================================================
    RIGHT
-========================================= */
+========================================================= */
 
 .navbar-right {
   display: flex;
   align-items: center;
 
-  gap: 16px;
+  gap: 9px;
+
+  min-width: 0;
 }
 
 
-/* =========================================
+/* =========================================================
    SEARCH
-========================================= */
+========================================================= */
 
 .navbar-search {
-  width: 240px;
-  height: 40px;
+  width: 245px;
+  height: 34px;
 
   display: flex;
   align-items: center;
@@ -123,30 +141,39 @@
 
   padding: 0 10px;
 
-  background: #f8fafc;
+  background: #101a2b;
 
-  border: 1px solid #e5e7eb;
+  border: 1px solid #22334b;
 
-  border-radius: 8px;
+  border-radius: 6px;
 
   box-sizing: border-box;
 
-  transition: all 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
+
 
 .navbar-search:focus-within {
-  border-color: #2563eb;
+  border-color: #218da8;
 
-  background: #ffffff;
+  background: #111e31;
 
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+  box-shadow:
+    0 0 0 2px rgba(25, 212, 229, 0.06);
 }
+
 
 .search-icon {
-  font-size: 14px;
+  font-size: 13px;
 
-  opacity: 0.7;
+  color: #647990;
+
+  opacity: 1;
 }
+
 
 .navbar-search input {
   flex: 1;
@@ -159,39 +186,41 @@
 
   background: transparent;
 
-  font-size: 12px;
+  font-size: 10px;
 
-  color: #111827;
+  color: #dce6f1;
 }
+
 
 .navbar-search input::placeholder {
-  color: #9ca3af;
+  color: #5e7088;
 }
 
+
 .search-shortcut {
-  padding: 3px 6px;
+  padding: 2px 5px;
 
-  border: 1px solid #e5e7eb;
+  border: 1px solid #283a52;
 
-  border-radius: 4px;
+  border-radius: 3px;
 
-  background: #ffffff;
+  background: #121e31;
 
-  color: #9ca3af;
+  color: #61748b;
 
-  font-size: 9px;
+  font-size: 8px;
 
   white-space: nowrap;
 }
 
 
-/* =========================================
+/* =========================================================
    ICON BUTTON
-========================================= */
+========================================================= */
 
 .navbar-icon-btn {
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
 
   position: relative;
 
@@ -199,36 +228,46 @@
   align-items: center;
   justify-content: center;
 
-  border: none;
+  border: 1px solid transparent;
 
   background: transparent;
 
-  border-radius: 8px;
+  border-radius: 6px;
 
-  font-size: 18px;
+  color: #899bb0;
+
+  font-size: 16px;
 
   cursor: pointer;
 
-  transition: 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
+
 
 .navbar-icon-btn:hover {
-  background: #f3f4f6;
+  background: #111e31;
+
+  border-color: #21344d;
+
+  color: #19d4e5;
 }
 
 
-/* =========================================
+/* =========================================================
    NOTIFICATION BADGE
-========================================= */
+========================================================= */
 
 .notification-badge {
   position: absolute;
 
-  top: 4px;
-  right: 4px;
+  top: 1px;
+  right: 0px;
 
-  min-width: 16px;
-  height: 16px;
+  min-width: 15px;
+  height: 15px;
 
   display: flex;
   align-items: center;
@@ -238,99 +277,118 @@
 
   border-radius: 20px;
 
-  background: #ef4444;
+  background: #ef6b3a;
 
-  color: white;
+  color: #ffffff;
 
-  font-size: 8px;
+  font-size: 7px;
 
   font-weight: 700;
 
-  border: 2px solid white;
+  border: 2px solid #09111f;
+
+  box-sizing: border-box;
 }
 
 
-/* =========================================
-   NOTIFICATION DROPDOWN
-========================================= */
+/* =========================================================
+   NOTIFICATION WRAPPER
+========================================================= */
 
 .navbar-notification-wrapper {
   position: relative;
 }
 
+
+/* =========================================================
+   NOTIFICATION DROPDOWN
+========================================================= */
+
 .notification-dropdown {
   position: absolute;
 
-  top: 52px;
-  right: -40px;
+  top: 43px;
+  right: -35px;
 
-  width: 330px;
+  width: 320px;
 
-  background: white;
+  background: #101a2b;
 
-  border: 1px solid #e5e7eb;
+  border: 1px solid #24364e;
 
-  border-radius: 12px;
+  border-radius: 7px;
 
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.45);
 
   overflow: hidden;
 }
+
 
 .dropdown-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  padding: 16px;
+  padding: 13px 14px;
 
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid #1d2c41;
 }
+
 
 .dropdown-header strong {
-  font-size: 14px;
+  font-size: 12px;
 
-  color: #111827;
+  color: #e9eff6;
 }
 
+
 .dropdown-header span {
-  padding: 4px 8px;
+  padding: 4px 7px;
 
-  border-radius: 20px;
+  border-radius: 10px;
 
-  background: #eff6ff;
+  background: rgba(25, 212, 229, 0.09);
 
-  color: #2563eb;
+  color: #21c9e0;
 
-  font-size: 9px;
+  font-size: 8px;
 
   font-weight: 600;
 }
 
 
-/* =========================================
+/* =========================================================
    NOTIFICATION ITEM
-========================================= */
+========================================================= */
 
 .notification-item {
   display: flex;
 
-  gap: 12px;
+  gap: 10px;
 
-  padding: 14px 16px;
+  padding: 11px 14px;
 
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid #19273a;
 
-  transition: 0.2s;
+  transition:
+    background 0.2s ease;
 }
+
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
 
 .notification-item:hover {
-  background: #f8fafc;
+  background: #132238;
 }
 
+
 .notification-item-icon {
-  width: 34px;
-  height: 34px;
+  width: 31px;
+  height: 31px;
 
   display: flex;
   align-items: center;
@@ -338,81 +396,97 @@
 
   flex-shrink: 0;
 
-  border-radius: 8px;
+  border: 1px solid #263c56;
 
-  background: #eff6ff;
+  border-radius: 6px;
 
-  font-size: 15px;
+  background: #14253a;
+
+  color: #25cde2;
+
+  font-size: 13px;
 }
+
 
 .notification-item strong {
   display: block;
 
   margin-bottom: 3px;
 
-  font-size: 11px;
+  font-size: 10px;
 
-  color: #374151;
+  color: #dce5ee;
 }
+
 
 .notification-item small {
-  font-size: 9px;
+  font-size: 8px;
 
-  color: #9ca3af;
+  color: #64768c;
 }
 
 
-/* =========================================
+/* =========================================================
    DIVIDER
-========================================= */
+========================================================= */
 
 .navbar-divider {
   width: 1px;
-  height: 30px;
+  height: 28px;
 
-  background: #e5e7eb;
+  background: #25354b;
 }
 
 
-/* =========================================
-   PROFILE
-========================================= */
+/* =========================================================
+   PROFILE WRAPPER
+========================================================= */
 
 .navbar-profile-wrapper {
   position: relative;
 }
 
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
 .navbar-profile {
   display: flex;
   align-items: center;
 
-  gap: 9px;
+  gap: 8px;
 
-  padding: 5px;
+  padding: 3px 5px;
 
-  border: none;
+  border: 1px solid transparent;
 
   background: transparent;
 
   cursor: pointer;
 
-  border-radius: 8px;
+  border-radius: 6px;
 
-  transition: 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
+
 
 .navbar-profile:hover {
-  background: #f8fafc;
+  background: #111e31;
+
+  border-color: #1f3149;
 }
 
 
-/* =========================================
+/* =========================================================
    AVATAR
-========================================= */
+========================================================= */
 
 .navbar-avatar {
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
 
   display: flex;
   align-items: center;
@@ -420,196 +494,286 @@
 
   flex-shrink: 0;
 
+  border: 1px solid #1c91b1;
+
   border-radius: 50%;
 
-  background: #dbeafe;
+  background: #10273a;
 
-  color: #2563eb;
+  color: #26c8e1;
 
-  font-size: 11px;
+  font-size: 9px;
 
   font-weight: 700;
 }
 
+
 .navbar-avatar.large {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
 }
 
 
-/* =========================================
+/* =========================================================
    USER INFO
-========================================= */
+========================================================= */
 
 .navbar-user-info {
   text-align: left;
+
+  min-width: 0;
 }
+
 
 .navbar-user-info strong {
   display: block;
 
-  font-size: 12px;
+  max-width: 120px;
 
-  color: #111827;
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+
+  font-size: 10px;
+
+  color: #e8edf4;
 }
+
 
 .navbar-user-info small {
   display: block;
 
   margin-top: 2px;
 
-  font-size: 10px;
+  font-size: 8px;
 
-  color: #9ca3af;
+  color: #65768d;
 }
 
 
-/* =========================================
+/* =========================================================
    ARROW
-========================================= */
+========================================================= */
 
 .profile-arrow {
-  margin-left: 3px;
+  margin-left: 2px;
 
-  color: #6b7280;
+  color: #687b91;
 
-  font-size: 15px;
+  font-size: 12px;
 }
 
 
-/* =========================================
+/* =========================================================
    PROFILE DROPDOWN
-========================================= */
+========================================================= */
 
 .profile-dropdown {
   position: absolute;
 
-  top: 54px;
+  top: 43px;
   right: 0;
 
-  width: 230px;
+  width: 225px;
 
-  padding: 8px;
+  padding: 7px;
 
-  background: white;
+  background: #101a2b;
 
-  border: 1px solid #e5e7eb;
+  border: 1px solid #24364e;
 
-  border-radius: 12px;
+  border-radius: 7px;
 
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.45);
+
+  box-sizing: border-box;
 }
 
 
-/* =========================================
+/* =========================================================
    PROFILE HEADER
-========================================= */
+========================================================= */
 
 .profile-dropdown-header {
   display: flex;
 
   align-items: center;
 
-  gap: 10px;
+  gap: 9px;
 
-  padding: 10px;
+  padding: 9px;
+
+  border-bottom: 1px solid #1d2c41;
+
+  margin-bottom: 5px;
 }
+
 
 .profile-dropdown-header strong {
   display: block;
 
-  font-size: 12px;
+  font-size: 10px;
 
-  color: #111827;
+  color: #e8eef5;
 }
+
 
 .profile-dropdown-header small {
   display: block;
 
   margin-top: 3px;
 
-  font-size: 10px;
+  font-size: 8px;
 
-  color: #9ca3af;
+  color: #65778e;
 }
 
 
-/* =========================================
+/* =========================================================
    DROPDOWN BUTTONS
-========================================= */
+========================================================= */
 
 .profile-dropdown button {
   width: 100%;
 
-  height: 38px;
+  height: 34px;
 
   display: flex;
   align-items: center;
 
-  gap: 10px;
+  gap: 9px;
 
-  padding: 0 10px;
+  padding: 0 9px;
 
   border: none;
 
   background: transparent;
 
-  border-radius: 7px;
+  border-radius: 5px;
 
-  color: #4b5563;
+  color: #8999ad;
 
-  font-size: 11px;
+  font-size: 9px;
 
   cursor: pointer;
 
   text-align: left;
 
-  transition: 0.2s;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
+
 
 .profile-dropdown button:hover {
-  background: #f3f4f6;
+  background: #17263b;
 
-  color: #2563eb;
+  color: #25c9e0;
 }
 
 
-/* =========================================
+/* =========================================================
    LOGOUT
-========================================= */
+========================================================= */
 
 .profile-dropdown .profile-logout {
-  color: #dc2626;
+  color: #e47755;
 }
+
 
 .profile-dropdown .profile-logout:hover {
-  background: #fef2f2;
+  background: rgba(222, 93, 59, 0.1);
 
-  color: #dc2626;
+  color: #f07a51;
 }
 
 
-/* =========================================
-   DIVIDER
-========================================= */
+/* =========================================================
+   PROFILE MENU DIVIDER
+========================================================= */
 
 .profile-menu-divider {
   height: 1px;
 
-  margin: 6px 0;
+  margin: 5px 0;
 
-  background: #f1f5f9;
+  background: #1d2c41;
 }
 
 
-/* =========================================
-   RESPONSIVE
-========================================= */
+/* =========================================================
+   OPTIONAL LIVE INDICATOR
+   Works if your Navbar JSX contains .live-indicator
+========================================================= */
 
-@media (max-width: 1000px) {
+.live-indicator {
+  height: 28px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 0 10px;
+
+  border: 1px solid #087f6c;
+
+  border-radius: 15px;
+
+  background: rgba(10, 166, 133, 0.08);
+
+  color: #13c795;
+
+  font-size: 8px;
+
+  font-weight: 700;
+}
+
+
+.live-indicator::before {
+  content: "";
+
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #12c997;
+
+  box-shadow:
+    0 0 8px rgba(18, 201, 151, 0.65);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
 
   .navbar-search {
-    width: 180px;
+    width: 190px;
+  }
+
+}
+
+
+@media (max-width: 900px) {
+
+  .navbar {
+    padding: 0 14px;
+  }
+
+  .navbar-search {
+    width: 165px;
+  }
+
+  .navbar-right {
+    gap: 6px;
   }
 
 }
@@ -618,7 +782,9 @@
 @media (max-width: 750px) {
 
   .navbar {
-    padding: 0 15px;
+    height: 58px;
+
+    padding: 0 12px;
   }
 
   .navbar-search {
@@ -630,23 +796,87 @@
     display: none;
   }
 
+  .navbar-title h1 {
+    font-size: 14px;
+  }
+
+  .navbar-title p {
+    font-size: 8px;
+  }
+
+  .navbar-divider {
+    display: none;
+  }
+
 }
 
 
 @media (max-width: 500px) {
 
+  .navbar {
+    padding: 0 9px;
+  }
+
+  .navbar-left {
+    gap: 8px;
+  }
+
+  .navbar-menu-btn {
+    width: 32px;
+    height: 32px;
+  }
+
   .navbar-title h1 {
-    font-size: 17px;
+    font-size: 13px;
   }
 
   .navbar-title p {
     display: none;
   }
 
-  .notification-dropdown {
-    width: 290px;
+  .navbar-icon-btn {
+    width: 32px;
+    height: 32px;
+  }
 
-    right: -80px;
+  .navbar-avatar {
+    width: 30px;
+    height: 30px;
+  }
+
+  .notification-dropdown {
+    width: 285px;
+
+    right: -75px;
+  }
+
+  .profile-dropdown {
+    width: 210px;
   }
 
 }
+
+
+/* =========================================================
+   VERY SMALL SCREENS
+========================================================= */
+
+@media (max-width: 380px) {
+
+  .navbar-title {
+    max-width: 120px;
+  }
+
+  .navbar-title h1 {
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+  }
+
+  .navbar-right {
+    gap: 3px;
+  }
+
+}   

@@ -1,13 +1,14 @@
 /* =========================================
    ATTENDANCE PAGE
+   DARK NAVY ERP DESIGN
 ========================================= */
 
 .attendance-page {
   min-height: 100vh;
-  background: #f5f7fb;
+  background: #03152a;
   padding: 30px;
   box-sizing: border-box;
-  color: #111827;
+  color: #f1f5f9;
 }
 
 
@@ -26,21 +27,25 @@
   border: none;
   background: transparent;
   padding: 0;
-  color: #2563eb;
+  color: #71b4ee;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
 }
 
+.attendance-back-btn:hover {
+  color: #9ed0fa;
+}
+
 .attendance-header h1 {
   margin: 12px 0 6px;
   font-size: 28px;
-  color: #111827;
+  color: #f1f5f9;
 }
 
 .attendance-header p {
   margin: 0;
-  color: #6b7280;
+  color: #8fa8c1;
   font-size: 13px;
 }
 
@@ -59,15 +64,24 @@
 }
 
 .attendance-export-btn {
-  border: none;
+  border: 1px solid #3b82f6;
   background: #2563eb;
-  color: white;
+  color: #ffffff;
+}
+
+.attendance-export-btn:hover {
+  background: #1d4ed8;
 }
 
 .attendance-refresh-btn {
-  border: 1px solid #e5e7eb;
-  background: white;
-  color: #374151;
+  border: 1px solid #315a7b;
+  background: #071f3a;
+  color: #cde7fa;
+}
+
+.attendance-refresh-btn:hover {
+  background: #0b2947;
+  border-color: #5d8fc1;
 }
 
 
@@ -83,14 +97,14 @@
 }
 
 .attendance-summary-card {
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: #03182f;
+  border: 1px solid #173653;
   border-radius: 14px;
   padding: 20px;
   display: flex;
   align-items: center;
   gap: 15px;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
 .attendance-summary-icon {
@@ -104,33 +118,35 @@
   font-size: 20px;
 }
 
+/* Summary icon backgrounds */
+
 .attendance-summary-icon.blue {
-  background: #eff6ff;
+  background: #0b2947;
 }
 
 .attendance-summary-icon.green {
-  background: #ecfdf5;
+  background: #123b31;
 }
 
 .attendance-summary-icon.red {
-  background: #fef2f2;
+  background: #491f2d;
 }
 
 .attendance-summary-icon.orange {
-  background: #fff7ed;
+  background: #49351c;
 }
 
 .attendance-summary-icon.purple {
-  background: #f5f3ff;
+  background: #302650;
 }
 
 .attendance-summary-icon.teal {
-  background: #ecfeff;
+  background: #123b42;
 }
 
 .attendance-summary-card span {
   display: block;
-  color: #6b7280;
+  color: #8fa8c1;
   font-size: 12px;
   margin-bottom: 5px;
 }
@@ -138,12 +154,13 @@
 .attendance-summary-card h2 {
   margin: 0;
   font-size: 24px;
+  color: #f1f5f9;
 }
 
 .attendance-summary-card small {
   display: block;
   margin-top: 4px;
-  color: #9ca3af;
+  color: #718ba4;
   font-size: 10px;
 }
 
@@ -153,11 +170,12 @@
 ========================================= */
 
 .attendance-filter-card {
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: #03182f;
+  border: 1px solid #173653;
   border-radius: 14px;
   padding: 24px;
   margin-bottom: 25px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
 .attendance-filter-header {
@@ -170,23 +188,30 @@
 .attendance-filter-header h2 {
   margin: 0 0 5px;
   font-size: 17px;
+  color: #f1f5f9;
 }
 
 .attendance-filter-header p {
   margin: 0;
-  color: #6b7280;
+  color: #8fa8c1;
   font-size: 12px;
 }
 
 .attendance-clear-btn {
-  border: none;
-  background: #eff6ff;
-  color: #2563eb;
+  border: 1px solid #315a7b;
+  background: #071f3a;
+  color: #79b9f2;
   padding: 9px 14px;
   border-radius: 7px;
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
+}
+
+.attendance-clear-btn:hover {
+  background: #0b2947;
+  border-color: #5d8fc1;
+  color: #9ed0fa;
 }
 
 .attendance-filter-grid {
@@ -203,7 +228,7 @@
 
 .attendance-filter-group label {
   font-size: 11px;
-  color: #374151;
+  color: #a9bfd3;
   font-weight: 600;
 }
 
@@ -212,34 +237,58 @@
   height: 42px;
   width: 100%;
   box-sizing: border-box;
-  border: 1px solid #d1d5db;
+  border: 1px solid #5d8fc1;
   border-radius: 8px;
   padding: 0 12px;
-  background: white;
-  color: #374151;
+  background: #071f3a;
+  color: #f1f5f9;
   font-size: 12px;
   outline: none;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .attendance-filter-group input:focus,
 .attendance-filter-group select:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+  border-color: #3b82f6;
+  background: #082442;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
 }
+
+.attendance-filter-group input::placeholder {
+  color: #718ba4;
+}
+
+/* Date picker icon */
+
+.attendance-filter-group input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
+  cursor: pointer;
+}
+
+
+/* =========================================
+   SEARCH
+========================================= */
 
 .attendance-search-box {
   height: 42px;
-  border: 1px solid #d1d5db;
+  border: 1px solid #5d8fc1;
   border-radius: 8px;
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 0 12px;
   box-sizing: border-box;
+  background: #071f3a;
 }
 
 .attendance-search-box:focus-within {
-  border-color: #2563eb;
+  border-color: #3b82f6;
+  background: #082442;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
 }
 
 .attendance-search-box input {
@@ -248,6 +297,12 @@
   width: 100%;
   height: 100%;
   padding: 0;
+  background: transparent;
+  color: #f1f5f9;
+}
+
+.attendance-search-box input::placeholder {
+  color: #718ba4;
 }
 
 
@@ -256,10 +311,11 @@
 ========================================= */
 
 .attendance-table-card {
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: #03182f;
+  border: 1px solid #173653;
   border-radius: 14px;
   overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
 .attendance-table-header {
@@ -267,17 +323,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #173653;
 }
 
 .attendance-table-header h2 {
   margin: 0 0 5px;
   font-size: 17px;
+  color: #f1f5f9;
 }
 
 .attendance-table-header p {
   margin: 0;
-  color: #6b7280;
+  color: #8fa8c1;
   font-size: 11px;
 }
 
@@ -287,14 +344,20 @@
 }
 
 .attendance-table-export {
-  border: 1px solid #dbeafe;
-  background: #eff6ff;
-  color: #2563eb;
+  border: 1px solid #315a7b;
+  background: #071f3a;
+  color: #79b9f2;
   padding: 8px 13px;
   border-radius: 7px;
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
+}
+
+.attendance-table-export:hover {
+  background: #0b2947;
+  border-color: #5d8fc1;
+  color: #9ed0fa;
 }
 
 .attendance-table-wrapper {
@@ -308,24 +371,30 @@
 }
 
 .attendance-table th {
-  background: #f9fafb;
+  background: #071f3a;
   text-align: left;
-  color: #6b7280;
+  color: #8fa8c1;
   font-size: 10px;
   text-transform: uppercase;
   padding: 13px 15px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #25445f;
 }
 
 .attendance-table td {
   padding: 14px 15px;
   font-size: 11px;
-  border-bottom: 1px solid #f1f5f9;
+  color: #d9e4ef;
+  border-bottom: 1px solid #173653;
   white-space: nowrap;
 }
 
+.attendance-table tbody tr {
+  background: #03182f;
+  transition: background 0.15s ease;
+}
+
 .attendance-table tbody tr:hover {
-  background: #f8fafc;
+  background: #082442;
 }
 
 
@@ -343,24 +412,25 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #eff6ff;
-  color: #2563eb;
+  background: #0b2947;
+  color: #79b9f2;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 10px;
   font-weight: 700;
+  border: 1px solid #315a7b;
 }
 
 .attendance-employee strong {
   display: block;
-  color: #111827;
+  color: #edf3f8;
   font-size: 12px;
 }
 
 .attendance-employee small {
   display: block;
-  color: #9ca3af;
+  color: #718ba4;
   margin-top: 3px;
   font-size: 10px;
 }
@@ -371,13 +441,14 @@
 ========================================= */
 
 .attendance-department {
-  color: #374151;
+  color: #c9d8e6;
   font-weight: 600;
 }
 
 .attendance-shift {
-  background: #f3f4f6;
-  color: #374151;
+  background: #071f3a;
+  border: 1px solid #25445f;
+  color: #a9bfd3;
   padding: 5px 9px;
   border-radius: 6px;
   font-size: 10px;
@@ -398,23 +469,27 @@
 }
 
 .attendance-status.present {
-  background: #dcfce7;
-  color: #15803d;
+  background: #123b31;
+  color: #8ee5c7;
+  border: 1px solid #28634f;
 }
 
 .attendance-status.absent {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: #491f2d;
+  color: #ffb8c4;
+  border: 1px solid #765064;
 }
 
 .attendance-status.late {
-  background: #fef3c7;
-  color: #b45309;
+  background: #49351c;
+  color: #f4cf8a;
+  border: 1px solid #73582b;
 }
 
 .attendance-status.leave {
-  background: #dbeafe;
-  color: #1d4ed8;
+  background: #12324a;
+  color: #9ed0fa;
+  border: 1px solid #385e78;
 }
 
 
@@ -440,23 +515,36 @@
 
 .mark-present-btn {
   width: 28px;
-  border: none;
-  background: #dcfce7;
-  color: #15803d;
+  border: 1px solid #28634f;
+  background: #123b31;
+  color: #8ee5c7;
+}
+
+.mark-present-btn:hover {
+  background: #174b3d;
 }
 
 .mark-absent-btn {
   width: 28px;
-  border: none;
-  background: #fee2e2;
-  color: #b91c1c;
+  border: 1px solid #765064;
+  background: #491f2d;
+  color: #ffb8c4;
+}
+
+.mark-absent-btn:hover {
+  background: #5b2637;
 }
 
 .attendance-view-btn {
-  border: 1px solid #dbeafe;
-  background: #eff6ff;
-  color: #2563eb;
+  border: 1px solid #315a7b;
+  background: #071f3a;
+  color: #79b9f2;
   padding: 0 9px;
+}
+
+.attendance-view-btn:hover {
+  background: #0b2947;
+  border-color: #5d8fc1;
 }
 
 
@@ -467,7 +555,8 @@
 .attendance-no-data {
   text-align: center !important;
   padding: 45px !important;
-  color: #9ca3af !important;
+  color: #718ba4 !important;
+  background: #03182f !important;
 }
 
 
@@ -480,8 +569,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #6b7280;
+  color: #8fa8c1;
   font-size: 11px;
+  border-top: 1px solid #173653;
 }
 
 .attendance-pagination {
@@ -492,15 +582,22 @@
 .attendance-pagination button {
   width: 30px;
   height: 30px;
-  border: 1px solid #e5e7eb;
-  background: white;
+  border: 1px solid #315a7b;
+  background: #071f3a;
+  color: #a9bfd3;
   border-radius: 6px;
   cursor: pointer;
 }
 
+.attendance-pagination button:hover {
+  background: #0b2947;
+  border-color: #5d8fc1;
+  color: #f1f5f9;
+}
+
 .attendance-page-active {
   background: #2563eb !important;
-  color: white;
+  color: white !important;
   border-color: #2563eb !important;
 }
 

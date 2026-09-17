@@ -49,8 +49,8 @@ function Reports() {
   // EMPLOYEE SELECTION
   // =====================================================
 
-  // Stores Employee IDs selected by the user.
-  // Empty selection = keep the existing filtered-report behavior.
+  // Stores selected Employee IDs.
+  // Empty selection = use normal filtered report.
   const [selectedEmployeeIds, setSelectedEmployeeIds] =
     useState([]);
 
@@ -76,8 +76,7 @@ function Reports() {
             await response.json();
 
           if (errorData?.detail) {
-            message =
-              errorData.detail;
+            message = errorData.detail;
           }
         } catch {
           // Ignore JSON parsing error
@@ -432,29 +431,25 @@ function Reports() {
 
   const getCurrentData = () => {
     if (
-      reportType ===
-      "employee"
+      reportType === "employee"
     ) {
       return employeeData;
     }
 
     if (
-      reportType ===
-      "attendance"
+      reportType === "attendance"
     ) {
       return attendanceData;
     }
 
     if (
-      reportType ===
-      "production"
+      reportType === "production"
     ) {
       return productionData;
     }
 
     if (
-      reportType ===
-      "department"
+      reportType === "department"
     ) {
       return departmentData;
     }
@@ -488,37 +483,47 @@ function Reports() {
   };
 
   // =====================================================
-  // FORMAT DATE TIME
-  // =====================================================
-
-  // =====================================================
-  // CALCULATE AGE FROM DATE OF BIRTH
+  // CALCULATE AGE
   // =====================================================
 
   const calculateAge = (dateOfBirth) => {
     if (!dateOfBirth) return "-";
 
-    const birthDate = new Date(dateOfBirth);
+    const birthDate =
+      new Date(dateOfBirth);
 
-    if (Number.isNaN(birthDate.getTime())) {
+    if (
+      Number.isNaN(
+        birthDate.getTime()
+      )
+    ) {
       return "-";
     }
 
     const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
+
+    let age =
+      today.getFullYear() -
+      birthDate.getFullYear();
 
     const monthDifference =
-      today.getMonth() - birthDate.getMonth();
+      today.getMonth() -
+      birthDate.getMonth();
 
     if (
       monthDifference < 0 ||
-      (monthDifference === 0 &&
-        today.getDate() < birthDate.getDate())
+      (
+        monthDifference === 0 &&
+        today.getDate() <
+          birthDate.getDate()
+      )
     ) {
       age--;
     }
 
-    return age >= 0 ? String(age) : "-";
+    return age >= 0
+      ? String(age)
+      : "-";
   };
 
   // =====================================================
@@ -565,9 +570,7 @@ function Reports() {
       Number(value);
 
     if (
-      Number.isNaN(
-        numberValue
-      )
+      Number.isNaN(numberValue)
     ) {
       return String(value);
     }
@@ -633,50 +636,53 @@ function Reports() {
             reportType ===
             "employee"
           ) {
-            // Multiple Employee ID search:
-            // EMP001, EMP003, EMP007
-            // or one ID per line.
-            const employeeIdList = search
-              .split(/[,;\n]+/)
-              .map((value) => value.trim().toLowerCase())
-              .filter(Boolean);
+            const employeeIdList =
+              search
+                .split(/[,;\n]+/)
+                .map(
+                  (value) =>
+                    value
+                      .trim()
+                      .toLowerCase()
+                )
+                .filter(Boolean);
 
             const isMultipleEmployeeIdSearch =
               employeeIdList.length > 1;
 
             const employeeId =
-              String(item.emp_id ?? "")
+              String(
+                item.emp_id ?? ""
+              )
                 .trim()
                 .toLowerCase();
 
-            if (isMultipleEmployeeIdSearch) {
-              // Multiple Employee IDs are ALWAYS exact matches.
-              // Example: EMP001, EMP003 must return only EMP001
-              // and EMP003, never employees whose other fields contain
-              // those values.
-              searchMatch = employeeIdList.includes(employeeId);
+            if (
+              isMultipleEmployeeIdSearch
+            ) {
+              searchMatch =
+                employeeIdList.includes(
+                  employeeId
+                );
             } else {
-              // IMPORTANT:
-              // If the entered value exactly matches an existing
-              // Employee ID, search ONLY by Employee ID.
-              //
-              // This prevents an Employee ID such as EMP001 from also
-              // returning another employee because "EMP001" happens
-              // to appear in another searchable field.
               const exactEmployeeIdExists =
                 employeeData.some(
                   (employee) =>
-                    String(employee.emp_id ?? "")
+                    String(
+                      employee.emp_id ?? ""
+                    )
                       .trim()
-                      .toLowerCase() === searchText
+                      .toLowerCase() ===
+                    searchText
                 );
 
-              if (exactEmployeeIdExists) {
+              if (
+                exactEmployeeIdExists
+              ) {
                 searchMatch =
-                  employeeId === searchText;
+                  employeeId ===
+                  searchText;
               } else {
-                // If it is not an Employee ID, keep normal text search
-                // for employee name and other employee information.
                 searchMatch = [
                   item.id,
                   item.emp_id,
@@ -684,7 +690,9 @@ function Reports() {
                   item.last_name,
                   item.gender,
                   item.date_of_birth,
-                  calculateAge(item.date_of_birth),
+                  calculateAge(
+                    item.date_of_birth
+                  ),
                   item.phone,
                   item.email,
                   item.department,
@@ -703,9 +711,13 @@ function Reports() {
                   item.updated_at,
                 ].some(
                   (value) =>
-                    String(value ?? "")
+                    String(
+                      value ?? ""
+                    )
                       .toLowerCase()
-                      .includes(searchText)
+                      .includes(
+                        searchText
+                      )
                 );
               }
             }
@@ -730,20 +742,10 @@ function Reports() {
         // DEPARTMENT
         // =================================================
 
-        // =================================================
-        // DEPARTMENT + EMPLOYEE SEARCH
-        // =================================================
-        // Employee report:
-        // 1. "Select Department" + no search = show no employee data.
-        // 2. "Select Department" + Emp ID/name search = search all
-        //    employees without requiring a department.
-        // 3. "All Departments" = show all matching employees.
-        // 4. Specific department = only show matching employees
-        //    from that department.
-        //
-        // This makes Department optional when the user is searching
-        // for an employee, while keeping the default blank state.
-        if (department === "Select Department") {
+        if (
+          department ===
+          "Select Department"
+        ) {
           if (
             reportType === "employee" &&
             search.trim() !== ""
@@ -752,10 +754,19 @@ function Reports() {
           } else {
             departmentMatch = false;
           }
-        } else if (department !== "All Departments") {
+        } else if (
+          department !==
+          "All Departments"
+        ) {
           departmentMatch =
-            String(item.department ?? "").trim().toLowerCase() ===
-            String(department).trim().toLowerCase();
+            String(
+              item.department ?? ""
+            )
+              .trim()
+              .toLowerCase() ===
+            String(department)
+              .trim()
+              .toLowerCase();
         }
 
         // =================================================
@@ -799,9 +810,6 @@ function Reports() {
   // SELECTED REPORT DATA
   // =====================================================
 
-  // If specific employees are selected, only those employees are
-  // included in the preview/downloads. If nothing is selected,
-  // the existing filteredData behavior remains unchanged.
   const reportData = useMemo(() => {
     if (
       reportType !== "employee" ||
@@ -810,14 +818,25 @@ function Reports() {
       return filteredData;
     }
 
-    const selectedSet = new Set(
-      selectedEmployeeIds.map((id) => String(id).trim().toLowerCase())
-    );
+    const selectedSet =
+      new Set(
+        selectedEmployeeIds.map(
+          (id) =>
+            String(id)
+              .trim()
+              .toLowerCase()
+        )
+      );
 
-    return filteredData.filter((employee) =>
-      selectedSet.has(
-        String(employee.emp_id ?? "").trim().toLowerCase()
-      )
+    return filteredData.filter(
+      (employee) =>
+        selectedSet.has(
+          String(
+            employee.emp_id ?? ""
+          )
+            .trim()
+            .toLowerCase()
+        )
     );
   }, [
     filteredData,
@@ -829,57 +848,109 @@ function Reports() {
   // EMPLOYEE SELECTION HELPERS
   // =====================================================
 
-  const toggleEmployeeSelection = (employeeId) => {
-    const id = String(employeeId ?? "").trim();
+  const toggleEmployeeSelection = (
+    employeeId
+  ) => {
+    const id =
+      String(
+        employeeId ?? ""
+      ).trim();
 
     if (!id) return;
 
-    setSelectedEmployeeIds((current) =>
-      current.includes(id)
-        ? current.filter((value) => value !== id)
-        : [...current, id]
+    setSelectedEmployeeIds(
+      (current) =>
+        current.includes(id)
+          ? current.filter(
+              (value) =>
+                value !== id
+            )
+          : [
+              ...current,
+              id,
+            ]
     );
   };
 
-  const toggleSelectAllEmployees = () => {
-    const visibleIds = filteredData
-      .map((employee) => String(employee.emp_id ?? "").trim())
-      .filter(Boolean);
+  const toggleSelectAllEmployees =
+    () => {
+      const visibleIds =
+        filteredData
+          .map(
+            (employee) =>
+              String(
+                employee.emp_id ?? ""
+              ).trim()
+          )
+          .filter(Boolean);
 
-    if (visibleIds.length === 0) return;
-
-    setSelectedEmployeeIds((current) => {
-      const currentSet = new Set(current);
-      const allVisibleSelected = visibleIds.every((id) =>
-        currentSet.has(id)
-      );
-
-      if (allVisibleSelected) {
-        return current.filter((id) => !visibleIds.includes(id));
+      if (
+        visibleIds.length === 0
+      ) {
+        return;
       }
 
-      return [
-        ...current,
-        ...visibleIds.filter((id) => !currentSet.has(id)),
-      ];
-    });
-  };
+      setSelectedEmployeeIds(
+        (current) => {
+          const currentSet =
+            new Set(current);
 
-  const clearEmployeeSelection = () => {
-    setSelectedEmployeeIds([]);
-  };
+          const allVisibleSelected =
+            visibleIds.every(
+              (id) =>
+                currentSet.has(id)
+            );
 
-  const isEmployeeSelected = (employeeId) =>
+          if (
+            allVisibleSelected
+          ) {
+            return current.filter(
+              (id) =>
+                !visibleIds.includes(id)
+            );
+          }
+
+          return [
+            ...current,
+            ...visibleIds.filter(
+              (id) =>
+                !currentSet.has(id)
+            ),
+          ];
+        }
+      );
+    };
+
+  const clearEmployeeSelection =
+    () => {
+      setSelectedEmployeeIds([]);
+    };
+
+  const isEmployeeSelected = (
+    employeeId
+  ) =>
     selectedEmployeeIds.includes(
-      String(employeeId ?? "").trim()
+      String(
+        employeeId ?? ""
+      ).trim()
     );
 
   const allVisibleEmployeesSelected =
     filteredData.length > 0 &&
     filteredData
-      .map((employee) => String(employee.emp_id ?? "").trim())
+      .map(
+        (employee) =>
+          String(
+            employee.emp_id ?? ""
+          ).trim()
+      )
       .filter(Boolean)
-      .every((id) => selectedEmployeeIds.includes(id));
+      .every(
+        (id) =>
+          selectedEmployeeIds.includes(
+            id
+          )
+      );
 
   // =====================================================
   // GET TABLE ROWS
@@ -1048,11 +1119,14 @@ function Reports() {
 
   const clearFilters = () => {
     setSearch("");
+
     setDepartment(
       "Select Department"
     );
+
     setFromDate("");
     setToDate("");
+
     setSelectedEmployeeIds([]);
   };
 
@@ -1069,7 +1143,9 @@ function Reports() {
     const rows =
       getRows();
 
-    if (rows.length === 0) {
+    if (
+      rows.length === 0
+    ) {
       alert(
         "No records found for CSV."
       );
@@ -1098,8 +1174,7 @@ function Reports() {
             .map(
               (value) =>
                 `"${String(
-                  value ??
-                    ""
+                  value ?? ""
                 ).replace(
                   /"/g,
                   '""'
@@ -1166,7 +1241,9 @@ function Reports() {
     const rows =
       getRows();
 
-    if (rows.length === 0) {
+    if (
+      rows.length === 0
+    ) {
       alert(
         "No records found for Excel."
       );
@@ -1201,230 +1278,231 @@ function Reports() {
 
   // =====================================================
   // EMPLOYEE A3 PDF
-  // WORKER DETAILS FORMAT
   // =====================================================
 
   const downloadEmployeePDF = () => {
-  if (!reportData.length) {
-    alert("No employees available for PDF.");
-    return;
-  }
-
-  const doc = new jsPDF({
-    orientation: "landscape",
-    unit: "mm",
-    format: "a3",
-  });
-
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const pageHeight = doc.internal.pageSize.getHeight();
-
-  // ============================================================
-  // CENTER THE COMPLETE REPORT ON A3 PAGE
-  // ============================================================
-
-  const reportWidth = 350;
-  const reportHeight = 190;
-
-  const reportX = (pageWidth - reportWidth) / 2;
-  const reportY = (pageHeight - reportHeight) / 2;
-
-  const left = reportX + 8;
-  const right = reportX + reportWidth - 8;
-  const width = right - left;
-
-  // ============================================================
-  // HELPERS
-  // ============================================================
-
-  const textValue = (value) => {
     if (
-      value === null ||
-      value === undefined ||
-      value === ""
+      !reportData.length
     ) {
-      return "-";
+      alert(
+        "No employees available for PDF."
+      );
+
+      return;
     }
 
-    return String(value);
-  };
+    const doc =
+      new jsPDF({
+        orientation:
+          "landscape",
+        unit:
+          "mm",
+        format:
+          "a3",
+      });
 
-  const fullName = (employee) => {
-    const first = employee?.first_name
-      ? String(employee.first_name).trim()
-      : "";
+    const pageWidth =
+      doc.internal.pageSize.getWidth();
 
-    const last = employee?.last_name
-      ? String(employee.last_name).trim()
-      : "";
+    const pageHeight =
+      doc.internal.pageSize.getHeight();
 
-    return `${first} ${last}`.trim() || "-";
-  };
+    // ===================================================
+    // CENTER REPORT
+    // ===================================================
 
-  const employmentType = (employee) => {
-    return (
-      employee?.employment_type_ ??
-      employee?.employment_type ??
-      employee?.employmentType ??
-      "-"
-    );
-  };
+    const reportWidth = 350;
+    const reportHeight = 190;
 
-  const dateValue = (value) => {
-    if (!value) return "-";
+    const reportX =
+      (pageWidth -
+        reportWidth) /
+      2;
 
-    const date = new Date(value);
+    const reportY =
+      (pageHeight -
+        reportHeight) /
+      2;
 
-    if (Number.isNaN(date.getTime())) {
+    const left =
+      reportX + 8;
+
+    const right =
+      reportX +
+      reportWidth -
+      8;
+
+    const width =
+      right - left;
+
+    // ===================================================
+    // PDF HELPERS
+    // ===================================================
+
+    const textValue = (
+      value
+    ) => {
+      if (
+        value === null ||
+        value === undefined ||
+        value === ""
+      ) {
+        return "-";
+      }
+
       return String(value);
-    }
+    };
 
-    return date.toLocaleDateString("en-GB");
-  };
+    const fullName = (
+      employee
+    ) => {
+      const first =
+        employee?.first_name
+          ? String(
+              employee.first_name
+            ).trim()
+          : "";
 
-  const salaryValue = (value) => {
-    if (
-      value === null ||
-      value === undefined ||
-      value === ""
-    ) {
-      return "-";
-    }
+      const last =
+        employee?.last_name
+          ? String(
+              employee.last_name
+            ).trim()
+          : "";
 
-    const number = Number(value);
+      return (
+        `${first} ${last}`.trim() ||
+        "-"
+      );
+    };
 
-    if (Number.isNaN(number)) {
-      return String(value);
-    }
+    const employmentType = (
+      employee
+    ) => {
+      return (
+        employee?.employment_type_ ??
+        employee?.employment_type ??
+        employee?.employmentType ??
+        "-"
+      );
+    };
 
-    return number.toLocaleString("en-IN", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  };
+    const dateValue = (
+      value
+    ) => {
+      if (!value) return "-";
 
-  const fitText = (
-    value,
-    maxWidth,
-    maxLines = 2
-  ) => {
-    const lines = doc.splitTextToSize(
-      textValue(value),
-      maxWidth
-    );
+      const date =
+        new Date(value);
 
-    if (lines.length <= maxLines) {
-      return lines;
-    }
+      if (
+        Number.isNaN(
+          date.getTime()
+        )
+      ) {
+        return String(value);
+      }
 
-    const result = lines.slice(0, maxLines);
+      return date.toLocaleDateString(
+        "en-GB"
+      );
+    };
 
-    let last = result[maxLines - 1];
+    const salaryValue = (
+      value
+    ) => {
+      if (
+        value === null ||
+        value === undefined ||
+        value === ""
+      ) {
+        return "-";
+      }
 
-    if (last.length > 4) {
-      last = last.substring(
-        0,
-        last.length - 4
-      ) + "...";
-    }
+      const number =
+        Number(value);
 
-    result[maxLines - 1] = last;
+      if (
+        Number.isNaN(number)
+      ) {
+        return String(value);
+      }
 
-    return result;
-  };
+      return number.toLocaleString(
+        "en-IN",
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }
+      );
+    };
 
-  // ============================================================
-  // DRAW SIMPLE FIELD
-  //
-  // No large horizontal line through the report.
-  // Each field has its own small bottom separator.
-  // ============================================================
-
-  const drawField = (
-    label,
-    value,
-    x,
-    y,
-    fieldWidth
-  ) => {
-    const labelWidth = 32;
-
-    doc.setFont(
-      "helvetica",
-      "bold"
-    );
-
-    doc.setFontSize(7);
-
-    doc.setTextColor(
-      30,
-      30,
-      30
-    );
-
-    doc.text(
-      label,
-      x,
-      y
-    );
-
-    doc.setFont(
-      "helvetica",
-      "normal"
-    );
-
-    doc.setFontSize(8);
-
-    const valueLines = fitText(
+    const fitText = (
       value,
-      fieldWidth - labelWidth - 3,
-      2
-    );
+      maxWidth,
+      maxLines = 2
+    ) => {
+      const lines =
+        doc.splitTextToSize(
+          textValue(value),
+          maxWidth
+        );
 
-    doc.text(
-      valueLines,
-      x + labelWidth,
-      y,
-      {
-        lineHeightFactor: 1.1,
+      if (
+        lines.length <=
+        maxLines
+      ) {
+        return lines;
       }
-    );
 
-    // Small separator belonging ONLY to this field
-    doc.setLineWidth(0.18);
+      const result =
+        lines.slice(
+          0,
+          maxLines
+        );
 
-    doc.setDrawColor(
-      150,
-      150,
-      150
-    );
+      let last =
+        result[
+          maxLines - 1
+        ];
 
-    doc.line(
+      if (
+        last.length > 4
+      ) {
+        last =
+          last.substring(
+            0,
+            last.length - 4
+          ) +
+          "...";
+      }
+
+      result[
+        maxLines - 1
+      ] = last;
+
+      return result;
+    };
+
+    // ===================================================
+    // DRAW FIELD
+    // ===================================================
+
+    const drawField = (
+      label,
+      value,
       x,
-      y + 3,
-      x + fieldWidth,
-      y + 3
-    );
-  };
-
-  // ============================================================
-  // EACH EMPLOYEE = ONE PAGE
-  // ============================================================
-
-  reportData.forEach(
-    (employee, index) => {
-      if (index > 0) {
-        doc.addPage();
-      }
-
-      // ========================================================
-      // BASIC PDF SETTINGS
-      // ========================================================
+      y,
+      fieldWidth
+    ) => {
+      const labelWidth = 32;
 
       doc.setFont(
         "helvetica",
-        "normal"
+        "bold"
       );
+
+      doc.setFontSize(7);
 
       doc.setTextColor(
         30,
@@ -1432,299 +1510,10 @@ function Reports() {
         30
       );
 
-      doc.setDrawColor(
-        90,
-        90,
-        90
-      );
-
-      // ========================================================
-      // OUTER REPORT BORDER
-      // ========================================================
-
-      doc.setLineWidth(0.45);
-
-      doc.rect(
-        reportX,
-        reportY,
-        reportWidth,
-        reportHeight
-      );
-
-      // ========================================================
-      // HEADER
-      // ========================================================
-
-      doc.setFont(
-        "helvetica",
-        "bold"
-      );
-
-      doc.setFontSize(15);
-
       doc.text(
-        "EMPLOYEE DETAILS",
-        pageWidth / 2,
-        reportY + 10,
-        {
-          align: "center",
-        }
-      );
-
-      doc.setFont(
-        "helvetica",
-        "normal"
-      );
-
-      doc.setFontSize(7);
-
-      doc.text(
-        `On ${formatDate(new Date())}`,
-        right,
-        reportY + 17,
-        {
-          align: "right",
-        }
-      );
-
-      // ========================================================
-      // HEADER LINE
-      // ========================================================
-
-      const headerLineY =
-        reportY + 22;
-
-      doc.setLineWidth(0.3);
-
-      doc.line(
-        left,
-        headerLineY,
-        right,
-        headerLineY
-      );
-
-      // ========================================================
-      // TOP INFORMATION AREA
-      // ========================================================
-
-      const columnGap = 18;
-
-      const columnWidth =
-        (width - columnGap) / 2;
-
-      const leftX = left;
-
-      const rightX =
-        left +
-        columnWidth +
-        columnGap;
-
-      let leftY =
-        headerLineY + 9;
-
-      let rightY =
-        headerLineY + 9;
-
-      const rowGap = 12;
-
-      // --------------------------------------------------------
-      // LEFT SIDE
-      // --------------------------------------------------------
-
-      drawField(
-        "Employee ID",
-        employee.emp_id,
-        leftX,
-        leftY,
-        columnWidth
-      );
-
-      leftY += rowGap;
-
-      drawField(
-        "Name",
-        fullName(employee),
-        leftX,
-        leftY,
-        columnWidth
-      );
-
-      leftY += rowGap;
-
-      drawField(
-        "Gender",
-        employee.gender,
-        leftX,
-        leftY,
-        columnWidth
-      );
-
-      leftY += rowGap;
-
-      drawField(
-        "Age",
-        calculateAge(employee.date_of_birth),
-        leftX,
-        leftY,
-        columnWidth
-      );
-
-      leftY += rowGap;
-
-      drawField(
-        "Phone",
-        employee.phone,
-        leftX,
-        leftY,
-        columnWidth
-      );
-
-      leftY += rowGap;
-
-      drawField(
-        "Email",
-        employee.email,
-        leftX,
-        leftY,
-        columnWidth
-      );
-
-      // --------------------------------------------------------
-      // RIGHT SIDE
-      // --------------------------------------------------------
-
-      drawField(
-        "Date of Birth",
-        dateValue(
-          employee.date_of_birth
-        ),
-        rightX,
-        rightY,
-        columnWidth
-      );
-
-      rightY += rowGap;
-
-      drawField(
-        "Joining Date",
-        dateValue(
-          employee.joining_date
-        ),
-        rightX,
-        rightY,
-        columnWidth
-      );
-
-      rightY += rowGap;
-
-      drawField(
-        "Department",
-        employee.department,
-        rightX,
-        rightY,
-        columnWidth
-      );
-
-      rightY += rowGap;
-
-      drawField(
-        "Designation",
-        employee.designation,
-        rightX,
-        rightY,
-        columnWidth
-      );
-
-      rightY += rowGap;
-
-      drawField(
-        "Employment Type",
-        employmentType(employee),
-        rightX,
-        rightY,
-        columnWidth
-      );
-
-      rightY += rowGap;
-
-      drawField(
-        "Status",
-        employee.status,
-        rightX,
-        rightY,
-        columnWidth
-      );
-
-      // ========================================================
-      // IMPORTANT FIX
-      //
-      // The separator is positioned AFTER the RIGHT COLUMN.
-      // It can therefore NEVER cross Status or another field.
-      // ========================================================
-
-      const informationBottom =
-        Math.max(
-          leftY,
-          rightY
-        );
-
-      const separatorY =
-        informationBottom + 5;
-
-      doc.setLineWidth(0.35);
-
-      doc.line(
-        left,
-        separatorY,
-        right,
-        separatorY
-      );
-
-      // ========================================================
-      // ADDRESS SECTION
-      // ========================================================
-
-      const addressTitleY =
-        separatorY + 8;
-
-      doc.setFont(
-        "helvetica",
-        "bold"
-      );
-
-      doc.setFontSize(8);
-
-      doc.text(
-        "Address",
-        left,
-        addressTitleY
-      );
-
-      const addressY =
-        addressTitleY + 5;
-
-      const addressHeight = 22;
-
-      doc.setLineWidth(0.25);
-
-      doc.rect(
-        left,
-        addressY,
-        width,
-        addressHeight
-      );
-
-      doc.setFont(
-        "helvetica",
-        "bold"
-      );
-
-      doc.setFontSize(6.5);
-
-      doc.text(
-        "Address",
-        left + 3,
-        addressY + 5
+        label,
+        x,
+        y
       );
 
       doc.setFont(
@@ -1734,321 +1523,754 @@ function Reports() {
 
       doc.setFontSize(8);
 
-      const addressLines =
+      const valueLines =
         fitText(
-          employee.address,
-          width - 6,
-          3
+          value,
+          fieldWidth -
+            labelWidth -
+            3,
+          2
         );
 
       doc.text(
-        addressLines,
-        left + 3,
-        addressY + 11,
+        valueLines,
+        x + labelWidth,
+        y,
         {
-          lineHeightFactor: 1.15,
+          lineHeightFactor:
+            1.1,
         }
       );
 
-      // ========================================================
-      // EMERGENCY CONTACT
-      // ========================================================
-
-      const emergencyTitleY =
-        addressY + addressHeight + 8;
-
-      doc.setFont(
-        "helvetica",
-        "bold"
+      doc.setLineWidth(
+        0.18
       );
 
-      doc.setFontSize(8);
-
-      doc.text(
-        "Emergency Contact",
-        left,
-        emergencyTitleY
+      doc.setDrawColor(
+        150,
+        150,
+        150
       );
 
-      const emergencyY =
-        emergencyTitleY + 6;
-
-      const emergencyGap = 10;
-      const emergencyWidth =
-        (width - emergencyGap * 2) / 3;
-
-      drawField(
-        "Name",
-        employee.emergency_name,
-        left,
-        emergencyY,
-        emergencyWidth
+      doc.line(
+        x,
+        y + 3,
+        x + fieldWidth,
+        y + 3
       );
+    };
 
-      drawField(
-        "Phone",
-        employee.emergency_phone,
-        left + emergencyWidth + emergencyGap,
-        emergencyY,
-        emergencyWidth
-      );
+    // ===================================================
+    // ONE EMPLOYEE = ONE PAGE
+    // ===================================================
 
-      drawField(
-        "Relationship",
-        employee.emergency_relationship,
-        left + (emergencyWidth + emergencyGap) * 2,
-        emergencyY,
-        emergencyWidth
-      );
+    reportData.forEach(
+      (
+        employee,
+        index
+      ) => {
+        if (
+          index > 0
+        ) {
+          doc.addPage();
+        }
 
-      // ========================================================
-      // LAST WORKING DETAILS
-      // ========================================================
-
-const lastWorkingTitleY =
-  emergencyY + 16;
-
-doc.setFont(
-  "helvetica",
-  "bold"
-);
-
-doc.setFontSize(8);
-
-doc.text(
-  "Last Working Details",
-  pageWidth / 2,
-  lastWorkingTitleY,
-  {
-    align: "center",
-  }
-);
-
-// ========================================================
-// LAST WORKING DETAILS TABLE
-// ========================================================
-
-const tableY =
-  lastWorkingTitleY + 4;
-
-// Available width inside report
-const tableWidth = width;
-
-// IMPORTANT:
-// Total column widths = 334mm or less.
-// This prevents the table from crossing the report margin.
-autoTable(doc, {
-  startY: tableY,
-
-  margin: {
-    left: left,
-    right: pageWidth - right,
-  },
-
-  tableWidth: tableWidth,
-
-  head: [
-    [
-      "Date",
-      "Department",
-      "Mill",
-      "RShift",
-      "WShift",
-      "Hours",
-      "Working Status",
-    ],
-  ],
-
-  body: [
-    [
-      // Available backend data
-      dateValue(
-        employee.joining_date
-      ),
-
-      textValue(
-        employee.department
-      ),
-
-      // These fields are not currently
-      // available in your backend.
-      "-",
-
-      "-",
-
-      "-",
-
-      "-",
-
-      // Existing employee status
-      textValue(
-        employee.status
-      ),
-    ],
-  ],
-
-  theme: "grid",
-
-  styles: {
-    font: "helvetica",
-    fontSize: 6.5,
-
-    textColor: [
-      30,
-      30,
-      30,
-    ],
-
-    lineColor: [
-      100,
-      100,
-      100,
-    ],
-
-    lineWidth: 0.25,
-
-    cellPadding: 2,
-
-    valign: "middle",
-    halign: "center",
-
-    overflow: "linebreak",
-  },
-
-  headStyles: {
-    font: "helvetica",
-    fontStyle: "bold",
-
-    fontSize: 6.5,
-
-    fillColor: [
-      245,
-      245,
-      245,
-    ],
-
-    textColor: [
-      30,
-      30,
-      30,
-    ],
-
-    halign: "center",
-    valign: "middle",
-
-    lineColor: [
-      100,
-      100,
-      100,
-    ],
-
-    lineWidth: 0.25,
-  },
-
-  bodyStyles: {
-    fontSize: 6.5,
-
-    halign: "center",
-    valign: "middle",
-
-    minCellHeight: 9,
-
-    lineColor: [
-      100,
-      100,
-      100,
-    ],
-
-    lineWidth: 0.25,
-  },
-
-  // ======================================================
-  // TOTAL = 334mm
-  // EXACTLY FITS THE AVAILABLE REPORT CONTENT WIDTH
-  // ======================================================
-
-  columnStyles: {
-    0: {
-      cellWidth: 40, // Date
-    },
-
-    1: {
-      cellWidth: 55, // Department
-    },
-
-    2: {
-      cellWidth: 45, // Mill
-    },
-
-    3: {
-      cellWidth: 40, // RShift
-    },
-
-    4: {
-      cellWidth: 40, // WShift
-    },
-
-    5: {
-      cellWidth: 45, // Hours
-    },
-
-    6: {
-      cellWidth: 69, // Working Status
-    },
-  },
-});
-
-      // FOOTER
-      // ========================================================
-
-      const finalY =
-        doc.lastAutoTable?.finalY ||
-        tableY + 15;
-
-      const footerY =
-        Math.min(
-          finalY + 7,
-          reportY +
-            reportHeight -
-            4
+        doc.setFont(
+          "helvetica",
+          "normal"
         );
 
-      doc.setFont(
-        "helvetica",
-        "normal"
-      );
+        doc.setTextColor(
+          30,
+          30,
+          30
+        );
 
-      doc.setFontSize(6.5);
+        doc.setDrawColor(
+          90,
+          90,
+          90
+        );
 
-      doc.text(
-        "Employee Record",
-        left,
-        footerY
-      );
+        // =================================================
+        // OUTER BORDER
+        // =================================================
 
-      doc.text(
-        `Page ${index + 1} of ${
-          reportData.length
-        }`,
-        right,
-        footerY,
-        {
-          align: "right",
-        }
-      );
-    }
-  );
+        doc.setLineWidth(
+          0.45
+        );
 
-  // ============================================================
-  // SAVE
-  // ============================================================
+        doc.rect(
+          reportX,
+          reportY,
+          reportWidth,
+          reportHeight
+        );
 
-  doc.save(
-    "employee-details-A3.pdf"
-  );
-};
+        // =================================================
+        // HEADER
+        // =================================================
+
+        doc.setFont(
+          "helvetica",
+          "bold"
+        );
+
+        doc.setFontSize(
+          15
+        );
+
+        doc.text(
+          "EMPLOYEE DETAILS",
+          pageWidth / 2,
+          reportY + 10,
+          {
+            align:
+              "center",
+          }
+        );
+
+        doc.setFont(
+          "helvetica",
+          "normal"
+        );
+
+        doc.setFontSize(7);
+
+        doc.text(
+          `On ${formatDate(
+            new Date()
+          )}`,
+          right,
+          reportY + 17,
+          {
+            align:
+              "right",
+          }
+        );
+
+        // =================================================
+        // HEADER LINE
+        // =================================================
+
+        const headerLineY =
+          reportY + 22;
+
+        doc.setLineWidth(
+          0.3
+        );
+
+        doc.line(
+          left,
+          headerLineY,
+          right,
+          headerLineY
+        );
+
+        // =================================================
+        // TOP INFORMATION
+        // =================================================
+
+        const columnGap = 18;
+
+        const columnWidth =
+          (width -
+            columnGap) /
+          2;
+
+        const leftX =
+          left;
+
+        const rightX =
+          left +
+          columnWidth +
+          columnGap;
+
+        let leftY =
+          headerLineY + 9;
+
+        let rightY =
+          headerLineY + 9;
+
+        const rowGap = 12;
+
+        // =================================================
+        // LEFT COLUMN
+        // =================================================
+
+        drawField(
+          "Employee ID",
+          employee.emp_id,
+          leftX,
+          leftY,
+          columnWidth
+        );
+
+        leftY += rowGap;
+
+        drawField(
+          "Name",
+          fullName(employee),
+          leftX,
+          leftY,
+          columnWidth
+        );
+
+        leftY += rowGap;
+
+        drawField(
+          "Gender",
+          employee.gender,
+          leftX,
+          leftY,
+          columnWidth
+        );
+
+        leftY += rowGap;
+
+        drawField(
+          "Age",
+          calculateAge(
+            employee.date_of_birth
+          ),
+          leftX,
+          leftY,
+          columnWidth
+        );
+
+        leftY += rowGap;
+
+        drawField(
+          "Phone",
+          employee.phone,
+          leftX,
+          leftY,
+          columnWidth
+        );
+
+        leftY += rowGap;
+
+        drawField(
+          "Email",
+          employee.email,
+          leftX,
+          leftY,
+          columnWidth
+        );
+
+        // =================================================
+        // RIGHT COLUMN
+        // =================================================
+
+        drawField(
+          "Date of Birth",
+          dateValue(
+            employee.date_of_birth
+          ),
+          rightX,
+          rightY,
+          columnWidth
+        );
+
+        rightY += rowGap;
+
+        drawField(
+          "Joining Date",
+          dateValue(
+            employee.joining_date
+          ),
+          rightX,
+          rightY,
+          columnWidth
+        );
+
+        rightY += rowGap;
+
+        drawField(
+          "Department",
+          employee.department,
+          rightX,
+          rightY,
+          columnWidth
+        );
+
+        rightY += rowGap;
+
+        drawField(
+          "Designation",
+          employee.designation,
+          rightX,
+          rightY,
+          columnWidth
+        );
+
+        rightY += rowGap;
+
+        drawField(
+          "Employment Type",
+          employmentType(
+            employee
+          ),
+          rightX,
+          rightY,
+          columnWidth
+        );
+
+        rightY += rowGap;
+
+        drawField(
+          "Status",
+          employee.status,
+          rightX,
+          rightY,
+          columnWidth
+        );
+
+        // =================================================
+        // INFORMATION SEPARATOR
+        // =================================================
+
+        const informationBottom =
+          Math.max(
+            leftY,
+            rightY
+          );
+
+        const separatorY =
+          informationBottom +
+          5;
+
+        doc.setLineWidth(
+          0.35
+        );
+
+        doc.line(
+          left,
+          separatorY,
+          right,
+          separatorY
+        );
+
+        // =================================================
+        // ADDRESS
+        // =================================================
+
+        const addressTitleY =
+          separatorY + 8;
+
+        doc.setFont(
+          "helvetica",
+          "bold"
+        );
+
+        doc.setFontSize(8);
+
+        doc.text(
+          "Address",
+          left,
+          addressTitleY
+        );
+
+        const addressY =
+          addressTitleY + 5;
+
+        const addressHeight = 22;
+
+        doc.setLineWidth(
+          0.25
+        );
+
+        doc.rect(
+          left,
+          addressY,
+          width,
+          addressHeight
+        );
+
+        doc.setFont(
+          "helvetica",
+          "bold"
+        );
+
+        doc.setFontSize(
+          6.5
+        );
+
+        doc.text(
+          "Address",
+          left + 3,
+          addressY + 5
+        );
+
+        doc.setFont(
+          "helvetica",
+          "normal"
+        );
+
+        doc.setFontSize(8);
+
+        const addressLines =
+          fitText(
+            employee.address,
+            width - 6,
+            3
+          );
+
+        doc.text(
+          addressLines,
+          left + 3,
+          addressY + 11,
+          {
+            lineHeightFactor:
+              1.15,
+          }
+        );
+
+        // =================================================
+        // EMERGENCY CONTACT
+        // =================================================
+
+        const emergencyTitleY =
+          addressY +
+          addressHeight +
+          8;
+
+        doc.setFont(
+          "helvetica",
+          "bold"
+        );
+
+        doc.setFontSize(8);
+
+        doc.text(
+          "Emergency Contact",
+          left,
+          emergencyTitleY
+        );
+
+        const emergencyY =
+          emergencyTitleY + 6;
+
+        const emergencyGap = 10;
+
+        const emergencyWidth =
+          (width -
+            emergencyGap * 2) /
+          3;
+
+        drawField(
+          "Name",
+          employee.emergency_name,
+          left,
+          emergencyY,
+          emergencyWidth
+        );
+
+        drawField(
+          "Phone",
+          employee.emergency_phone,
+          left +
+            emergencyWidth +
+            emergencyGap,
+          emergencyY,
+          emergencyWidth
+        );
+
+        drawField(
+          "Relationship",
+          employee.emergency_relationship,
+          left +
+            (
+              emergencyWidth +
+              emergencyGap
+            ) *
+              2,
+          emergencyY,
+          emergencyWidth
+        );
+
+        // =================================================
+        // LAST WORKING DETAILS
+        // =================================================
+
+        const lastWorkingTitleY =
+          emergencyY + 16;
+
+        doc.setFont(
+          "helvetica",
+          "bold"
+        );
+
+        doc.setFontSize(8);
+
+        doc.text(
+          "Last Working Details",
+          pageWidth / 2,
+          lastWorkingTitleY,
+          {
+            align:
+              "center",
+          }
+        );
+
+        // =================================================
+        // LAST WORKING TABLE
+        // =================================================
+
+        const tableY =
+          lastWorkingTitleY + 4;
+
+        const tableWidth =
+          width;
+
+        autoTable(
+          doc,
+          {
+            startY:
+              tableY,
+
+            margin: {
+              left: left,
+              right:
+                pageWidth -
+                right,
+            },
+
+            tableWidth:
+              tableWidth,
+
+            head: [
+              [
+                "Date",
+                "Department",
+                "Mill",
+                "RShift",
+                "WShift",
+                "Hours",
+                "Working Status",
+              ],
+            ],
+
+            body: [
+              [
+                dateValue(
+                  employee.joining_date
+                ),
+
+                textValue(
+                  employee.department
+                ),
+
+                "-",
+
+                "-",
+
+                "-",
+
+                "-",
+
+                textValue(
+                  employee.status
+                ),
+              ],
+            ],
+
+            theme:
+              "grid",
+
+            styles: {
+              font:
+                "helvetica",
+
+              fontSize:
+                6.5,
+
+              textColor: [
+                30,
+                30,
+                30,
+              ],
+
+              lineColor: [
+                100,
+                100,
+                100,
+              ],
+
+              lineWidth:
+                0.25,
+
+              cellPadding:
+                2,
+
+              valign:
+                "middle",
+
+              halign:
+                "center",
+
+              overflow:
+                "linebreak",
+            },
+
+            headStyles: {
+              font:
+                "helvetica",
+
+              fontStyle:
+                "bold",
+
+              fontSize:
+                6.5,
+
+              fillColor: [
+                245,
+                245,
+                245,
+              ],
+
+              textColor: [
+                30,
+                30,
+                30,
+              ],
+
+              halign:
+                "center",
+
+              valign:
+                "middle",
+
+              lineColor: [
+                100,
+                100,
+                100,
+              ],
+
+              lineWidth:
+                0.25,
+            },
+
+            bodyStyles: {
+              fontSize:
+                6.5,
+
+              halign:
+                "center",
+
+              valign:
+                "middle",
+
+              minCellHeight:
+                9,
+
+              lineColor: [
+                100,
+                100,
+                100,
+              ],
+
+              lineWidth:
+                0.25,
+            },
+
+            columnStyles: {
+              0: {
+                cellWidth:
+                  40,
+              },
+
+              1: {
+                cellWidth:
+                  55,
+              },
+
+              2: {
+                cellWidth:
+                  45,
+              },
+
+              3: {
+                cellWidth:
+                  40,
+              },
+
+              4: {
+                cellWidth:
+                  40,
+              },
+
+              5: {
+                cellWidth:
+                  45,
+              },
+
+              6: {
+                cellWidth:
+                  69,
+              },
+            },
+          }
+        );
+
+        // =================================================
+        // FOOTER
+        // =================================================
+
+        const finalY =
+          doc.lastAutoTable?.finalY ||
+          tableY + 15;
+
+        const footerY =
+          Math.min(
+            finalY + 7,
+            reportY +
+              reportHeight -
+              4
+          );
+
+        doc.setFont(
+          "helvetica",
+          "normal"
+        );
+
+        doc.setFontSize(
+          6.5
+        );
+
+        doc.text(
+          "Employee Record",
+          left,
+          footerY
+        );
+
+        doc.text(
+          `Page ${
+            index + 1
+          } of ${
+            reportData.length
+          }`,
+          right,
+          footerY,
+          {
+            align:
+              "right",
+          }
+        );
+      }
+    );
+
+    // ===================================================
+    // SAVE
+    // ===================================================
+
+    doc.save(
+      "employee-details-A3.pdf"
+    );
+  };
+
   // =====================================================
-  // NORMAL PDF FOR OTHER REPORTS
+  // NORMAL PDF
   // =====================================================
 
   const downloadNormalPDF = () => {
@@ -2060,7 +2282,9 @@ autoTable(doc, {
     const rows =
       getRows();
 
-    if (rows.length === 0) {
+    if (
+      rows.length === 0
+    ) {
       alert(
         "No records found for PDF."
       );
@@ -2174,7 +2398,9 @@ autoTable(doc, {
       selectedEmployeeIds.length > 0
     ) {
       filterText +=
-        ` | Selected Employees: ${selectedEmployeeIds.join(", ")}`;
+        ` | Selected Employees: ${selectedEmployeeIds.join(
+          ", "
+        )}`;
     }
 
     doc.text(
@@ -2298,13 +2524,12 @@ autoTable(doc, {
     // =================================================
 
     doc.save(
-        `${reportType}-report.pdf`
+      `${reportType}-report.pdf`
     );
   };
 
   // =====================================================
   // PDF MAIN FUNCTION
-  // ONLY ONE downloadPDF FUNCTION
   // =====================================================
 
   const downloadPDF = () => {
@@ -2338,6 +2563,7 @@ autoTable(doc, {
     setFromDate("");
 
     setToDate("");
+
     setSelectedEmployeeIds([]);
   };
 
@@ -2459,18 +2685,11 @@ autoTable(doc, {
 
           </div>
 
-          <div
-            style={{
-              display:
-                "flex",
+          {/* FIXED:
+              No inline styling here.
+          */}
 
-              gap:
-                "10px",
-
-              alignItems:
-                "center",
-            }}
-          >
+          <div className="report-header-actions">
 
             {reportType ===
               "employee" && (
@@ -2581,9 +2800,17 @@ autoTable(doc, {
               }
 
               onChange={(e) => {
-                setDepartment(e.target.value);
-                if (reportType === "employee") {
-                  setSelectedEmployeeIds([]);
+                setDepartment(
+                  e.target.value
+                );
+
+                if (
+                  reportType ===
+                  "employee"
+                ) {
+                  setSelectedEmployeeIds(
+                    []
+                  );
                 }
               }}
             >
@@ -2676,9 +2903,17 @@ autoTable(doc, {
               }
 
               onChange={(e) => {
-                setSearch(e.target.value);
-                if (reportType === "employee") {
-                  setSelectedEmployeeIds([]);
+                setSearch(
+                  e.target.value
+                );
+
+                if (
+                  reportType ===
+                  "employee"
+                ) {
+                  setSelectedEmployeeIds(
+                    []
+                  );
                 }
               }}
             />
@@ -2691,165 +2926,185 @@ autoTable(doc, {
 
       {/* =================================================
           EMPLOYEE SELECTION
-          Added without changing the existing report design.
+          FIXED:
+          All visual styling is now handled by report.css.
       ================================================= */}
 
-      {reportType === "employee" && !loadingEmployees && !employeeError && (
-        <div
-          style={{
-            marginTop: "15px",
-            padding: "16px 18px",
-            borderRadius: "8px",
-            background: "#ffffff",
-            border: "1px solid #e5e7eb",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              gap: "15px",
-              flexWrap: "wrap",
-              marginBottom: "12px",
-            }}
-          >
-            <div>
-              <strong>
+      {reportType === "employee" &&
+        !loadingEmployees &&
+        !employeeError && (
+
+        <div className="report-employee-selection">
+
+          {/* =================================================
+              SELECTION HEADER
+          ================================================= */}
+
+          <div className="report-selection-header">
+
+            <div className="report-selection-heading">
+
+              <h3 className="report-selection-title">
                 Select Employees
-              </strong>
-              <div
-                style={{
-                  marginTop: "4px",
-                  fontSize: "12px",
-                  color: "#666",
-                }}
-              >
-                Select specific employees for the report. Leave all unchecked to use the normal filtered report.
-              </div>
+              </h3>
+
+              <p className="report-selection-description">
+                Select specific employees for the report.
+                Leave all unchecked to use the normal filtered report.
+              </p>
+
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                flexWrap: "wrap",
-              }}
-            >
-              <span
-                style={{
-                  fontSize: "13px",
-                  fontWeight: 600,
-                }}
-              >
-                Selected: {selectedEmployeeIds.length}
+            <div className="report-selection-actions">
+
+              <span className="report-selection-count">
+                Selected: {
+                  selectedEmployeeIds.length
+                }
               </span>
 
               <button
                 type="button"
                 className="clear-report-btn"
-                onClick={toggleSelectAllEmployees}
-                disabled={filteredData.length === 0}
+                onClick={
+                  toggleSelectAllEmployees
+                }
+                disabled={
+                  filteredData.length === 0
+                }
               >
-                {allVisibleEmployeesSelected
-                  ? "Deselect All"
-                  : "Select All"}
+                {
+                  allVisibleEmployeesSelected
+                    ? "Deselect All"
+                    : "Select All"
+                }
               </button>
 
-              {selectedEmployeeIds.length > 0 && (
+              {selectedEmployeeIds.length >
+                0 && (
+
                 <button
                   type="button"
                   className="clear-report-btn"
-                  onClick={clearEmployeeSelection}
+                  onClick={
+                    clearEmployeeSelection
+                  }
                 >
                   Clear Selection
                 </button>
+
               )}
+
             </div>
+
           </div>
 
-          <div
-            style={{
-              maxHeight: "230px",
-              overflowY: "auto",
-              border: "1px solid #eeeeee",
-              borderRadius: "6px",
-            }}
-          >
-            {filteredData.length > 0 ? (
-              filteredData.map((employee) => {
-                const employeeId = String(
-                  employee.emp_id ?? ""
-                ).trim();
+          {/* =================================================
+              EMPLOYEE LIST
+          ================================================= */}
 
-                const employeeName = [
-                  employee.first_name,
-                  employee.last_name,
-                ]
-                  .filter(Boolean)
-                  .join(" ") || "-";
+          <div className="report-selection-list">
 
-                return (
-                  <label
-                    key={employeeId || employee.id}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "10px",
-                      padding: "9px 12px",
-                      borderBottom: "1px solid #f1f1f1",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={isEmployeeSelected(employeeId)}
-                      onChange={() =>
-                        toggleEmployeeSelection(employeeId)
+            {filteredData.length >
+            0 ? (
+
+              filteredData.map(
+                (employee) => {
+
+                  const employeeId =
+                    String(
+                      employee.emp_id ??
+                        ""
+                    ).trim();
+
+                  const employeeName =
+                    [
+                      employee.first_name,
+                      employee.last_name,
+                    ]
+                      .filter(
+                        Boolean
+                      )
+                      .join(
+                        " "
+                      ) || "-";
+
+                  const selected =
+                    isEmployeeSelected(
+                      employeeId
+                    );
+
+                  return (
+                    <label
+                      key={
+                        employeeId ||
+                        employee.id
                       }
-                      disabled={!employeeId}
-                    />
 
-                    <span
-                      style={{
-                        minWidth: "85px",
-                        fontWeight: 600,
-                      }}
+                      className={
+                        selected
+                          ? "report-selection-row selected"
+                          : "report-selection-row"
+                      }
                     >
-                      {employeeId || "-"}
-                    </span>
 
-                    <span>
-                      {employeeName}
-                    </span>
+                      <input
+                        type="checkbox"
 
-                    <span
-                      style={{
-                        marginLeft: "auto",
-                        fontSize: "12px",
-                        color: "#777",
-                      }}
-                    >
-                      {employee.department || "-"}
-                    </span>
-                  </label>
-                );
-              })
+                        className="report-selection-checkbox"
+
+                        checked={
+                          selected
+                        }
+
+                        onChange={() =>
+                          toggleEmployeeSelection(
+                            employeeId
+                          )
+                        }
+
+                        disabled={
+                          !employeeId
+                        }
+                      />
+
+                      <span className="report-selection-id">
+                        {
+                          employeeId ||
+                          "-"
+                        }
+                      </span>
+
+                      <span className="report-selection-name">
+                        {
+                          employeeName
+                        }
+                      </span>
+
+                      <span className="report-selection-department">
+                        {
+                          employee.department ||
+                          "-"
+                        }
+                      </span>
+
+                    </label>
+                  );
+                }
+              )
+
             ) : (
-              <div
-                style={{
-                  padding: "14px",
-                  textAlign: "center",
-                  color: "#777",
-                  fontSize: "13px",
-                }}
-              >
+
+              <div className="report-selection-empty">
                 No employees match the current filters.
               </div>
+
             )}
+
           </div>
+
         </div>
+
       )}
 
       {/* =================================================
@@ -2860,56 +3115,32 @@ autoTable(doc, {
         "employee" &&
         employeeError && (
 
-        <div
-          style={{
-            marginTop:
-              "15px",
+        <div className="report-error">
 
-            padding:
-              "14px 18px",
-
-            borderRadius:
-              "8px",
-
-            background:
-              "#fff1f2",
-
-            border:
-              "1px solid #fecdd3",
-
-            color:
-              "#be123c",
-          }}
-        >
-
-          <strong>
-            Unable to load employee data
-          </strong>
-
-          <div
-            style={{
-              marginTop:
-                "5px",
-            }}
-          >
-            {employeeError}
+          <div className="report-error-icon">
+            !
           </div>
 
-          <button
-            onClick={
-              fetchEmployees
-            }
+          <div className="report-error-content">
 
-            style={{
-              marginTop:
-                "10px",
+            <strong>
+              Unable to load employee data
+            </strong>
 
-              cursor:
-                "pointer",
-            }}
-          >
-            Try Again
-          </button>
+            <p>
+              {employeeError}
+            </p>
+
+            <button
+              className="report-error-retry"
+              onClick={
+                fetchEmployees
+              }
+            >
+              Try Again
+            </button>
+
+          </div>
 
         </div>
 
@@ -2917,7 +3148,7 @@ autoTable(doc, {
 
       {/* =================================================
           DOWNLOAD SECTION
-          Report preview/table intentionally removed.
+          Preview/table intentionally removed.
       ================================================= */}
 
       <div className="report-preview-card">
@@ -2925,27 +3156,37 @@ autoTable(doc, {
         <div className="report-preview-header">
 
           <div>
+
             <h2>
               Download Report
             </h2>
 
             <p>
-              {loadingEmployees && reportType === "employee"
-                ? "Loading employee records..."
-                : reportData.length > 0
-                  ? `${reportData.length} records ready for download`
-                  : "No records available for download"}
+              {
+                loadingEmployees &&
+                reportType ===
+                  "employee"
+                  ? "Loading employee records..."
+                  : reportData.length >
+                    0
+                    ? `${reportData.length} records ready for download`
+                    : "No records available for download"
+              }
             </p>
+
           </div>
 
           <div className="report-download-buttons">
 
             <button
               className="download-btn pdf"
-              onClick={downloadPDF}
+              onClick={
+                downloadPDF
+              }
               disabled={
                 loadingEmployees ||
-                reportData.length === 0
+                reportData.length ===
+                  0
               }
             >
               ↓ Download PDF
@@ -2953,10 +3194,13 @@ autoTable(doc, {
 
             <button
               className="download-btn excel"
-              onClick={downloadExcel}
+              onClick={
+                downloadExcel
+              }
               disabled={
                 loadingEmployees ||
-                reportData.length === 0
+                reportData.length ===
+                  0
               }
             >
               ↓ Download Excel
@@ -2964,10 +3208,13 @@ autoTable(doc, {
 
             <button
               className="download-btn csv"
-              onClick={downloadCSV}
+              onClick={
+                downloadCSV
+              }
               disabled={
                 loadingEmployees ||
-                reportData.length === 0
+                reportData.length ===
+                  0
               }
             >
               ↓ Download CSV
@@ -2977,27 +3224,24 @@ autoTable(doc, {
 
         </div>
 
-        {reportType === "employee" && (
-          <div
-            style={{
-              margin: "0 20px 15px",
-              padding: "10px 14px",
-              borderRadius: "8px",
-              background: "#f5f5f5",
-              border: "1px solid #dddddd",
-              color: "#444444",
-              fontSize: "13px",
-            }}
-          >
-             {/* <strong>Employee PDF:</strong>{" "}
-            A3 Landscape, centered Worker Details format using employee database information.  */}
+        {/* =================================================
+            EMPLOYEE NOTE
+            No inline styling.
+        ================================================= */}
+
+        {reportType ===
+          "employee" && (
+
+          <div className="report-employee-note">
+            {/* Employee PDF information can be placed here if needed. */}
           </div>
+
         )}
 
-      </div>   
+      </div>
 
     </div>
   );
 }
 
-export default Reports;         
+export default Reports;

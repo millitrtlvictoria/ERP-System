@@ -1,15 +1,15 @@
-
 /* =========================================================
    ADD EMPLOYEE PAGE
-   Professional ERP Design
+   DARK NAVY ERP DESIGN
 ========================================================= */
 
 .add-employee-page {
   min-height: 100vh;
-  background: #f5f7fb;
+  width: 100%;
+  background: #03152a;
   padding: 30px;
   box-sizing: border-box;
-  color: #111827;
+  color: #f1f5f9;
 }
 
 
@@ -33,14 +33,14 @@
   margin: 0;
   font-size: 26px;
   font-weight: 700;
-  color: #111827;
+  color: #f8fafc;
   letter-spacing: -0.3px;
 }
 
 .employee-page-header p {
   margin: 6px 0 0;
   font-size: 13px;
-  color: #6b7280;
+  color: #94a3b8;
 }
 
 
@@ -51,22 +51,29 @@
 .back-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+
   padding: 10px 16px;
-  border: 1px solid #d1d5db;
+
+  border: 1px solid #35506d;
   border-radius: 8px;
-  background: #ffffff;
-  color: #374151;
+
+  background: #081d35;
+  color: #dbeafe;
+
   font-size: 13px;
   font-weight: 500;
+
   cursor: pointer;
+
   transition: all 0.2s ease;
 }
 
 .back-btn:hover {
-  background: #f9fafb;
-  border-color: #2563eb;
-  color: #2563eb;
+  background: #0b2745;
+  border-color: #6ea8df;
+  color: #ffffff;
 }
 
 
@@ -75,11 +82,19 @@
 ========================================================= */
 
 .employee-card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  width: 100%;
+  box-sizing: border-box;
+
+  background: #03182f;
+
+  border: 1px solid #173653;
   border-radius: 14px;
+
   padding: 28px;
-  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.25);
+
   margin-bottom: 22px;
 }
 
@@ -92,34 +107,43 @@
   display: flex;
   align-items: center;
   gap: 14px;
+
   padding-bottom: 20px;
   margin-bottom: 24px;
-  border-bottom: 1px solid #eef0f4;
+
+  border-bottom: 1px solid #183650;
 }
 
 .heading-icon {
   width: 44px;
   height: 44px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   border-radius: 10px;
-  background: #eff6ff;
-  color: #2563eb;
+
+  background: #0b2947;
+  color: #72b7f5;
+
   font-size: 20px;
 }
 
 .card-heading h2 {
   margin: 0;
+
   font-size: 17px;
   font-weight: 650;
-  color: #111827;
+
+  color: #f8fafc;
 }
 
 .card-heading p {
   margin: 4px 0 0;
+
   font-size: 12px;
-  color: #6b7280;
+  color: #8fa8c1;
 }
 
 
@@ -129,19 +153,33 @@
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+
+  column-gap: 28px;
+  row-gap: 25px;
+
+  width: 100%;
 }
 
 
 /* =========================================================
-   EMERGENCY CONTACT THREE-COLUMN ROW
+   EMERGENCY CONTACT
+   THREE FIELDS IN ONE ROW
 ========================================================= */
 
 .contact-emergency-row {
+  grid-column: 1 / -1;
+
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
   gap: 20px;
+
   width: 100%;
 }
 
@@ -153,6 +191,8 @@
 .form-group {
   display: flex;
   flex-direction: column;
+
+  width: 100%;
   min-width: 0;
 }
 
@@ -160,16 +200,25 @@
   grid-column: 1 / -1;
 }
 
+
+/* =========================================================
+   LABEL
+========================================================= */
+
 .form-group label {
-  margin-bottom: 7px;
-  font-size: 12px;
+  margin-bottom: 10px;
+
+  font-size: 16px;
+  line-height: 1.2;
+
   font-weight: 600;
-  color: #374151;
+
+  color: #e7edf5;
 }
 
 .form-group label span {
-  color: #dc2626;
-  margin-left: 2px;
+  color: #ff3b4d;
+  margin-left: 3px;
 }
 
 
@@ -182,28 +231,47 @@
 .form-group textarea {
   width: 100%;
   box-sizing: border-box;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #111827;
+
+  border: 2px solid #5d8fc1;
+  border-radius: 10px;
+
+  background: #071f3a;
+
+  color: #f1f5f9;
+
   font-family: inherit;
-  font-size: 13px;
+  font-size: 16px;
+
   outline: none;
+
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease,
     background 0.2s ease;
 }
 
+
+/* =========================================================
+   INPUT / SELECT
+========================================================= */
+
 .form-group input,
 .form-group select {
-  height: 44px;
-  padding: 0 13px;
+  height: 70px;
+
+  padding: 0 22px;
 }
 
+
+/* =========================================================
+   TEXTAREA
+========================================================= */
+
 .form-group textarea {
-  min-height: 105px;
-  padding: 12px 13px;
+  min-height: 115px;
+
+  padding: 15px 18px;
+
   resize: vertical;
 }
 
@@ -214,7 +282,24 @@
 
 .form-group input::placeholder,
 .form-group textarea::placeholder {
-  color: #9ca3af;
+  color: #91b1d1;
+  opacity: 1;
+}
+
+
+/* =========================================================
+   SELECT
+========================================================= */
+
+.form-group select {
+  cursor: pointer;
+
+  appearance: auto;
+}
+
+.form-group select option {
+  background: #071f3a;
+  color: #f8fafc;
 }
 
 
@@ -225,9 +310,12 @@
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.09);
-  background: #ffffff;
+  background: #082442;
+
+  border-color: #79b9f2;
+
+  box-shadow:
+    0 0 0 3px rgba(87, 159, 221, 0.15);
 }
 
 
@@ -238,7 +326,40 @@
 .form-group input:hover,
 .form-group select:hover,
 .form-group textarea:hover {
-  border-color: #9ca3af;
+  border-color: #78a9d4;
+}
+
+
+/* =========================================================
+   DATE INPUT
+========================================================= */
+
+.form-group input[type="date"] {
+  color: #f1f5f9;
+}
+
+.form-group input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.95;
+
+  cursor: pointer;
+
+  width: 20px;
+  height: 20px;
+}
+
+.form-group input[type="date"]::-webkit-datetime-edit {
+  color: #f1f5f9;
+}
+
+.form-group input[type="date"]::-webkit-datetime-edit-text {
+  color: #91b1d1;
+}
+
+.form-group input[type="date"]::-webkit-datetime-edit-month-field,
+.form-group input[type="date"]::-webkit-datetime-edit-day-field,
+.form-group input[type="date"]::-webkit-datetime-edit-year-field {
+  color: #f1f5f9;
 }
 
 
@@ -249,18 +370,13 @@
 .form-group input:disabled,
 .form-group select:disabled,
 .form-group textarea:disabled {
-  background: #f3f4f6;
-  color: #9ca3af;
+  background: #0a1a2c;
+
+  color: #60758b;
+
+  border-color: #30475e;
+
   cursor: not-allowed;
-}
-
-
-/* =========================================================
-   SELECT
-========================================================= */
-
-.form-group select {
-  cursor: pointer;
 }
 
 
@@ -275,26 +391,32 @@
 }
 
 .photo-preview {
-  width: 95px;
-  height: 95px;
+  width: 110px;
+  height: 110px;
+
   flex-shrink: 0;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   overflow: hidden;
-  border: 1px dashed #cbd5e1;
+
+  border: 2px dashed #4e7193;
   border-radius: 12px;
-  background: #f8fafc;
+
+  background: #071f3a;
 }
 
 .photo-preview span {
   font-size: 38px;
-  color: #94a3b8;
+  color: #7892ac;
 }
 
 .photo-preview img {
   width: 100%;
   height: 100%;
+
   object-fit: cover;
 }
 
@@ -313,18 +435,25 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   padding: 10px 16px;
+
   border-radius: 8px;
-  background: #eff6ff;
-  color: #2563eb;
+
+  background: #0a2c4d;
+  color: #71b4ee;
+
   font-size: 12px;
   font-weight: 600;
+
   cursor: pointer;
+
   transition: all 0.2s ease;
 }
 
 .photo-upload label:hover {
-  background: #dbeafe;
+  background: #103c65;
+  color: #a6d4fa;
 }
 
 .photo-upload input {
@@ -333,9 +462,11 @@
 
 .photo-upload p {
   margin: 8px 0 0;
+
   font-size: 11px;
   line-height: 1.5;
-  color: #9ca3af;
+
+  color: #718ba4;
 }
 
 
@@ -344,16 +475,20 @@
 ========================================================= */
 
 .form-section {
-  margin-top: 28px;
-  padding-top: 25px;
-  border-top: 1px solid #eef0f4;
+  margin-top: 32px;
+
+  padding-top: 28px;
+
+  border-top: 1px solid #183650;
 }
 
 .form-section-title {
   margin-bottom: 20px;
-  font-size: 15px;
+
+  font-size: 16px;
   font-weight: 650;
-  color: #111827;
+
+  color: #f1f5f9;
 }
 
 
@@ -365,20 +500,29 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+
   gap: 10px;
-  margin-top: 28px;
-  padding-top: 22px;
-  border-top: 1px solid #eef0f4;
+
+  margin-top: 30px;
+  padding-top: 24px;
+
+  border-top: 1px solid #183650;
 }
 
 .form-actions button {
-  height: 42px;
-  padding: 0 20px;
+  height: 44px;
+
+  padding: 0 22px;
+
   border-radius: 8px;
+
   font-family: inherit;
+
   font-size: 13px;
   font-weight: 600;
+
   cursor: pointer;
+
   transition: all 0.2s ease;
 }
 
@@ -388,14 +532,19 @@
 ========================================================= */
 
 .cancel-btn {
-  background: #ffffff;
-  border: 1px solid #d1d5db;
-  color: #374151;
+  background: #071f3a;
+
+  border: 1px solid #456684;
+
+  color: #cbd5e1;
 }
 
 .cancel-btn:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
+  background: #0b2947;
+
+  border-color: #7095b8;
+
+  color: #ffffff;
 }
 
 
@@ -404,14 +553,19 @@
 ========================================================= */
 
 .reset-btn {
-  background: #ffffff;
-  border: 1px solid #d1d5db;
-  color: #6b7280;
+  background: #071f3a;
+
+  border: 1px solid #456684;
+
+  color: #9fb3c7;
 }
 
 .reset-btn:hover {
-  background: #f3f4f6;
-  color: #374151;
+  background: #0b2947;
+
+  border-color: #7095b8;
+
+  color: #e2e8f0;
 }
 
 
@@ -421,16 +575,24 @@
 
 .save-employee-btn {
   background: #2563eb;
+
   border: 1px solid #2563eb;
+
   color: #ffffff;
-  box-shadow: 0 2px 5px rgba(37, 99, 235, 0.15);
+
+  box-shadow:
+    0 2px 6px rgba(37, 99, 235, 0.25);
 }
 
 .save-employee-btn:hover {
   background: #1d4ed8;
+
   border-color: #1d4ed8;
+
   transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+
+  box-shadow:
+    0 5px 12px rgba(37, 99, 235, 0.3);
 }
 
 .save-employee-btn:active {
@@ -443,9 +605,11 @@
 ========================================================= */
 
 .helper-text {
-  margin-top: 5px;
+  margin-top: 6px;
+
   font-size: 10px;
-  color: #9ca3af;
+
+  color: #718ba4;
 }
 
 
@@ -454,13 +618,15 @@
 ========================================================= */
 
 .input-error {
-  border-color: #dc2626 !important;
+  border-color: #ef4444 !important;
 }
 
 .error-message {
   margin-top: 5px;
+
   font-size: 11px;
-  color: #dc2626;
+
+  color: #f87171;
 }
 
 
@@ -470,12 +636,19 @@
 
 .success-message {
   padding: 12px 15px;
+
   margin-bottom: 20px;
-  border: 1px solid #bbf7d0;
+
+  border: 1px solid #166534;
+
   border-radius: 8px;
-  background: #f0fdf4;
-  color: #15803d;
+
+  background: #082719;
+
+  color: #86efac;
+
   font-size: 12px;
+
   font-weight: 500;
 }
 
@@ -487,36 +660,74 @@
 .employee-id-display {
   display: inline-flex;
   align-items: center;
+
   padding: 6px 10px;
+
   border-radius: 6px;
-  background: #eff6ff;
-  color: #2563eb;
+
+  background: #0b2c4b;
+
+  color: #73b8ef;
+
   font-size: 11px;
+
   font-weight: 700;
 }
 
 
 /* =========================================================
-   RESPONSIVE — TABLET
+   TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+  .add-employee-page {
+    padding: 25px 20px;
+  }
+
+  .form-grid {
+    column-gap: 22px;
+  }
+
+  .form-group label {
+    font-size: 15px;
+  }
+
+  .form-group input,
+  .form-group select {
+    height: 62px;
+
+    font-size: 15px;
+
+    padding: 0 18px;
+  }
+}
+
+
+/* =========================================================
+   TABLET — SINGLE COLUMN
 ========================================================= */
 
 @media (max-width: 900px) {
-
   .add-employee-page {
     padding: 24px;
   }
 
   .form-grid {
     grid-template-columns: 1fr;
+
+    column-gap: 0;
+
+    row-gap: 20px;
   }
 
   .form-group.full-width {
     grid-column: auto;
   }
 
-  /* Emergency fields stack on tablet */
   .contact-emergency-row {
     grid-template-columns: 1fr;
+
+    gap: 20px;
   }
 
   .employee-card {
@@ -526,18 +737,19 @@
 
 
 /* =========================================================
-   RESPONSIVE — MOBILE
+   MOBILE
 ========================================================= */
 
 @media (max-width: 600px) {
-
   .add-employee-page {
     padding: 15px;
   }
 
   .employee-page-header {
     align-items: flex-start;
+
     flex-direction: column;
+
     gap: 15px;
   }
 
@@ -547,6 +759,7 @@
 
   .employee-card {
     padding: 18px;
+
     border-radius: 10px;
   }
 
@@ -556,22 +769,42 @@
 
   .form-grid {
     grid-template-columns: 1fr;
+
     gap: 16px;
   }
 
-  /* Emergency fields stack on mobile */
   .contact-emergency-row {
     grid-template-columns: 1fr;
+
     gap: 16px;
+  }
+
+  .form-group label {
+    font-size: 14px;
+  }
+
+  .form-group input,
+  .form-group select {
+    height: 54px;
+
+    font-size: 14px;
+
+    padding: 0 15px;
+  }
+
+  .form-group textarea {
+    font-size: 14px;
   }
 
   .photo-section {
     align-items: flex-start;
+
     flex-direction: column;
   }
 
   .form-actions {
     align-items: stretch;
+
     flex-direction: column;
   }
 
@@ -581,6 +814,7 @@
 
   .back-btn {
     width: 100%;
+
     justify-content: center;
   }
 }
@@ -591,7 +825,6 @@
 ========================================================= */
 
 @media (max-width: 400px) {
-
   .add-employee-page {
     padding: 12px;
   }
@@ -606,7 +839,9 @@
 
   .form-group input,
   .form-group select {
-    height: 42px;
+    height: 50px;
+
+    font-size: 13px;
   }
 
   .contact-emergency-row {
@@ -614,41 +849,122 @@
   }
 }
 
-/* =====================================================
-   EMERGENCY CONTACT - THREE FIELDS IN ONE ROW
-   ===================================================== */
+/* =========================================================
+   FORCE DARK EMPLOYEE FORM
+   This overrides global input styles
+========================================================= */
 
-.contact-emergency-row {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  width: 100%;
+.add-employee-page input,
+.add-employee-page select,
+.add-employee-page textarea {
+  background: #071f3a !important;
+  background-color: #071f3a !important;
+
+  color: #f1f5f9 !important;
+
+  border: 2px solid #5d8fc1 !important;
+
+  border-radius: 10px !important;
+
+  box-shadow: none !important;
+
+  -webkit-text-fill-color: #f1f5f9 !important;
 }
 
 
-/* =====================================================
-   TABLET
-   ===================================================== */
+/* PLACEHOLDER */
 
-@media (max-width: 900px) {
-
-  .contact-emergency-row {
-    grid-template-columns: 1fr;
-  }
-
+.add-employee-page input::placeholder,
+.add-employee-page textarea::placeholder {
+  color: #91b1d1 !important;
+  opacity: 1 !important;
 }
 
 
-/* =====================================================
-   MOBILE
-   ===================================================== */
+/* FOCUS */
 
-@media (max-width: 600px) {
+.add-employee-page input:focus,
+.add-employee-page select:focus,
+.add-employee-page textarea:focus {
+  background: #082442 !important;
+  background-color: #082442 !important;
 
-  .contact-emergency-row {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
+  color: #ffffff !important;
 
+  border-color: #79b9f2 !important;
+
+  outline: none !important;
+
+  box-shadow:
+    0 0 0 3px rgba(121, 185, 242, 0.15) !important;
+
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+
+/* HOVER */
+
+.add-employee-page input:hover,
+.add-employee-page select:hover,
+.add-employee-page textarea:hover {
+  background: #071f3a !important;
+  background-color: #071f3a !important;
+
+  border-color: #78a9d4 !important;
+}
+
+
+/* SELECT OPTIONS */
+
+.add-employee-page select option {
+  background: #071f3a !important;
+  color: #ffffff !important;
+}
+
+
+/* DATE INPUT */
+
+.add-employee-page input[type="date"] {
+  background: #071f3a !important;
+  background-color: #071f3a !important;
+  color: #f1f5f9 !important;
+}
+
+
+/* DATE ICON */
+
+.add-employee-page input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) !important;
+  opacity: 1 !important;
+}
+
+
+/* AUTOFILL */
+
+.add-employee-page input:-webkit-autofill,
+.add-employee-page input:-webkit-autofill:hover,
+.add-employee-page input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f1f5f9 !important;
+
+  -webkit-box-shadow:
+    0 0 0 1000px #071f3a inset !important;
+
+  box-shadow:
+    0 0 0 1000px #071f3a inset !important;
+
+  background-color: #071f3a !important;
+}
+
+
+/* LABELS */
+
+.add-employee-page label {
+  color: #e7edf5 !important;
+}
+
+
+/* REQUIRED STAR */
+
+.add-employee-page label span {
+  color: #ff3b4d !important;
 }

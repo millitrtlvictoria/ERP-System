@@ -1,5 +1,6 @@
 /* =========================================================
    USER MANAGEMENT
+   DARK NAVY ERP DESIGN
 ========================================================= */
 
 .user-management-page {
@@ -7,9 +8,10 @@
   width: 100%;
   box-sizing: border-box;
   padding: 30px 40px 50px;
-  background: #f5f7fb;
-  color: #263142;
+  background: #03152a;
+  color: #f8fafc;
 }
+
 
 /* =========================================================
    HEADER
@@ -32,22 +34,23 @@
 }
 
 .um-breadcrumb a {
-  color: #536df5;
+  color: #9ed0fa;
   text-decoration: none;
   font-weight: 500;
 }
 
 .um-breadcrumb a:hover {
+  color: #ffffff;
   text-decoration: underline;
 }
 
 .um-breadcrumb span {
-  color: #8d96a5;
+  color: #a9bfd3;
 }
 
 .um-header h1 {
   margin: 0;
-  color: #1e2736;
+  color: #ffffff;
   font-size: 30px;
   line-height: 1.2;
   font-weight: 700;
@@ -55,10 +58,11 @@
 
 .um-header p {
   margin: 7px 0 0;
-  color: #7d8796;
+  color: #a9bfd3;
   font-size: 14px;
   line-height: 1.5;
 }
+
 
 /* =========================================================
    ADD USER BUTTON
@@ -69,25 +73,26 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-
   min-width: 120px;
   height: 43px;
   padding: 0 18px;
 
-  border: 1px solid #536df5;
+  border: 1px solid #ffffff;
   border-radius: 8px;
 
-  background: #536df5;
+  background: #2563eb;
   color: #ffffff;
 
   font-size: 13px;
   font-weight: 600;
-
   cursor: pointer;
 
-  box-shadow: 0 4px 10px rgba(83, 109, 245, 0.18);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
 
-  transition: all 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .um-add-button span {
@@ -96,15 +101,15 @@
 }
 
 .um-add-button:hover {
-  background: #465fdc;
-  border-color: #465fdc;
+  background: #1d4ed8;
   transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(83, 109, 245, 0.22);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.32);
 }
 
 .um-add-button:active {
   transform: translateY(0);
 }
+
 
 /* =========================================================
    SUMMARY CARDS
@@ -125,27 +130,31 @@
   align-items: center;
   gap: 16px;
 
-  background: #ffffff;
+  background: #03182f;
 
-  border: 1px solid #e2e6ed;
+  /* WHITE / LIGHT BORDER */
+  border: 1px solid #ffffff;
   border-radius: 12px;
 
   box-sizing: border-box;
 
-  box-shadow: 0 2px 8px rgba(25, 35, 50, 0.04);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
 
-  transition: 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .um-summary-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(25, 35, 50, 0.07);
+  background: #061d35;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.25);
 }
 
 .um-summary-icon {
   width: 46px;
   height: 46px;
-
   flex-shrink: 0;
 
   display: flex;
@@ -154,26 +163,27 @@
 
   border-radius: 11px;
 
-  background: #eef2ff;
-
-  color: #536df5;
+  background: #0b2947;
+  color: #9ed0fa;
 
   font-size: 20px;
+
+  border: 1px solid #ffffff;
 }
 
 .um-summary-card:nth-child(2) .um-summary-icon {
-  background: #eaf8f1;
-  color: #2eaa70;
+  background: #123b31;
+  color: #8ee5c7;
 }
 
 .um-summary-card:nth-child(3) .um-summary-icon {
-  background: #fff1f2;
-  color: #d45c67;
+  background: #491f2d;
+  color: #ffb8c4;
 }
 
 .um-summary-card:nth-child(4) .um-summary-icon {
-  background: #f1ebff;
-  color: #7555c4;
+  background: #302650;
+  color: #cbbcff;
 }
 
 .um-summary-card > div:last-child {
@@ -182,18 +192,19 @@
 }
 
 .um-summary-card span {
-  color: #7e8898;
+  color: #a9bfd3;
   font-size: 12px;
   font-weight: 600;
   margin-bottom: 7px;
 }
 
 .um-summary-card strong {
-  color: #252f40;
+  color: #ffffff;
   font-size: 27px;
   line-height: 1;
   font-weight: 700;
 }
+
 
 /* =========================================================
    FILTER CARD
@@ -205,18 +216,19 @@
   gap: 15px;
 
   padding: 18px 20px;
-
   margin-bottom: 20px;
 
-  background: #ffffff;
+  background: #03182f;
 
-  border: 1px solid #e2e6ed;
+  /* WHITE BORDER */
+  border: 1px solid #ffffff;
   border-radius: 11px;
 
-  box-shadow: 0 2px 7px rgba(25, 35, 50, 0.03);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
 
   box-sizing: border-box;
 }
+
 
 /* =========================================================
    SEARCH
@@ -236,43 +248,45 @@
 
   padding: 0 14px 0 39px;
 
-  border: 1px solid #dce1e8;
+  /* WHITE BORDER */
+  border: 1px solid #ffffff;
   border-radius: 7px;
 
-  background: #ffffff;
-
-  color: #303846;
+  background: #071f3a;
+  color: #ffffff;
 
   font-size: 13px;
-
   outline: none;
 
-  transition: 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .um-search-box input::placeholder {
-  color: #a0a8b5;
+  color: #a9bfd3;
 }
 
 .um-search-box input:focus {
-  border-color: #7187f7;
-  box-shadow: 0 0 0 3px rgba(113, 135, 247, 0.1);
+  border-color: #ffffff;
+  background: #082442;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
 }
 
 .um-search-icon {
   position: absolute;
-
   left: 13px;
   top: 50%;
 
   transform: translateY(-50%);
 
-  color: #7f8998;
+  color: #cde7fa;
 
   font-size: 18px;
-
   pointer-events: none;
 }
+
 
 /* =========================================================
    FILTER GROUP
@@ -282,12 +296,11 @@
   display: flex;
   flex-direction: column;
   gap: 7px;
-
   min-width: 155px;
 }
 
 .um-filter-group label {
-  color: #5b6575;
+  color: #ffffff;
   font-size: 12px;
   font-weight: 600;
 }
@@ -298,28 +311,36 @@
 
   padding: 0 32px 0 12px;
 
-  border: 1px solid #dce1e8;
+  /* WHITE BORDER */
+  border: 1px solid #ffffff;
   border-radius: 7px;
 
-  background: #ffffff;
-
-  color: #4a5565;
+  background: #071f3a;
+  color: #ffffff;
 
   font-size: 13px;
-
   outline: none;
-
   cursor: pointer;
 
   box-sizing: border-box;
 
-  transition: 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .um-filter-group select:focus {
-  border-color: #7187f7;
-  box-shadow: 0 0 0 3px rgba(113, 135, 247, 0.1);
+  border-color: #ffffff;
+  background: #082442;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
 }
+
+.um-filter-group select option {
+  background: #071f3a;
+  color: #ffffff;
+}
+
 
 /* =========================================================
    RESET BUTTON
@@ -329,25 +350,28 @@
   height: 42px;
   padding: 0 16px;
 
-  border: 1px solid #dce1e8;
+  /* WHITE BORDER */
+  border: 1px solid #ffffff;
   border-radius: 7px;
 
-  background: #ffffff;
-
-  color: #5e6877;
+  background: #071f3a;
+  color: #ffffff;
 
   font-size: 12px;
   font-weight: 600;
 
   cursor: pointer;
 
-  transition: 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .um-reset-button:hover {
-  background: #f2f4f7;
-  border-color: #cfd5de;
+  background: #0b2947;
+  border-color: #ffffff;
 }
+
 
 /* =========================================================
    TABLE CARD
@@ -356,15 +380,17 @@
 .um-table-card {
   width: 100%;
 
-  background: #ffffff;
+  background: #03182f;
 
-  border: 1px solid #e2e6ed;
+  /* WHITE BORDER */
+  border: 1px solid #ffffff;
   border-radius: 12px;
 
   overflow: hidden;
 
-  box-shadow: 0 2px 8px rgba(25, 35, 50, 0.04);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.20);
 }
+
 
 /* =========================================================
    TABLE HEADER
@@ -376,18 +402,17 @@
   justify-content: space-between;
 
   min-height: 80px;
-
   padding: 19px 25px;
 
   box-sizing: border-box;
 
-  border-bottom: 1px solid #edf0f4;
+  border-bottom: 1px solid #ffffff;
 }
 
 .um-table-header h2 {
   margin: 0;
 
-  color: #252e3d;
+  color: #ffffff;
 
   font-size: 17px;
   font-weight: 700;
@@ -396,10 +421,11 @@
 .um-table-header p {
   margin: 5px 0 0;
 
-  color: #8a94a3;
+  color: #a9bfd3;
 
   font-size: 12px;
 }
+
 
 /* =========================================================
    TABLE WRAPPER
@@ -409,6 +435,7 @@
   width: 100%;
   overflow-x: auto;
 }
+
 
 /* =========================================================
    TABLE
@@ -423,27 +450,24 @@
 }
 
 .um-table thead {
-  background: #f8f9fb;
+  background: #071f3a;
 }
 
 .um-table th {
   height: 47px;
-
   padding: 0 15px;
 
-  border-bottom: 1px solid #e4e8ee;
+  border-bottom: 1px solid #ffffff;
 
-  color: #737d8d;
+  color: #ffffff;
 
   font-size: 11px;
   font-weight: 700;
 
   text-align: left;
-
   text-transform: uppercase;
 
   letter-spacing: 0.03em;
-
   white-space: nowrap;
 }
 
@@ -458,24 +482,24 @@
 
 .um-table td {
   height: 70px;
-
   padding: 10px 15px;
 
-  border-bottom: 1px solid #edf0f4;
+  border-bottom: 1px solid #315a7b;
 
-  color: #596474;
+  color: #e7edf5;
 
   font-size: 12px;
-
   vertical-align: middle;
 }
 
 .um-table tbody tr {
+  background: #03182f;
+
   transition: background 0.15s ease;
 }
 
 .um-table tbody tr:hover {
-  background: #fafbfe;
+  background: #082442;
 }
 
 .um-table tbody tr:last-child td {
@@ -490,6 +514,7 @@
   padding-right: 25px;
 }
 
+
 /* =========================================================
    USER CELL
 ========================================================= */
@@ -498,7 +523,6 @@
   display: flex;
   align-items: center;
   gap: 12px;
-
   min-width: 220px;
 }
 
@@ -514,9 +538,12 @@
 
   border-radius: 50%;
 
-  background: #e7efff;
+  background: #0b2947;
 
-  color: #536df5;
+  /* WHITE BORDER */
+  border: 1px solid #ffffff;
+
+  color: #9ed0fa;
 
   font-size: 12px;
   font-weight: 700;
@@ -525,12 +552,11 @@
 .um-user-cell > div:last-child {
   display: flex;
   flex-direction: column;
-
   min-width: 0;
 }
 
 .um-user-cell strong {
-  color: #303a4a;
+  color: #ffffff;
 
   font-size: 13px;
   font-weight: 700;
@@ -541,25 +567,26 @@
 .um-user-cell span {
   margin-top: 4px;
 
-  color: #929baa;
+  color: #a9bfd3;
 
   font-size: 11px;
-
   white-space: nowrap;
 }
+
 
 /* =========================================================
    EMPLOYEE ID
 ========================================================= */
 
 .um-employee-id {
-  color: #536df5;
+  color: #9ed0fa;
 
   font-size: 12px;
   font-weight: 600;
 
   white-space: nowrap;
 }
+
 
 /* =========================================================
    ROLE
@@ -570,14 +597,14 @@
   align-items: center;
 
   min-height: 27px;
-
   padding: 0 10px;
 
+  /* WHITE BORDER */
+  border: 1px solid #ffffff;
   border-radius: 6px;
 
-  background: #eef2ff;
-
-  color: #5369ca;
+  background: #0b2947;
+  color: #cde7fa;
 
   font-size: 11px;
   font-weight: 600;
@@ -585,32 +612,34 @@
   white-space: nowrap;
 }
 
+
 /* Different role colors */
 
 .um-table tbody tr:nth-child(1) .um-role {
-  background: #f0eaff;
-  color: #7354bd;
+  background: #302650;
+  color: #d5c9ff;
 }
 
 .um-table tbody tr:nth-child(2) .um-role {
-  background: #eaf1ff;
-  color: #4e6fc6;
+  background: #12324a;
+  color: #b9ddfa;
 }
 
 .um-table tbody tr:nth-child(3) .um-role {
-  background: #eaf8f2;
-  color: #37926c;
+  background: #123b31;
+  color: #b6f0db;
 }
 
 .um-table tbody tr:nth-child(4) .um-role {
-  background: #fff3df;
-  color: #b37722;
+  background: #49351c;
+  color: #f4d18f;
 }
 
 .um-table tbody tr:nth-child(5) .um-role {
-  background: #f1f2f5;
-  color: #687281;
+  background: #26384a;
+  color: #d0dce8;
 }
+
 
 /* =========================================================
    STATUS
@@ -622,30 +651,29 @@
   gap: 7px;
 
   min-height: 27px;
-
   padding: 0 10px;
 
-  border: none;
+  /* WHITE BORDER */
+  border: 1px solid #ffffff;
   border-radius: 20px;
 
   font-size: 11px;
   font-weight: 600;
 
   cursor: pointer;
-
   white-space: nowrap;
 
   transition: 0.2s ease;
 }
 
 .um-status.active {
-  background: #eaf8f1;
-  color: #30996a;
+  background: #123b31;
+  color: #8ee5c7;
 }
 
 .um-status.inactive {
-  background: #f1f2f4;
-  color: #7c8490;
+  background: #26384a;
+  color: #b8c5d1;
 }
 
 .um-status:hover {
@@ -661,17 +689,18 @@
   background: currentColor;
 }
 
+
 /* =========================================================
    LAST LOGIN
 ========================================================= */
 
 .um-last-login {
-  color: #7d8796;
+  color: #a9bfd3;
 
   font-size: 11px;
-
   white-space: nowrap;
 }
+
 
 /* =========================================================
    ACTIONS
@@ -681,7 +710,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
   gap: 7px;
 }
 
@@ -693,37 +721,38 @@
   align-items: center;
   justify-content: center;
 
-  border: 1px solid #dce3f2;
+  /* WHITE BORDER */
+  border: 1px solid #ffffff;
   border-radius: 6px;
 
-  background: #f6f8ff;
-
-  color: #536df5;
+  background: #071f3a;
+  color: #9ed0fa;
 
   font-size: 14px;
 
   cursor: pointer;
 
-  transition: 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .um-action-button:hover {
-  background: #eaf0ff;
-  border-color: #cbd6ff;
+  background: #0b2947;
+  border-color: #ffffff;
 }
 
 .um-action-button.delete {
-  border-color: #f0d5d8;
-
-  background: #fff7f7;
-
-  color: #d45c67;
+  border-color: #ffffff;
+  background: #491f2d;
+  color: #ffb8c4;
 }
 
 .um-action-button.delete:hover {
-  background: #ffeded;
-  border-color: #eabcc1;
+  background: #5b2637;
+  border-color: #ffffff;
 }
+
 
 /* =========================================================
    EMPTY STATE
@@ -752,9 +781,11 @@
 
   border-radius: 50%;
 
-  background: #f1f4f8;
+  /* WHITE BORDER */
+  border: 1px solid #ffffff;
 
-  color: #8b95a3;
+  background: #071f3a;
+  color: #a9bfd3;
 
   font-size: 20px;
 }
@@ -762,7 +793,7 @@
 .um-empty-state h3 {
   margin: 0;
 
-  color: #3d4757;
+  color: #ffffff;
 
   font-size: 15px;
   font-weight: 700;
@@ -771,34 +802,56 @@
 .um-empty-state p {
   margin: 7px 0 14px;
 
-  color: #929aa7;
+  color: #a9bfd3;
 
   font-size: 12px;
 }
 
 .um-reset-empty {
   height: 34px;
-
   padding: 0 14px;
 
-  border: 1px solid #dce1e8;
+  /* WHITE BORDER */
+  border: 1px solid #ffffff;
   border-radius: 7px;
 
-  background: #ffffff;
-
-  color: #536df5;
+  background: #071f3a;
+  color: #ffffff;
 
   font-size: 12px;
   font-weight: 600;
 
   cursor: pointer;
 
-  transition: 0.2s ease;
+  transition: background 0.2s ease;
 }
 
 .um-reset-empty:hover {
-  background: #f1f4ff;
+  background: #0b2947;
 }
+
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+.um-table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.um-table-wrapper::-webkit-scrollbar-track {
+  background: #071f3a;
+}
+
+.um-table-wrapper::-webkit-scrollbar-thumb {
+  background: #315a7b;
+  border-radius: 10px;
+}
+
+.um-table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #5d8fc1;
+}
+
 
 /* =========================================================
    RESPONSIVE
@@ -821,6 +874,7 @@
     flex: 1 1 100%;
   }
 }
+
 
 @media (max-width: 700px) {
   .user-management-page {
