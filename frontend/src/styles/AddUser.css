@@ -1,13 +1,18 @@
+/* =====================================================
+   ADD USER PAGE
+===================================================== */
 
 .add-user-page {
   min-height: 100vh;
   padding: 30px 40px 50px;
-  background: #f5f7fb;
+  box-sizing: border-box;
+  background: #080f1c;
+  color: #dce6ef;
 }
 
-/* =========================
+/* =====================================================
    HEADER
-========================= */
+===================================================== */
 
 .add-user-header {
   display: flex;
@@ -22,35 +27,35 @@
   gap: 9px;
   margin-bottom: 10px;
   font-size: 13px;
-  color: #7b8494;
+  color: #63758c;
 }
 
 .breadcrumb span:first-child {
   cursor: pointer;
-  color: #4f6ef7;
+  color: #19d4e5;
 }
 
 .breadcrumb-separator {
-  color: #b1b7c3;
+  color: #65778d;
 }
 
 .add-user-header h1 {
   margin: 0;
-  color: #1d2635;
+  color: #edf3f8;
   font-size: 30px;
   font-weight: 700;
 }
 
 .add-user-header p {
   margin: 7px 0 0;
-  color: #7a8494;
+  color: #63758c;
   font-size: 14px;
 }
 
 .back-button {
-  border: 1px solid #dfe3ea;
-  background: #ffffff;
-  color: #4c5667;
+  border: 1px solid #293b53;
+  background: #101a2a;
+  color: #a9b8c9;
   border-radius: 8px;
   padding: 10px 17px;
   font-size: 14px;
@@ -60,28 +65,34 @@
 }
 
 .back-button:hover {
-  background: #f0f3f8;
+  background: #0d1726;
+  border-color: #65778d;
+  color: #edf3f8;
 }
 
-/* =========================
+/* =====================================================
    CARD
-========================= */
+===================================================== */
 
 .user-card {
-  background: #ffffff;
-  border: 1px solid #e4e8ef;
+  background: #101a2a;
+  border: 1px solid #24364e;
   border-radius: 12px;
   margin-bottom: 22px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(25, 35, 50, 0.03);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
+
+/* =====================================================
+   SECTION HEADER
+===================================================== */
 
 .section-header {
   display: flex;
   align-items: center;
   gap: 13px;
   padding: 21px 25px;
-  border-bottom: 1px solid #edf0f4;
+  border-bottom: 1px solid #24364e;
 }
 
 .section-icon {
@@ -91,26 +102,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #eef2ff;
+  background: #102639;
+  border: 1px solid #24364e;
+  color: #19d4e5;
   font-size: 19px;
 }
 
 .section-header h2 {
   margin: 0;
-  color: #252d3b;
+  color: #edf3f8;
   font-size: 17px;
   font-weight: 700;
 }
 
 .section-header p {
   margin: 4px 0 0;
-  color: #8992a1;
+  color: #63758c;
   font-size: 13px;
 }
 
-/* =========================
+/* =====================================================
    FORM
-========================= */
+===================================================== */
 
 .form-grid {
   display: grid;
@@ -126,13 +139,13 @@
 
 .form-group label {
   margin-bottom: 8px;
-  color: #3c4656;
+  color: #a9b8c9;
   font-size: 13px;
   font-weight: 600;
 }
 
 .form-group label span {
-  color: #e14d5a;
+  color: #ef7651;
 }
 
 .form-group input,
@@ -141,44 +154,75 @@
   height: 44px;
   box-sizing: border-box;
   padding: 0 13px;
-  border: 1px solid #dce1e8;
+  border: 1px solid #293b53;
   border-radius: 7px;
-  background: #ffffff;
-  color: #303846;
+  background: #101a2a;
+  background-color: #101a2a;
+  color: #edf3f8;
   font-size: 14px;
   outline: none;
-  transition: 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+  -webkit-text-fill-color: #edf3f8;
 }
 
 .form-group input::placeholder {
-  color: #a7aebb;
+  color: #65778d;
+  opacity: 1;
+}
+
+.form-group input:hover,
+.form-group select:hover {
+  background: #101a2a;
+  background-color: #101a2a;
+  border-color: #65778d;
 }
 
 .form-group input:focus,
 .form-group select:focus {
-  border-color: #7187f7;
-  box-shadow: 0 0 0 3px rgba(113, 135, 247, 0.10);
+  border-color: #19d4e5;
+  background: #101a2a;
+  background-color: #101a2a;
+  color: #edf3f8;
+  box-shadow: 0 0 0 3px rgba(25, 212, 229, 0.06);
+  -webkit-text-fill-color: #edf3f8;
 }
 
+.form-group select option {
+  background: #101a2a;
+  background-color: #101a2a;
+  color: #edf3f8;
+}
+
+/* =====================================================
+   ERROR
+===================================================== */
+
 .input-error {
-  border-color: #e35b68 !important;
+  border-color: #703c31 !important;
 }
 
 .error-message {
   margin-top: 5px;
-  color: #d94b58;
+  color: #ef7651;
   font-size: 12px;
 }
 
+/* =====================================================
+   FIELD HINT
+===================================================== */
+
 .field-hint {
   margin-top: 6px;
-  color: #929aa8;
+  color: #65778d;
   font-size: 11px;
 }
 
-/* =========================
+/* =====================================================
    PASSWORD
-========================= */
+===================================================== */
 
 .password-wrapper {
   position: relative;
@@ -195,15 +239,19 @@
   transform: translateY(-50%);
   border: none;
   background: transparent;
-  color: #5068df;
+  color: #19d4e5;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
 }
 
-/* =========================
+.password-toggle:hover {
+  color: #edf3f8;
+}
+
+/* =====================================================
    STATUS
-========================= */
+===================================================== */
 
 .status-options {
   display: flex;
@@ -218,13 +266,14 @@
   gap: 7px;
   margin: 0 !important;
   cursor: pointer;
+  color: #a9b8c9;
   font-weight: 500 !important;
 }
 
 .radio-label input {
   width: auto;
   height: auto;
-  accent-color: #536df5;
+  accent-color: #19d4e5;
 }
 
 .status-dot {
@@ -234,16 +283,17 @@
 }
 
 .status-dot.active {
-  background: #35b978;
+  background: #12c896;
+  box-shadow: 0 0 6px rgba(18, 200, 150, 0.25);
 }
 
 .status-dot.inactive {
-  background: #a3a9b4;
+  background: #63758c;
 }
 
-/* =========================
+/* =====================================================
    PERMISSIONS
-========================= */
+===================================================== */
 
 .permission-header {
   justify-content: space-between;
@@ -258,10 +308,15 @@
 .permission-note {
   padding: 9px 12px;
   border-radius: 6px;
-  background: #f7f8fa;
-  color: #858e9d;
+  background: #102639;
+  border: 1px solid #24364e;
+  color: #63758c;
   font-size: 11px;
 }
+
+/* =====================================================
+   PERMISSION TABLE
+===================================================== */
 
 .permission-table-wrapper {
   overflow-x: auto;
@@ -275,13 +330,13 @@
 }
 
 .permission-table th {
-  background: #f8f9fb;
-  color: #737d8d;
+  background: #0d1726;
+  color: #63758c;
   font-size: 12px;
   font-weight: 700;
   text-align: center;
   padding: 13px 12px;
-  border-bottom: 1px solid #e4e8ee;
+  border-bottom: 1px solid #24364e;
 }
 
 .permission-table th:first-child {
@@ -291,22 +346,27 @@
 .permission-table td {
   padding: 15px 12px;
   text-align: center;
-  border-bottom: 1px solid #edf0f4;
+  background: #101a2a;
+  border-bottom: 1px solid #1d2c41;
 }
 
 .permission-table td:first-child {
   text-align: left;
-  color: #394353;
+  color: #a9b8c9;
   font-size: 13px;
+}
+
+.permission-table tbody tr:hover td {
+  background: #142238;
 }
 
 .permission-table tbody tr:last-child td {
   border-bottom: none;
 }
 
-/* =========================
+/* =====================================================
    CHECKBOX
-========================= */
+===================================================== */
 
 .checkbox-container {
   position: relative;
@@ -325,15 +385,15 @@
 .custom-checkbox {
   width: 18px;
   height: 18px;
-  border: 1px solid #cdd3dd;
+  border: 1px solid #293b53;
   border-radius: 4px;
-  background: #ffffff;
+  background: #101a2a;
   transition: 0.2s ease;
 }
 
 .checkbox-container input:checked + .custom-checkbox {
-  background: #566ff1;
-  border-color: #566ff1;
+  background: #19d4e5;
+  border-color: #19d4e5;
 }
 
 .checkbox-container input:checked + .custom-checkbox::after {
@@ -342,14 +402,14 @@
   width: 5px;
   height: 9px;
   margin: 2px 0 0 6px;
-  border: solid #ffffff;
+  border: solid #06101c;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
 
-/* =========================
+/* =====================================================
    SECURITY NOTICE
-========================= */
+===================================================== */
 
 .security-notice {
   display: flex;
@@ -357,31 +417,32 @@
   gap: 13px;
   padding: 16px 19px;
   margin-bottom: 22px;
-  border: 1px solid #e2e6ed;
+  border: 1px solid #24364e;
   border-radius: 10px;
-  background: #fafbfc;
+  background: #102639;
 }
 
 .security-icon {
   font-size: 18px;
+  color: #19d4e5;
 }
 
 .security-notice h3 {
   margin: 0 0 4px;
-  color: #3c4655;
+  color: #edf3f8;
   font-size: 13px;
 }
 
 .security-notice p {
   margin: 0;
-  color: #7d8795;
+  color: #63758c;
   font-size: 12px;
   line-height: 1.5;
 }
 
-/* =========================
+/* =====================================================
    ACTIONS
-========================= */
+===================================================== */
 
 .form-actions {
   display: flex;
@@ -397,44 +458,80 @@
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
 }
 
+/* =====================================================
+   CANCEL BUTTON
+===================================================== */
+
 .cancel-button {
-  border: 1px solid #dce1e8;
-  background: #ffffff;
-  color: #596373;
+  border: 1px solid #293b53;
+  background: #101a2a;
+  color: #a9b8c9;
 }
 
 .cancel-button:hover {
-  background: #f2f4f7;
+  background: #0d1726;
+  border-color: #65778d;
+  color: #edf3f8;
 }
 
+/* =====================================================
+   RESET BUTTON
+===================================================== */
+
 .reset-button {
-  border: 1px solid #dce1e8;
-  background: #ffffff;
-  color: #596373;
+  border: 1px solid #293b53;
+  background: #101a2a;
+  color: #a9b8c9;
 }
 
 .reset-button:hover {
-  background: #f2f4f7;
+  background: #0d1726;
+  border-color: #65778d;
+  color: #edf3f8;
 }
 
+/* =====================================================
+   CREATE BUTTON
+===================================================== */
+
 .create-button {
-  border: 1px solid #536df5;
-  background: #536df5;
-  color: #ffffff;
+  border: 1px solid #19d4e5;
+  background: #19d4e5;
+  color: #06101c;
   min-width: 125px;
 }
 
 .create-button:hover {
-  background: #465fe0;
-  border-color: #465fe0;
+  background: #20cce0;
+  border-color: #20cce0;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(25, 212, 229, 0.16);
 }
 
-/* =========================
+.create-button:active {
+  transform: translateY(0);
+}
+
+/* =====================================================
+   DISABLED BUTTON
+===================================================== */
+
+.form-actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* =====================================================
    RESPONSIVE
-========================= */
+===================================================== */
 
 @media (max-width: 900px) {
   .add-user-page {
@@ -459,6 +556,10 @@
     margin-left: 55px;
   }
 }
+
+/* =====================================================
+   MOBILE
+===================================================== */
 
 @media (max-width: 600px) {
   .add-user-page {
@@ -496,4 +597,137 @@
   .form-actions button {
     width: 100%;
   }
+}
+
+/* =====================================================
+   FORCE SOLID DARK FORM FIELDS
+   PREVENT GLOBAL CSS FROM TURNING FIELDS BLUE/WHITE
+===================================================== */
+
+.add-user-page .form-group input,
+.add-user-page .form-group select,
+.add-user-page .form-group textarea {
+  background: #101a2a !important;
+  background-color: #101a2a !important;
+  color: #edf3f8 !important;
+  border: 1px solid #293b53 !important;
+  border-radius: 7px !important;
+  box-shadow: none !important;
+  -webkit-text-fill-color: #edf3f8 !important;
+}
+
+/* =====================================================
+   PLACEHOLDER
+===================================================== */
+
+.add-user-page .form-group input::placeholder,
+.add-user-page .form-group textarea::placeholder {
+  color: #65778d !important;
+  opacity: 1 !important;
+}
+
+/* =====================================================
+   HOVER
+===================================================== */
+
+.add-user-page .form-group input:hover,
+.add-user-page .form-group select:hover,
+.add-user-page .form-group textarea:hover {
+  background: #101a2a !important;
+  background-color: #101a2a !important;
+  border-color: #65778d !important;
+}
+
+/* =====================================================
+   FOCUS
+===================================================== */
+
+.add-user-page .form-group input:focus,
+.add-user-page .form-group select:focus,
+.add-user-page .form-group textarea:focus {
+  background: #101a2a !important;
+  background-color: #101a2a !important;
+  color: #edf3f8 !important;
+  border-color: #19d4e5 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(25, 212, 229, 0.06) !important;
+  -webkit-text-fill-color: #edf3f8 !important;
+}
+
+/* =====================================================
+   SELECT OPTIONS
+===================================================== */
+
+.add-user-page .form-group select option {
+  background: #101a2a !important;
+  background-color: #101a2a !important;
+  color: #edf3f8 !important;
+}
+
+/* =====================================================
+   PASSWORD FIELD
+===================================================== */
+
+.add-user-page .password-wrapper input {
+  background: #101a2a !important;
+  background-color: #101a2a !important;
+  color: #edf3f8 !important;
+  -webkit-text-fill-color: #edf3f8 !important;
+}
+
+/* =====================================================
+   RADIO BUTTONS
+   KEEP RADIO FUNCTIONALITY UNCHANGED
+===================================================== */
+
+.add-user-page .radio-label input {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* =====================================================
+   AUTOFILL
+   PREVENT CHROME FROM SHOWING BLUE/YELLOW FIELD
+===================================================== */
+
+.add-user-page .form-group input:-webkit-autofill,
+.add-user-page .form-group input:-webkit-autofill:hover,
+.add-user-page .form-group input:-webkit-autofill:focus,
+.add-user-page .form-group input:-webkit-autofill:active {
+  -webkit-text-fill-color: #edf3f8 !important;
+
+  -webkit-box-shadow:
+    0 0 0 1000px #101a2a inset !important;
+
+  box-shadow:
+    0 0 0 1000px #101a2a inset !important;
+
+  background-color: #101a2a !important;
+  background: #101a2a !important;
+}
+
+/* =====================================================
+   DISABLED FIELDS
+===================================================== */
+
+.add-user-page .form-group input:disabled,
+.add-user-page .form-group select:disabled,
+.add-user-page .form-group textarea:disabled {
+  background: #0d1726 !important;
+  background-color: #0d1726 !important;
+  color: #63758c !important;
+  -webkit-text-fill-color: #63758c !important;
+  border-color: #24364e !important;
+}
+
+/* =====================================================
+   LABELS
+===================================================== */
+
+.add-user-page .form-group label {
+  color: #a9b8c9 !important;
+}
+
+.add-user-page .form-group label span {
+  color: #ef7651 !important;
 }
