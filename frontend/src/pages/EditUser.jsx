@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "../styles/AddUser.css";
 
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "http://192.168.1.71:8000";
 
 const DEFAULT_PERMISSIONS = {
   dashboard: {

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/login.css";
+import API_URL from "../config/api";
 
 function Login() {
   const navigate = useNavigate();
@@ -50,7 +51,7 @@ function Login() {
       // -------------------------------------------------
 
       const response = await fetch(
-        "http://127.0.0.1:8000/api/login",
+        `${API_URL}/api/login`,
         {
           method: "POST",
 
@@ -140,9 +141,9 @@ function Login() {
   // REGISTER
   // =====================================================
 
-  //  const handleRegister = () => {
+  // const handleRegister = () => {
   //   navigate("/register");
-  //  };
+  // };
 
   // =====================================================
   // PAGE
@@ -278,3 +279,4 @@ function Login() {
 }
 
 export default Login;
+

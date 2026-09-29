@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/UserManagement.css";
 
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "http://192.168.1.71:8000";
 
 function UserManagement() {
   const navigate = useNavigate();
@@ -1031,3 +1031,4 @@ function UserManagement() {
 }
 
 export default UserManagement;
+

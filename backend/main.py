@@ -1,3 +1,4 @@
+
 from fastapi import (
     FastAPI,
     Depends,
@@ -87,10 +88,14 @@ app.add_middleware(
     CORSMiddleware,
 
     allow_origins=[
+        # Development
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://localhost:5174",
         "http://127.0.0.1:5174",
+
+        # Hosted ERP frontend
+        "http://192.168.1.71",
     ],
 
     allow_credentials=True,
@@ -517,9 +522,11 @@ async def upload_employee_photo(
         if old_file_path.exists():
 
             try:
+
                 old_file_path.unlink()
 
             except OSError:
+
                 pass
 
         # ---------------------------------------------
@@ -570,9 +577,11 @@ async def upload_employee_photo(
         if file_path.exists():
 
             try:
+
                 file_path.unlink()
 
             except OSError:
+
                 pass
 
         raise HTTPException(
@@ -687,9 +696,11 @@ def delete_employee_photo(
     if file_path.exists():
 
         try:
+
             file_path.unlink()
 
         except OSError:
+
             pass
 
     # -------------------------------------------------

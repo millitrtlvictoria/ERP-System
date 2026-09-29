@@ -246,7 +246,7 @@ try {
   // =================================================
 
   const response = await fetch(
-    "http://127.0.0.1:8000/api/user-2",
+    "http://192.168.1.71:8000/api/user-2",
     {
       method: "POST",
       headers: {
@@ -1079,3 +1079,4 @@ return ( <div className="add-user-page">
 }
 
 export default AddUser;
+
